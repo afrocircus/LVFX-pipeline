@@ -11,7 +11,6 @@ from scripts import ftrackUpload
 from scripts import writeNodeManager
 from scripts import slate
 from scripts import easySave
-from scripts import rpSubmit
 
 
 def addCustomPanel1():
