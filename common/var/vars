@@ -1,0 +1,8 @@
+export PIPE_DIR=/data/production/pipeline
+export VAR_DIR=$PIPE_DIR/common/var
+export PACKAGES_DIR=$PIPE_DIR/common/packages
+export PIPE_DEV_DIR=$PIPE_DIR/dev
+export PIPE_LIVE_DIR=$PIPE_DIR/live
+export FTRACK_DEV_DIR=$PIPE_DEV_DIR/ftrack-connect-package/resource
+export FTRACK_LIVE_DIR=$PIPE_LIVE_DIR/ftrack-connect-package/resource
+

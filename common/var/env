@@ -1,0 +1,24 @@
+export FOUNDRY_ASSET_PLUGIN_PATH=/data/production/pipeline/linux/ftrack-connect-package/resource/legacy_plugins/ftrackProvider
+
+export HIERO_PLUGIN_PATH=/data/production/pipeline/linux/ftrack-connect-package/resource/legacy_plugins/ftrackHieroPlugin
+
+export PYTHONPATH=/usr/local/lib/python2.7/site-packages/:/data/production/pipeline/linux/common/packages/loco-api/:/data/production/pipeline/linux/common/packages/ftrack-api-3.3/:/data/production/pipeline/linux/maya/scripts/python:/data/production/pipeline/linux/ftrack-connect-package/resource/legacy_plugins/theFoundry
+
+export TEMP=/tmp
+
+export ICONS_PATH=/data/production/pipeline/linux/common/icons/
+
+export MAYA_MODULE_PATH=/data/production/pipeline/linux/maya/modules
+
+export MAYA_PLUG_IN_PATH=/data/production/pipeline/linux/maya/scripts/python/shot_submit:/data/production/pipeline/linux/maya/plug-ins
+
+export MAYA_SHELF_PATH=/data/production/pipeline/linux/maya/shelves
+
+export MAYA_SCRIPT_PATH=/data/production/pipeline/linux/maya/scripts/mel
+
+export NUKE_PATH=/data/production/pipeline/linux/nuke
+
+export XBMLANGPATH=/data/production/pipeline/linux/maya/icons
+
+export SHOT_SUBMIT_CONFIG=/data/production/pipeline/linux/common/config/shot_submit_config.json
+
