@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TimeTracker Layout</title>
+    <style>
+    @page { padding: 10pt}
+    @page { margin: 20px; }
+    @page { size: A3}
+    @page { size: A3 landscape }
+    body{margin:30px; padding: 10px}
+    img { page-break-inside: avoid; }
+    .break { clear:both; page-break-after:always; }
+    td, th { page-break-inside: avoid; }
+    </style>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css'>
+    <link type="text/css" rel="stylesheet" href="/static/css/home.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+</head>
+<body>
+    {% block content %} {% endblock %}
+</body>
+</html>

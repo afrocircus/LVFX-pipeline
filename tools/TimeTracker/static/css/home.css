@@ -1,0 +1,9 @@
+.banner_div {
+    height:130px;
+}
+
+.banner {
+    width: 7%;
+    position: absolute;
+    left: 45%;
+}
