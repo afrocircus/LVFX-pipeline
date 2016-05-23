@@ -1,0 +1,467 @@
+global proc shelf_LVFX_Modeling () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "KTools booleans workflow script" 
+        -enableBackground 0
+        -align "center" 
+        -label "KTools " 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "/data/production/pipeline/linux/maya/icons/K_HE_edit_menuO.png" 
+        -image1 "/data/production/pipeline/linux/maya/icons/K_HE_edit_menuO.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "/*********************************\n\nKTools - booleans workflow script. \n\nScript by: Klaudio Ladavac\nEmail: klaudio2u@gmail.com\n\nIMPORTANT: Script is provided as is and keep in mind it is personal project to learn MEL scripting \n           in the first place so it is definitly not most elagant code.  \n           Please don't share it around for free or change the script yourself.\n           If you are familiar with MEL scripting and you see where it can be improved/changed \n           please contant me on my email above! Thanks! ;)\n\n**********************************/\n\nstring $KTools = `window -t \"KTools\" -tlb 1 -s 0 -te 250`;\ncolumnLayout -adj 1;\n\n//   BOOLEANS - section    //////////////////////////////////////////////////////////////////\ntext -label \"> Booleans\" -al \"left\" -h 15 -font \"smallPlainLabelFont\" -backgroundColor 0.23 0.23 0.23;\n\n// ...........................................................................................\n\nrowLayout;\n  iconTextButton -image1 \"K_Boolean_DIF.png\" -command \"Difference_D\";  // Difference \n     proc Difference_D() { \n        polyCBoolOp -op 2 -ch 1 -preserveColor 1 -classification 1; \n        rename polyCBoolOp1 Boolean_dif; \n        polySoftEdge -angle 45;\n               int $inViewPref_D = `optionVar -q inViewMessageEnable`;\n               optionVar -iv inViewMessageEnable false;\n        toggleSelMode;\n        toggleSelMode; \n               optionVar -iv inViewMessageEnable $inViewPref_D;\n        DeleteHistory;\n     } \nsetParent ..;\t\n\n// ...........................................................................................\n\nrowLayout -numberOfColumns 2;\n    iconTextButton -image1 \"K_DIFFBox.png\" -command \"DifBox\" kBox;   // DIF Box \n        popupMenu -parent kBox; \n            menuItem  -label \"DIF Box > Edit Mode\" -image \"K_DIFFBox_edit.png\" -command \"DifBoxEdit\";  // DIF Box > Edit Mode \n\t    \n\n   proc DifBox() { \n            polyCBoolOp -op 2 -ch 1 -preserveColor 1 -classification 1;\n            sets -e -forceElement initialShadingGroup;\n            rename MAINObject_Bool;\n            polySoftEdge -angle 50;\n            select -r \"transform*\";\n                string $cmd_DB = \"import maya.cmds as mc;sel_obj = mc.ls(sl=True);mc.select(sel_obj[:-1], tgl=True)\";\n                python($cmd_DB);\n            \n                string $allObjs_DB[] = `ls -sl`;\n                for($x=0;$x<size($allObjs_DB);$x++) {\n                rename $allObjs_DB[$x] (\"temp_transfrom\" + $x);\n                }\n                \n            select \"transform*\";\n            select -tgl -vis \"transform*\";\n            \n            string $selected_DB[] = `ls -sl -dag -leaf`;\n                    for ($each_DB in $selected_DB)\n                    {\n                        setAttr ($each_DB +\".intermediateObject\") 0 ;\n                        setAttr ($each_DB +\".overrideEnabled\") 1 ;\n                        setAttr ($each_DB +\".overrideLevelOfDetail\") 1 ;  \n                    }\n    \n            showHidden -a;\n            rename polyCBoolOp1 Boolean_difbox;\n            parent -w;\n            sets -e -forceElement initialShadingGroup;\n                 int $inViewPref_Dbox = `optionVar -q inViewMessageEnable`;\n                 optionVar -iv inViewMessageEnable false;\n            doGroup 0 1 1;\n                 optionVar -iv inViewMessageEnable $inViewPref_Dbox;\n            source cleanUpScene.mel;\n            deleteEmptyGroups();\n            select -cl;\n} \n\n\nproc DifBoxEdit() { \n        polyCBoolOp -op 2 -ch 1 -preserveColor 1 -classification 1;\n        sets -e -forceElement initialShadingGroup;\n        rename MAINObject_Bool;\n        polySoftEdge -angle 50;\n        select -r \"transform*\";\n            string $cmd_DBE = \"import maya.cmds as mc;sel_obj = mc.ls(sl=True);mc.select(sel_obj[:-1], tgl=True)\";\n            python($cmd_DBE);\n        \n        string $allObjs_DBE[] = `ls -sl`;\n        for($x=0;$x<size($allObjs_DBE);$x++) {\n        rename $allObjs_DBE[$x] (\"temp_transfrom\" + $x);\n        }\n        \n        select -r \"transform*\";\n        select -tgl -vis \"transform*\";\n        \n            string $selected_DBE[] = `ls -sl -dag -leaf`;\n            for ($each_DBE in $selected_DBE)\n            {\n                setAttr ($each_DBE +\".intermediateObject\") 0;\n                setAttr ($each_DBE +\".overrideEnabled\") 1;\n                setAttr ($each_DBE +\".overrideShading\") 0;\n            }\n        \n        showHidden -a;\n        rename polyCBoolOp1 Boolean_difbox;\n        parent -w;\n        CenterPivot;\n              int $inViewPref_DboxE = `optionVar -q inViewMessageEnable`;\n              optionVar -iv inViewMessageEnable false;\n        doGroup 0 1 1;\n              optionVar -iv inViewMessageEnable $inViewPref_DboxE;\n        source cleanUpScene.mel;\n        deleteEmptyGroups();\n        select -cl;\n          \n} \n\n// ...........................................................................................\n\niconTextButton -image1 \"K_DIFFBox_clear.png\" -command \"ClearBox\";   // CLEAR BOX\nproc ClearBox() { \n    string $ObjectNoCheck_CB[] = `ls -sl`;                          // check number of seleced objects\n       if ( size($ObjectNoCheck_CB) == 0 ) {\n           inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Select MAIN object only!\" ) -fade -pos midCenterTop -fontSize 9;\n           print \"INFO -- Select MAIN object only!  - Nothing is selected so ClearBox doesn't know what to clear. Select boolean result!\"; \n       }  \n        \n       if ( size($ObjectNoCheck_CB)  == 1) {\n              if(gmatch($ObjectNoCheck_CB[0], \"MAINObject_Bool*\")){\n                    rename polySurface;                           // Script part\n                    DeleteHistory;\n                    sets -e -forceElement initialShadingGroup;\n                    select -cl;\n                    DeleteHistory;\n                    select -r \"transform*\";\n                    doDelete;\n                    source cleanUpScene.mel;\n                    deleteEmptyGroups();\n                }\n                else {\n                  inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Select MAIN object only!\" ) -fade -pos midCenterTop -fontSize 9;\n                  print \"INFO -- Select MAIN object only! - You have selected wrong object. Select correct one!\";   \n                }\n       }\n       \n       if ( size($ObjectNoCheck_CB) >= 2 ) {\n           inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Select MAIN object only!\" ) -fade -pos midCenterTop -fontSize 9; \n           print \"INFO -- Select MAIN object only!  - You have selected 2 or more objects. Make sure to select only correct one!\"; \n       }\n                 \n} \n\nsetParent ..;\t\t\n\t\t\t\n// ...........................................................................................\n\t\nrowLayout;\n    iconTextButton -image1 \"K_BooleanDIF_INT2.png\"  -command \"BooleanDIF_INT\" kDifInt;           // DIF + INT button\n      popupMenu -parent kDifInt; \n        menuItem -label \"Quick Slicer\" -image \"K_QuickSlicer.png\" -command \"BooleanDIF_INT_2\";   // Quick Slicer menu\n        menuItem -divider true;\n        menuItem -label \"ReBool\" -image \"K_ReBool.png\" -command \"ReBool\";                        // ReBool button menu\nsetParent ..;\t\n\nproc BooleanDIF_INT() {\n     string $ObjectNoCheck_DI[] = `ls -sl`;                          // check number of seleced objects\n       if ( size($ObjectNoCheck_DI) == 0 ) {\n           inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> At least 2 object need to be selected!\" ) -fade -pos midCenterTop -fontSize 9;\n           print \"INFO -- No objects selected! Select first the main object then object(s) that will cut into the main one!\"; \n       \n       } \n       if ( size($ObjectNoCheck_DI) == 1 ) { \n           inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> At least 2 object need to be selected!\" ) -fade -pos midCenterTop -fontSize 9;\n           print \"INFO -- Select at least 2 objects! First the main object then object(s) that will cut into the main one!\"; \n       } \n       if ( size($ObjectNoCheck_DI) >= 2 ) {                                                             \n            DeleteHistory;\n            polyCBoolOp -op 3 -ch 1 -preserveColor 1 -classification 1;\n            rename polyCBoolOp1 Boolean_dif_int;\n            polySoftEdge -angle 40;\n            duplicate -rr;\n            pickWalk -d left;\n            setAttr \"Boolean_dif_int.operation\" 2;\n            polySoftEdge -angle 40;\n            DeleteHistory;\n            source cleanUpScene.mel;\n            deleteEmptyGroups();\n            select -cl;\n        }\n}\n\nproc ReBool(){\n    string $ObjectNoCheck_RB[] = `ls -sl`;  // check for selected objects\n       if ( size($ObjectNoCheck_RB) == 0 ) {\n           inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Select MAIN object only!\" ) -fade -pos midCenterTop -fontSize 9;\n           print \"INFO -- Select MAIN object only!  - Nothing is selected so ReBool doesn't know what you want to do. Select boolean result!\";\n       }  \n       \n       if ( size($ObjectNoCheck_RB)  == 1) {\n       if(gmatch($ObjectNoCheck_RB[0], \"MAINObject_Bool*\")){       \n                    string $nodes_RBa[] = `ls -sl`;\n                    for ($node_RBa in $nodes_RBa)\n                    {\n                        select -r \"Boolean_difbox*\";\n                        string $cmd_RB1 = \"import maya.cmds as mc;sel_obj = mc.ls(sl=True);mc.select(sel_obj[:-1], tgl=True)\";\n                        python($cmd_RB1);\n                            string $objs_RBa[] = `ls -sl -fl`;\n                            for($i=0;$i<size($objs_RBa);$i++)\n                            {\n                            string $shape_RBa[] = `listRelatives -s $objs_RBa[$i]`;\n                            setAttr ($shape_RBa[0]+\".operation\") 3 ;\n                            }\n                    }\n               \n                select -r \"MAINObject_Bool*\";\n                string $polyMeshes_RB[] = `filterExpand -sm 12`;\n                select -r $polyMeshes_RB;\n               \n                polySoftEdge -angle 40;\n                duplicate -rr;\n                rename polySurface; \n                    string $nodes_RBb[] = `ls -sl`;\n                    for ($node_RBb in $nodes_RBb)\n                    {\n                        select -r \"Boolean_difbox*\";\n                        string $cmd_RB2 = \"import maya.cmds as mc;sel_obj = mc.ls(sl=True);mc.select(sel_obj[:-1], tgl=True)\";\n                        python($cmd_RB2);\n                            string $objs_RBb[] = `ls -sl -fl`;\n                            for($i=0;$i<size($objs_RBb);$i++)\n                            {\n                            string $shape_RBb[] = `listRelatives -s $objs_RBb[$i]`;\n                            setAttr ($shape_RBb[0]+\".operation\") 2 ;\n                            }\n                    }\n       }\n\n                else {\n                  inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Select MAIN object only!\" ) -fade -pos midCenterTop -fontSize 9;\n                  print \"INFO -- Select MAIN object only!  - You have selected wrong object. Select correct one - boolean result!\";   \n                }\n       }\n       \n       if ( size($ObjectNoCheck_RB) >= 2 ) {\n           inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Select MAIN object only!\" ) -fade -pos midCenterTop -fontSize 9;\n           print \"INFO -- Select MAIN object only!  - You have selected 2 or more objects. Make sure to select only correct one - boolean result only!\";  \n       }                \n}\n \n \n//   EDGE SELECT - section    //////////////////////////////////////////////////////////////////\nseparator -height 10 -style \"none\";\ntext -label \"> Edge Select\" -al \"left\" -h 15 -font \"smallPlainLabelFont\" -backgroundColor 0.23 0.23 0.23 ;\n\n// ...........................................................................................\n\nrowLayout -numberOfColumns 2;  \n   iconTextButton -image1 \"K_UseConstraints_HardEdges2.png\" -command \"HardEdges\" ConstHE;         // Hard Edges \n   iconTextButton -image1 \"K_HE_edit_menu.png\" EditHE;                                            // Hard Edges\nsetParent ..;    \n \n       proc HardEdges() {                  \n                if (size(`filterExpand -sm 31`)){  // VERTEX selection check\n                       inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Please select Faces or Edges!\" ) -fade -pos midCenterTop -fontSize 9;\n                       print \"INFO -- Please select Faces or Edges!\";}\n                \n                if (size(`filterExpand -sm 34`)){  // FACES selection check\n                            ConvertSelectionToEdges;\n                            polySelectConstraint -t 0x8000;\n                            resetPolySelectConstraint;\n                            polySelectConstraint -m 2 -sm 1;\n                            resetPolySelectConstraint; \n                            polySelectConstraint -t 0x8000; \n                            resetPolySelectConstraint;\n                            setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n                }\n\n                if (size(`filterExpand -sm 32`)){   // EDGES selection check\n                            ConvertSelectionToEdges;\n                            polySelectConstraint -t 0x8000;\n                            resetPolySelectConstraint;\n                            polySelectConstraint -m 2 -sm 1;\n                            resetPolySelectConstraint; \n                            polySelectConstraint -t 0x8000; \n                            resetPolySelectConstraint;\n                            setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n                }\n         }\n\npopupMenu -parent EditHE;\n        menuItem - label \" Standard Edges \" -image \"K_HE_edit_SE.png\" -command \"StandardEdgesD\";   // Standard Edges\n        menuItem - label \" Hard/Soft Edges \" -image \"K_HE_edit_HSE.png\" -command \"HardSoftD\";      // Hard / Soft Edges\n        menuItem -divider true -dividerLabel \"Select\";\n        menuItem - label \" Hard Edges (object) \" -image \"K_HE_edit_menuO.png\" -command \"HE_edit_menuO\";      // Hard Edges (OBJECT) window\n        menuItem - label \" Hard Edges (component) \" -image \"K_HE_edit_menuC.png\" -command \"HE_edit_menuC\";   // Hard Edges (COMP) window\nsetParent ..;\n          \npopupMenu -parent ConstHE;\n       menuItem - label \" Hard Edges marquee \" -image \"K_SS_ToInnerHE.png\" -command \"HEmarquee\";             // Hard Edges marqee\n           proc HEmarquee() { polySelectConstraint -t 0x8000; resetPolySelectConstraint; polySelectConstraint -m 2 -sm 1; inViewMessage -amg (\"Hard Edges -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165; }\n       menuItem -divider true;\n       menuItem  -label \" DISABLE \" -image \"K_SS_DeleteSets.png\" -command \"resetHE\";                          // HE DISABLE\n           proc resetHE() { resetPolySelectConstraint; polySelectConstraint -t 0x8000; resetPolySelectConstraint; inViewMessage -amg (\"Hard Edges -- <span style=\\\"color:#ff5d5d;\\\"> OFF </span>\") -fade -pos midCenterBot -fontSize 8 -frameOffset 165;}        \nsetParent ..;\n\n// ...........................................................................................\n\nrowLayout;\n    iconTextButton -image1 \"K_UseConstrains_Dissolve2.png\" -command \"DisolveEdges\";            // Dissolve Edges \n        proc DisolveEdges() {\n                if (size(`filterExpand -sm 31`)){  // VERTEX selection check\n                       inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Please select Edges!\" ) -fade -pos midCenterTop -fontSize 9;\n                       print \"INFO -- Please select Edges!\";}\n                \n                if (size(`filterExpand -sm 34`)){  // FACES selection check\n                       inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Please select Edges!\" ) -fade -pos midCenterTop -fontSize 9;\n                       print \"INFO -- Please select Edges!\";}\n\n                if (size(`filterExpand -sm 32`)){   // EDGES selection check\n                        polySelectConstraint -t 0x8000;\n                        resetPolySelectConstraint;\n                        polySelectConstraint -m 2 -a on -ab 0 0;\n                        resetPolySelectConstraint; \n                        polySelectConstraint -t 0x8000; \n                        resetPolySelectConstraint;\n                        setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n                }                \n\n            } \n            \n       popupMenu ;\n        radioMenuItemCollection;\n            menuItem - label \" Dissolve Edges marquee \" -image \"K_SS_ToInnerHE.png\" -command \"DEmarquee\"; \n                proc DEmarquee() { polySelectConstraint -t 0x8000; resetPolySelectConstraint; polySelectConstraint -m 2 -a on -ab 0 0; inViewMessage -amg (\"Dissolve Edges -- 0  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;}\n            menuItem -divider true -dividerLabel \"Max Angle\";\n            menuItem -radioButton off -label \"1 degree\" -command \"DisolveEdges1\"; proc DisolveEdges1() { polySelectConstraint -m 2 -a on -ab 0 1; inViewMessage -amg (\"Dissolve Edges -- 1  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"2 degree\" -command \"DisolveEdges2\"; proc DisolveEdges2() { polySelectConstraint -m 2 -a on -ab 0 2; inViewMessage -amg (\"Dissolve Edges -- 2  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"3 degree\" -command \"DisolveEdges3\"; proc DisolveEdges3() { polySelectConstraint -m 2 -a on -ab 0 3; inViewMessage -amg (\"Dissolve Edges -- 3  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"4 degree\" -command \"DisolveEdges4\"; proc DisolveEdges4() { polySelectConstraint -m 2 -a on -ab 0 4; inViewMessage -amg (\"Dissolve Edges -- 4  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;}; \n            menuItem -radioButton off -label \"5 degree\" -command \"DisolveEdges5\"; proc DisolveEdges5() { polySelectConstraint -m 2 -a on -ab 0 5; inViewMessage -amg (\"Dissolve Edges -- 5  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"6 degree\" -command \"DisolveEdges6\"; proc DisolveEdges6() { polySelectConstraint -m 2 -a on -ab 0 6; inViewMessage -amg (\"Dissolve Edges -- 6  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"7 degree\" -command \"DisolveEdges7\"; proc DisolveEdges7() { polySelectConstraint -m 2 -a on -ab 0 7; inViewMessage -amg (\"Dissolve Edges -- 7  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"8 degree\" -command \"DisolveEdges8\"; proc DisolveEdges8() { polySelectConstraint -m 2 -a on -ab 0 8; inViewMessage -amg (\"Dissolve Edges -- 8  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"9 degree\" -command \"DisolveEdges9\"; proc DisolveEdges9() { polySelectConstraint -m 2 -a on -ab 0 9; inViewMessage -amg (\"Dissolve Edges -- 9  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -radioButton off -label \"10 degree\" -command \"DisolveEdges10\"; proc DisolveEdges10() { polySelectConstraint -m 2 -a on -ab 0 10; inViewMessage -amg (\"Dissolve Edges -- 10  -- <span style=\\\"color:#bfff00;\\\"> ON </span>\") -pos midCenterBot -fontSize 8 -frameOffset 165;};\n            menuItem -divider true;\n            menuItem  -label \" DISABLE \" -image \"K_SS_DeleteSets.png\" -command \"resetDE\"; \n               proc resetDE() { resetPolySelectConstraint; polySelectConstraint -t 0x8000; resetPolySelectConstraint; inViewMessage -amg (\"Dissolve Edges -- <span style=\\\"color:#ff5d5d;\\\"> OFF </span>\") -fade -pos midCenterBot -fontSize 8 -frameOffset 165;}\n\nsetParent ..;\n\n// ...........................................................................................\n\nrowLayout;\n   iconTextButton -image1 \"K_SS_SelectionSets.png\" -al \"center\" K_SSets;            // Selection Sets\n          popupMenu  -parent K_SSets;\n           menuItem  -label \" Create Sets\" -image \"K_SS_CreateSets.png\" -command \"saveSL\";\n           menuItem -divider true -dividerLabel \"Convert Selection\";\n           menuItem  -label \" To Edges\" -image \"K_SS_ToEdges.png\" -command \"ToEdges\"; \n           menuItem  -label \" To Inner Hard Edges\" -image \"K_SS_ToInnerHE.png\" -command \"ToInnerHE\";\n           menuItem  -label \" To Perimeter\" -image \"K_SS_ToPerimeter.png\" -command \"ToPerimeter\";\n           menuItem  -label \" To Faces\" -image \"K_SS_ToFaces.png\" -command \"ToFaces\";\n           menuItem -divider true;  \n           menuItem  -label \" Delete Sets\" -image \"K_SS_DeleteSets.png\" -command \"DELSets\";      \n           \nsetParent ..;\n\n\n\n//   MOVE OBJ / COMP - section    //////////////////////////////////////////////////////////////////\nseparator -height 10 -style \"none\";\ntext -label \"> Move Obj / Comp\" -al \"left\" -h 15 -font \"smallPlainLabelFont\" -backgroundColor 0.23 0.23 0.23 ;\n\n// ...........................................................................................\n\nrowLayout -numberOfColumns 3;                                             \n     iconTextButton -image1 \"K_FlipWorldX.png\" -command \"move1\";       // Move X, Y, Z\n     iconTextButton -image1 \"K_FlipWorldY.png\" -command \"move2\";\n     iconTextButton -image1 \"K_FlipWorldZ.png\" -command \"move3\";\n    \nsetParent ..;\n\nproc move1() { move -a -moveX 0; setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";}\nproc move2() { move -a -moveY 0; setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";}\nproc move3() { move -a -moveZ 0; setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";}\n\n// ...........................................................................................\n\nrowLayout;\niconTextButton -image1 \"K_BakePivot.png\" -command \"BakePivot\";         // Bake Pivot\n     proc BakePivot() {  \n    DeleteHistory;     \n    CenterPivot;\n{\n    string $allObjs_BP1[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_BP1);$x++) {\n    rename $allObjs_BP1[$x] (\"polyPivotBakeTEMP\" + $x);\n    }\n        \n        string $selection[] = `ls -sl`;\n        int $size = size($selection);\n        int $i;\n        for ($i = 0; $i < size($selection); $i++){\n             string $zeroLoc[] = `spaceLocator`;\n             string $loc[] = `spaceLocator`;\n             string $ptCon[] = `pointConstraint $selection[$i] $loc`;\n             string $orCon[] = `orientConstraint $selection[$i] $loc`;\n             \n             float $tran[] = `xform -q -t -ws $loc`;\n             float $rot[] = `xform -q -ro -ws $loc`;\n        \n             delete $ptCon;\n             delete $orCon;\n            \n             string $ptConZero[] = `pointConstraint $zeroLoc $selection[$i]`;\n             string $orConZero[] = `orientConstraint $zeroLoc $selection[$i]`;\n             delete $ptConZero;\n             delete $orConZero;\n             \n             makeIdentity -apply true -t 1 -r 1 $selection[$i];\n            \n             setAttr ($selection[$i] + \".translate\") $tran[0] $tran[1] $tran[2];\n             setAttr ($selection[$i] + \".rotate\") $rot[0] $rot[1] $rot[2];\n            \n             delete $zeroLoc;\n             delete $loc;\n             }\n}\n    select \"polyPivotBakeTEMP*\";\n    DeleteHistory;\n    pickWalk -d up;\n    string $allObjs_BP2[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_BP2);$x++) {\n    rename $allObjs_BP2[$x] (\"polyMesh\" + $x);\n    }\n} \nsetParent ..;\n\n// ...........................................................................................\n\nrowLayout;\niconTextButton -image1 \"K_MakeGroup.png\" -command \"MGbutton\";                  //  Make Group\n  proc MGbutton() {\n       string $grouping = `window -title \"Group Selected Objects\" -tlb 1 -s 0 -te 450 myGrouping`;\ncolumnLayout -adjustableColumn true -columnOffset left -50;\ntextFieldButtonGrp \n    -label \"Group Name > \" \n    -text \"\" -buttonLabel \"Make Group\" \n    -bc \"MakeGroup\" \n  snTF;\n\nshowWindow myGrouping;\n  }\nsetParent ..;\n\n// ...........................................................................................\n\nseparator -height 5 -style \"none\";\ntext -label \"> Flip / Mirror\" -al \"left\" -h 15 -font \"smallPlainLabelFont\" -backgroundColor 0.23 0.23 0.23 ;\n \n                                                     // Flip / Mirror (Copy/Instance) Object\ncolumnLayout ;\noptionMenu -w 112 FlipMirror;\nmenuItem -label \"  Flip - World\" ;\nmenuItem -label \" Mirror - as Copy\" ;\nsetParent ..;\n\n//Button to run command \nrowLayout -numberOfColumns 3;\n     iconTextButton -image1 \"K_ObjectMoveX.png\" -command \"buttonCmdX\" xAxisButton;\n     iconTextButton -image1 \"K_ObjectMoveY.png\" -command \"buttonCmdY\" yAxisButton;\n     iconTextButton -image1 \"K_ObjectMoveZ.png\" -command \"buttonCmdZ\" zAxisButton;\n              popupMenu -parent xAxisButton; \n              menuItem  -label \"Flip - Local\" -image \"K_ObjectMoveX_menu.png\" -command \"L_FlipX\";\n              menuItem -divider true -dividerLabel \"Mirror\";\n              menuItem  -label \"Mirror as Instance\" -image \"K_instanceX_menu.png\" -command \"InstanceX\"; \n              menuItem -divider true;\n              menuItem  -label \" Instance To Obj \" -command \"InstanceToObj2\";\n              menuItem  -label \" Instance To Obj + Group \" -command \"InstanceToObj1\"; \n         popupMenu -parent yAxisButton;\n              menuItem  -label \"Flip - Local\" -image \"K_ObjectMoveY_menu.png\" -command \"L_FlipY\";\n              menuItem -divider true -dividerLabel \"Mirror\";\n              menuItem  -label \"Mirror as Instance\" -image \"K_instanceY_menu.png\" -command \"InstanceY\"; \n              menuItem -divider true;\n              menuItem  -label \" Instance To Obj \" -command \"InstanceToObj2\";\n              menuItem  -label \" Instance To Obj + Group \" -command \"InstanceToObj1\"; \n         popupMenu -parent zAxisButton;\n              menuItem  -label \"Flip - Local\" -image \"K_ObjectMoveZ_menu.png\" -command \"L_FlipZ\";\n              menuItem -divider true -dividerLabel \"Mirror\";\n              menuItem  -label \"Mirror as Instance\" -image \"K_instanceZ_menu.png\" -command \"InstanceZ\"; \n              menuItem -divider true;\n              menuItem  -label \" Instance To Obj \" -command \"InstanceToObj2\";\n              menuItem  -label \" Instance To Obj + Group \" -command \"InstanceToObj1\"; \nsetParent ..;\n\nproc buttonCmdX() {\n    string $currentSel_X = `optionMenu -q -v FlipMirror`;\n    switch ($currentSel_X) {\n     case \"  Flip - World\":            // Flip X\n    \n        DeleteHistory;\n        makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;\n        CenterPivot;\n        string $objectWx[] = `ls -sl`;\n        for ($currentWx in $objectWx)\n        {\n    \t   setAttr ($currentWx + \".scaleX\") -1;\n        }\n        makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;\n        setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n     break;\n    \n     case \" Mirror - as Copy\":         //Mirror X\n        \n        int $inViewPref_x = `optionVar -q inViewMessageEnable`;\n        optionVar -iv inViewMessageEnable false;\n        doGroup 0 1 1;\n            string $allObjsX[] = `ls -sl`;\n            for($x=0;$x<size($allObjsX);$x++) {\n            rename $allObjsX[$x] (\"group_tempppTk\" + $x);\n            }\n        duplicate -rr; scale -r -1 1 1;\n        select \"group_tempppTk*\";\n        ungroup;\n        optionVar -iv inViewMessageEnable $inViewPref_x;\n        CenterPivot;\n        DeleteHistory;\n        makeIdentity -apply true -t 0 -r 1 -s 1 -n 0 -pn 1;\n        setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n     break;\n    }\n}\n\nproc buttonCmdY() {\n    string $currentSel_Y = `optionMenu -q -v FlipMirror`;\n    switch ($currentSel_Y) {\n     case \"  Flip - World\":            // Flip Y\n    \n        DeleteHistory;\n        makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;\n        CenterPivot;   \n        string $objectWy[] = `ls -sl`;\n        for ($currentWy in $objectWy)\n        {\n    \t   setAttr ($currentWy + \".scaleY\") -1;\n        }\n        makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;\n        setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n    \n     break;\n    \n     case \" Mirror - as Copy\":         //Mirror Y\n     \n        int $inViewPref_y = `optionVar -q inViewMessageEnable`;\n        optionVar -iv inViewMessageEnable false;\n        doGroup 0 1 1;\n            string $allObjsY[] = `ls -sl`;\n            for($x=0;$x<size($allObjsY);$x++) {\n            rename $allObjsY[$x] (\"group_tempppTk\" + $x);\n            }\n        duplicate -rr; scale -r 1 -1 1;\n        select \"group_tempppTk*\";\n        ungroup;\n        optionVar -iv inViewMessageEnable $inViewPref_y;\n        CenterPivot;\n        DeleteHistory;\n        makeIdentity -apply true -t 0 -r 1 -s 1 -n 0 -pn 1;\n        setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n     break;\n    }\n}\n\nproc buttonCmdZ() {\n    string $currentSel_Z = `optionMenu -q -v FlipMirror`;\n    switch ($currentSel_Z) {\n     case \"  Flip - World\":            // Flip Z\n    \n       DeleteHistory;\n       makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;\n       CenterPivot;\n       string $objectWz[] = `ls -sl`;\n       for ($currentWz in $objectWz)\n       {\n    \t  setAttr ($currentWz + \".scaleZ\") -1;\n       }\n       makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;\n       setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n     break;\n    \n     case \" Mirror - as Copy\":         //Mirror Z\n     \n        int $inViewPref_z = `optionVar -q inViewMessageEnable`;\n        optionVar -iv inViewMessageEnable false;\n        doGroup 0 1 1;\n            string $allObjsZ[] = `ls -sl`;\n            for($x=0;$x<size($allObjsZ);$x++) {\n            rename $allObjsZ[$x] (\"group_tempppTk\" + $x);\n            }\n        duplicate -rr; scale -r 1 1 -1;\n        select \"group_tempppTk*\";\n        ungroup;\n        optionVar -iv inViewMessageEnable $inViewPref_z;\n        CenterPivot;\n        DeleteHistory;\n        makeIdentity -apply true -t 0 -r 1 -s 1 -n 0 -pn 1;\n        setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n     break;\n    }\n} \n\nproc L_FlipX() {             // Flip - Local X\n    DeleteHistory;\n    CenterPivot;\n{\n    string $objectLx[] = `ls -sl`;\n    for ($currentLx in $objectLx)\n    {\n\t   $scale1 = getAttr ($currentLx + \".scaleX\");\n\t   $scaleX = $scale1 * -1;\n\t   setAttr ($currentLx + \".scaleX\") $scaleX;\n    }\n}\n    makeIdentity -apply true -t 0 -r 0 -s 1 -n 0 -pn 1;\n    setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n}\n\nproc L_FlipY() {           // Flip - Local Y\n    DeleteHistory;\n    CenterPivot;\n{\n    string $objectLy[] = `ls -sl`;\n    for ($currentLy in $objectLy)\n    {\n\t   $scale2 = getAttr ($currentLy + \".scaleY\");\n\t   $scaleY = $scale2 * -1;\n\t   setAttr ($currentLy + \".scaleY\") $scaleY;\n    }\n}\n    makeIdentity -apply true -t 0 -r 0 -s 1 -n 0 -pn 1;\n    setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n}\n\nproc L_FlipZ() {           // Flip - Local Z\n    DeleteHistory;\n    CenterPivot;\n{\n    string $objectLz[] = `ls -sl`;\n    for ($currentLz in $objectLz)\n    {\n\t   $scale3 = getAttr ($currentLz + \".scaleZ\");\n\t   $scaleZ = $scale3 * -1;\n\t   setAttr ($currentLz + \".scaleZ\") $scaleZ;\n    }\n}\n    makeIdentity -apply true -t 0 -r 0 -s 1 -n 0 -pn 1;\n    setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n}\t\n\nproc InstanceX() {           // Instnce X\n       int $inViewPref_Ix = `optionVar -q inViewMessageEnable`;\n       optionVar -iv inViewMessageEnable false;\n    doGroup 1 1 1;\n    string $allObjs_X1[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_X1);$x++) {\n    rename $allObjs_X1[$x] (\"poly_orgTEMP\" + $x);\n    }\n    instance; scale -r -1 1 1;\n    string $allObjs_X2[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_X2);$x++) {\n    rename $allObjs_X2[$x] (\"poly_instanceTEMP\" + $x);\n    }\n       optionVar -iv inViewMessageEnable $inViewPref_Ix;\n       setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n} \n\nproc InstanceY() {           // Instnce Y\n       int $inViewPref_Iy = `optionVar -q inViewMessageEnable`;\n       optionVar -iv inViewMessageEnable false;\n    doGroup 1 1 1;\n    string $allObjs_Y1[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_Y1);$x++) {\n    rename $allObjs_Y1[$x] (\"poly_orgTEMP\" + $x);\n    }\n    instance; scale -r 1 -1 1;\n    string $allObjs_Y2[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_Y2);$x++) {\n    rename $allObjs_Y2[$x] (\"poly_instanceTEMP\" + $x);\n    }\n       optionVar -iv inViewMessageEnable $inViewPref_Iy;\n       setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n}\n\nproc InstanceZ() {           // Instnce X\n        int $inViewPref_Iz = `optionVar -q inViewMessageEnable`;\n        optionVar -iv inViewMessageEnable false;\n    doGroup 1 1 1;\n    string $allObjs_Z1[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_Z1);$x++) {\n    rename $allObjs_Z1[$x] (\"poly_orgTEMP\" + $x);\n    }\n    instance; scale -r 1 1 -1;\n    string $allObjs_Z2[] = `ls -sl`;\n    for($x=0;$x<size($allObjs_Z2);$x++) {\n    rename $allObjs_Z2[$x] (\"poly_instanceTEMP\" + $x);\n    }\n       optionVar -iv inViewMessageEnable $inViewPref_Iz;\n       setFocus \"MayaWindow|formLayout1|viewPanes|modelPanel4\";\n} \n\nproc InstanceToObj1() {                // Instance to Obj convert + Make Group\n    source cleanUpScene.mel;\n    deleteEmptyGroups();\n    select \"poly_instanceTEMP*\";\n    ConvertInstanceToObject;\n    select \"poly_instanceTEMP*\" \"poly_orgTEMP*\";\n    ungroup;\n    makeIdentity -apply true -t 0 -r 1 -s 1 -n 0 -pn 1;\n    \n        string $grouping = `window -title \"Group Selected Objects\" -tlb 1 -s 0 -te 450 myGrouping`;\n        \n        columnLayout -adjustableColumn true -columnOffset left -50;\n        textFieldButtonGrp \n            -label \"Group Name > \" \n            -text \"\" -buttonLabel \"Make Group\" \n            -bc \"MakeGroup\" \n          snTF;\n        \n        showWindow myGrouping;\n\n}\n\nproc MakeGroup() {\n        int $inViewPref_MG = `optionVar -q inViewMessageEnable`;\n        optionVar -iv inViewMessageEnable false;\n    doGroup 0 1 1;\n       string $allObjs_MG[] = `ls -sl`;\n            for($x=0;$x<size($allObjs_MG);$x++) {\n            rename $allObjs_MG[$x] (\"GroupName_TEMP\" + $x);\n            }\n            \n    string $selected_MG = `textFieldGrp -query -text snTF`;\n    rename $selected_MG;\n         optionVar -iv inViewMessageEnable $inViewPref_MG;\n    CenterPivot;   \n    source cleanUpScene.mel;\n    deleteEmptyGroups();\n    deleteUI myGrouping;\n    }\n\nproc InstanceToObj2() {                // Instance to Obj convert\n    source cleanUpScene.mel;\n    deleteEmptyGroups();\n    select \"poly_instanceTEMP*\";\n    ConvertInstanceToObject;\n    select \"poly_instanceTEMP*\" \"poly_orgTEMP*\";\n    ungroup;\n    makeIdentity -apply true -t 0 -r 1 -s 1 -n 0 -pn 1; \n}\n\n\n\n////////////////////////////////////////////////////\n // Selection Sets\n////////////////////////////////////////////////////\nproc saveSL(){\n        string $allObjs_SS[] = `ls -sl`;\n        for($x=0;$x<size($allObjs_SS);$x++) {\n        rename $allObjs_SS[$x] (\"polyObjSel\" + $x); }\n    \n    select -r \"polyObjSel0\";\n    rename \"polyObj_Main\";\n    select -r \"polyObjSel*\";\n    pickWalk -d up;\n    \n\n        string $selObjects_SS[] = `ls -sl`;\n        for ($selection_SS in $selObjects_SS)\n        {\n        select $selection_SS;\n        ConvertSelectionToFaces;\n        string $nameOfSet = \"BoolSet\" +$selection_SS;\n        sets -name $nameOfSet;\n        select -cl;\n        }\n    \n    select -cl;\n    inViewMessage -amg (\"Selection Sets - <span style=\\\"color:#bfff00;\\\"> Saved </span> \") -pos botCenter -fontSize 8;\n    select -r \"polyObjSel*\";\n    pickWalk -d up;\n    select -addFirst \"polyObj_Main*\";\n}  \n\n // To Edges\n    proc ToEdges(){\n    setSelectMode components Components; \n    selectType -smp 0 -sme 0 -smf 1 -smu 0 -pv 0 -pe 0 -pf 1 -puv 0;\n    select -r -noExpand \"BoolSet*\";\n    ConvertSelectionToContainedEdges;\n    }\n    \n // To Inner Hard Edges\n    proc ToInnerHE(){\n    setSelectMode components Components; \n    selectType -smp 0 -sme 0 -smf 1 -smu 0 -pv 0 -pe 0 -pf 1 -puv 0;\n    select -r -noExpand \"BoolSet*\";\n    ConvertSelectionToContainedEdges;\n    polySelectConstraint -t 0x8000;\n    resetPolySelectConstraint;\n    polySelectConstraint -m 2 -sm 1;\n    resetPolySelectConstraint;\n    }\n\n // To Edge Perimiter\n    proc ToPerimeter() {\n    setSelectMode components Components; \n    selectType -smp 0 -sme 0 -smf 1 -smu 0 -pv 0 -pe 0 -pf 1 -puv 0;\n    select -r -noExpand \"BoolSet*\";\n    ConvertSelectionToEdgePerimeter;\n    }\n    \n // To Faces\n    proc ToFaces() {\n    setSelectMode components Components; \n    selectType -smp 0 -sme 0 -smf 1 -smu 0 -pv 0 -pe 0 -pf 1 -puv 0;\n    select -r \"BoolSet*\";\n    ConvertSelectionToContainedEdges;\n    ConvertSelectionToFaces;\n    }\n\n // Delete Sets\n    proc DELSets() {\n    select -noExpand \"BoolSet*\" ;\n    doDelete;\n    inViewMessage -amg (\"Selection Sets - <span style=\\\"color:#ff5d5d;\\\"> Deleted </span>\") -fade -pos botCenter -fontSize 8;\n    }\n    \n   \n////////////////////////////////////////////////////\n // HE_Edit_Object mode                              \n////////////////////////////////////////////////////\nproc HE_edit_menuO() {\n    polySoftEdge -angle 40 -ch 1;\n    \n            int $inViewPref_HE_o = `optionVar -q inViewMessageEnable`;\n            optionVar -iv inViewMessageEnable false;\n            \n    toggleSelMode;\n    toggleSelMode;\n    \n             optionVar -iv inViewMessageEnable $inViewPref_HE_o;\n    \n    TogglePolyDisplayHardEdgesColor;\n    \n    \n                window -title \"Set Normal Angle\" -tlb 1 -s 1 -te 300 HE_Edit_Object;  \n                string $hist_HE_o[] = `listHistory -levels 1`;\n                    columnLayout -adjustableColumn true  -columnOffset \"left\" -100;\n                    separator -h 5 -style \"none\";\n                    attrFieldSliderGrp -min 0 -max 100 -at ($hist_HE_o[1]+\".angle\");  \n                    setParent ..;\n                \n                rowColumnLayout;\n                separator -h 8 -style \"none\";\n                setParent ..;\n                \n                rowColumnLayout -numberOfRows 1 -columnOffset 1 \"left\" 120 -columnSpacing 1 3;\n                \t\ticonTextButton -image1 \"K_HEResetClose.png\" -command \"HEResetClose\";\n                \t\ticonTextButton -image1 \"K_HESelectClose.png\" -command \"HESelectClose\";\n                setParent ..;\n                \n                showWindow HE_Edit_Object;\n}\n\nproc HEResetClose() {\n    int $StandardEdges[] = `polyOptions -q -np -ae`;\n    if ($StandardEdges[0] == 0) {\n        polyOptions -np -se;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplaySoftEdges;\n        TogglePolyDisplayLimitToSelected;\n        rename \"polyMesh\"; \n        evalDeferred \"deleteUI -window HE_Edit_Object\";\n    }\n    if ($StandardEdges[0] == 1) {\n        polyOptions -np -ae;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplayEdges;\n        TogglePolyDisplayLimitToSelected;\n        rename \"polyMesh\"; \n        evalDeferred \"deleteUI -window HE_Edit_Object\";\n    }   \n}\n\nproc HESelectClose() {\n    int $StandardEdges[] = `polyOptions -q -np -ae`;\n    if ($StandardEdges[0] == 0) {\n        polyOptions -np -se;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplaySoftEdges;\n        TogglePolyDisplayLimitToSelected;\n        rename \"polyMesh\"; \n        setSelectMode components Components; selectType -smp 0 -sme 1 -smf 0 -smu 0 -pv 0 -pe 1 -pf 0 -puv 0;\n        SelectAll;\n        polySelectConstraint -t 0x8000;\n        resetPolySelectConstraint;\n        polySelectConstraint -m 2 -sm 1;\n        resetPolySelectConstraint;\n        evalDeferred \"deleteUI -window HE_Edit_Object\";\n    }\n    if ($StandardEdges[0] == 1) {\n        polyOptions -np -ae;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplayEdges;\n        TogglePolyDisplayLimitToSelected;\n        PolyDisplayReset; \n        rename \"polyMesh\"; \n        setSelectMode components Components; selectType -smp 0 -sme 1 -smf 0 -smu 0 -pv 0 -pe 1 -pf 0 -puv 0;\n        SelectAll;\n        polySelectConstraint -t 0x8000;\n        resetPolySelectConstraint;\n        polySelectConstraint -m 2 -sm 1;\n        resetPolySelectConstraint;\n        evalDeferred \"deleteUI -window HE_Edit_Object\";\n    }    \n}\n\n \n \n ////////////////////////////////////////////////////\n // HE_Edit_Component mode\n////////////////////////////////////////////////////\nproc HE_edit_menuC() {\n    global string $HSsave[];\n    $HSsave = `filterExpand -sm 34`; \n    polySoftEdge -angle 40 -ch 1;\n    \n            int $inViewPref_HE_c = `optionVar -q inViewMessageEnable`;\n            optionVar -iv inViewMessageEnable false;\n     \n           \n    string $HEls[] = `ls -hilite`;\n    select -cl;\n    select -r $HEls;     \n    \n             optionVar -iv inViewMessageEnable $inViewPref_HE_c;\n             \n    TogglePolyDisplayHardEdgesColor;\n    \n            window -title \"Set Normal Angle\" -tlb 1 -s 1 -te 300 HE_Edit_C;  \n            string $histi[] = `listHistory -levels 1`;\n                columnLayout -adjustableColumn true  -columnOffset \"left\" -100;\n                separator -h 3 -style \"none\";\n                attrFieldSliderGrp -min 0 -max 100 -at ($histi[1]+\".angle\");\n                setParent ..;\n                \n            rowColumnLayout;\n            separator;\n            setParent ..;\n            \n            rowColumnLayout -numberOfRows 1 -columnOffset 1 \"left\" 120 -columnSpacing 1 3;\n            \t\ticonTextButton -image1 \"K_HEResetClose.png\" -command \"HE_C_ResetClose\";\n            \t\ticonTextButton -image1 \"K_HESelectClose.png\" -command \"HE_C_SelectClose($HSsave)\";\n            setParent ..;\n            \n            showWindow HE_Edit_C;\n}\n\nproc HE_C_ResetClose() {\n    int $StandardEdges[] = `polyOptions -q -np -ae`;\n    if ($StandardEdges[0] == 0) {\n        polyOptions -np -se;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplaySoftEdges;\n        TogglePolyDisplayLimitToSelected;\n        rename \"polyMesh\"; \n        evalDeferred \"deleteUI -window HE_Edit_C\";\n    }\n    if ($StandardEdges[0] == 1) {\n        polyOptions -np -ae;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplayEdges;\n        TogglePolyDisplayLimitToSelected;\n        rename \"polyMesh\"; \n        evalDeferred \"deleteUI -window HE_Edit_C\";\n    }   \n}\n \nproc HE_C_SelectClose(string $HSsave[]) {\n    int $StandardEdges[] = `polyOptions -q -np -ae`;\n    if ($StandardEdges[0] == 0) {\n        polyOptions -np -se;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplaySoftEdges;\n        TogglePolyDisplayLimitToSelected;\n        setSelectMode components Components; selectType -smp 0 -sme 0 -smf 1 -smu 0 -pv 0 -pe 0 -pf 1 -puv 0;\n        select -r $HSsave;\n        ConvertSelectionToEdges;\n        polySelectConstraint -t 0x8000;\n        resetPolySelectConstraint;\n        polySelectConstraint -m 2 -sm 1;\n        resetPolySelectConstraint;\n        evalDeferred \"deleteUI -window HE_Edit_C\";\n    }\n    if ($StandardEdges[0] == 1) {\n        polyOptions -np -ae;\n        TogglePolyDisplayLimitToSelected;\n        TogglePolyDisplayEdges;\n        TogglePolyDisplayLimitToSelected;\n        PolyDisplayReset; \n        setSelectMode components Components; selectType -smp 0 -sme 0 -smf 1 -smu 0 -pv 0 -pe 0 -pf 1 -puv 0;\n        select -r $HSsave;\n        ConvertSelectionToEdges;\n        polySelectConstraint -t 0x8000;\n        resetPolySelectConstraint;\n        polySelectConstraint -m 2 -sm 1;\n        resetPolySelectConstraint;\n        evalDeferred \"deleteUI -window HE_Edit_C\";\n    }    \n}\n\n\n ////////////////////////////////////////////////////\n // Standard - Hard/Soft Edges Display \n////////////////////////////////////////////////////\nproc StandardEdgesD(){\n    polyOptions -np -ae;\n    TogglePolyDisplayLimitToSelected;\n    TogglePolyDisplayEdges;\n    TogglePolyDisplayLimitToSelected;\n}\n\nproc HardSoftD() {\n    polyOptions -np -se;\n    TogglePolyDisplayLimitToSelected;\n    TogglePolyDisplaySoftEdges;\n    TogglePolyDisplayLimitToSelected;\n}\n\n\n ////////////////////////////////////////////////////\n // DIFF + INT _2 ...copy slicing object(s) > Quick Slicer\n////////////////////////////////////////////////////\nproc BooleanDIF_INT_2() {\n  string $objectCheck[] = `ls -sl`;   // object selection check\n     if ( size($objectCheck) == 0 ) {\n         inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> No objects selected!\" ) -fade -pos midCenterTop -fontSize 9;\n         print \"INFO -- No object selected! Select first the main object then object(s) that will cut into the main one!\"; \n     }\n     \n     if ( size($objectCheck) == 1 ) {\n         inViewMessage -amg (\"<span style=\\\"color:#ff5d5d;\\\"> INFO: </span> Selected only one object! Select at least 2!\" ) -fade -pos midCenterTop -fontSize 9;\n         print \"INFO -- Selected only one object! Select first the main object then object(s) that will cut into the main one!\";\n     }\n     \n     if ( size($objectCheck) >= 2 ) {\n         searchReplaceNames \"BoolMainOBJs\" \"polySurface\" \"all\";\n         searchReplaceNames \"WaiterOBJ\" \"polySurface\" \"all\";\n         \n             string $allObjs_QS1[] = `ls -sl`;\n             for($x=0;$x<size($allObjs_QS1);$x++) {\n             rename $allObjs_QS1[$x] (\"BoolMainOBJs\" + $x); }\n            \n                int $inViewPref_QS = `optionVar -q inViewMessageEnable`;      // DO\n                optionVar -iv inViewMessageEnable false; \n \n                string $cmd_QS1 = \"import maya.cmds as mc;sel_obj = mc.ls(sl=True);mc.select(sel_obj[:1], tgl=True)\";\n                python($cmd_QS1);  \n        \n                duplicate -rr;\n                    string $allObjs_QS2[] = `ls -sl`;\n                    for($x=0;$x<size($allObjs_QS2);$x++) {\n                    rename $allObjs_QS2[$x] (\"WaiterOBJ\" + $x); }\n                HideSelectedObjects;\n        \n                select \"BoolMainOBJs*\";\n                string $cmd_QS2 = \"import maya.cmds as mc;sel_obj = mc.ls(sl=True);mc.select(sel_obj[:1], tgl=True)\";\n                python($cmd_QS2);\n                select -af \"BoolMainOBJs0\";\n                \n                        polyCBoolOp -op 2 -ch 1 -classification 1;\n                        polySoftEdge -angle 52;\n                        rename polyCBoolOp1 Boolean;\n                        source cleanUpScene.mel;\n                        deleteEmptyGroups();\n                \n                \n                rename \"BoolMeshMain\";            // CL_unHide\n                setAttr \"Boolean.operation\" 3;    \n                select -r \"BoolMeshMain\";\n                polySoftEdge -angle 40;\n                duplicate -rr; \n                rename \"BoolCutMesh\";\n        \n                setAttr \"Boolean.operation\" 2;\n                   \n                        select -r \"BoolMeshMain\";\n                        DeleteHistory;\n                        select -cl;\n                        DeleteHistory;\n                        doDelete;\n                        source cleanUpScene.mel;\n                        deleteEmptyGroups();\n                \n                select -r \"BoolMeshMain\" \"BoolCutMesh\";\n                pickWalk -d up;\n                    string $allObjs_QS3[] = `ls -sl`;\n                    for($x=0;$x<size($allObjs_QS3);$x++) {\n                    rename $allObjs_QS3[$x] (\"polySurface\" + $x); }\n                select \"WaiterOBJ*\";\n                pickWalk -d up;\n                showHidden -a;\n                MoveTool; \n                \n                    optionVar -iv inViewMessageEnable $inViewPref_QS;\n                    \n                source cleanUpScene.mel;\n                deleteEmptyGroups();\n\n      }\n   \n}\n\nshowWindow $KTools;\n" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "arranges the points in an exact circle" 
+        -enableBackground 0
+        -align "center" 
+        -label "makeCircle" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polySelectEdge.png" 
+        -image1 "polySelectEdge.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import makeCircle\nmakeCircle.makeCircle()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Rearranges selected vertices on circumference of a circle" 
+        -enableBackground 0
+        -align "center" 
+        -label "vtxToCircle" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polyDodecahedron.png" 
+        -image1 "polyDodecahedron.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import polyToCircle\npolyToCircle.polyToCircle()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Polygon Cube" 
+        -enableBackground 0
+        -align "center" 
+        -label "Polygon Cube" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polyCube.png" 
+        -image1 "polyCube.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "CreatePolygonCube" 
+        -sourceType "mel" 
+        -doubleClickCommand "CreatePolygonCubeOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Polygon Cylinder" 
+        -enableBackground 0
+        -align "center" 
+        -label "Polygon Cylinder" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polyCylinder.png" 
+        -image1 "polyCylinder.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "CreatePolygonCylinder" 
+        -sourceType "mel" 
+        -doubleClickCommand "CreatePolygonCylinderOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Polygon Sphere" 
+        -enableBackground 0
+        -align "center" 
+        -label "Polygon Sphere" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polySphere.png" 
+        -image1 "polySphere.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "CreatePolygonSphere" 
+        -sourceType "mel" 
+        -doubleClickCommand "CreatePolygonSphereOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Polygon Plane" 
+        -enableBackground 0
+        -align "center" 
+        -label "Polygon Plane" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polyMesh.png" 
+        -image1 "polyMesh.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "CreatePolygonPlane" 
+        -sourceType "mel" 
+        -doubleClickCommand "CreatePolygonPlaneOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Select object(s)" 
+        -enableBackground 0
+        -align "center" 
+        -label "Lattice" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "lattice.png" 
+        -image1 "lattice.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "CreateLattice" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Outliner" 
+        -enableBackground 0
+        -align "center" 
+        -label "Outliner" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "Outl" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "menuIconWindow.png" 
+        -image1 "menuIconWindow.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "OutlinerWindow" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "dupSpecOptItem" 
+        -enableBackground 0
+        -align "center" 
+        -label "dupSpecOptItem" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "DSo" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "menuIconEdit.png" 
+        -image1 "menuIconEdit.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "DuplicateSpecialOptions" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Center Pivot" 
+        -enableBackground 0
+        -align "center" 
+        -label "Center Pivot" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "CP" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "menuIconModify.png" 
+        -image1 "menuIconModify.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "CenterPivot" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Select an object(s)" 
+        -enableBackground 0
+        -align "center" 
+        -label "Freeze Transformations" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "FT" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "menuIconModify.png" 
+        -image1 "menuIconModify.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "FreezeTransformations" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Harden Edge" 
+        -enableBackground 0
+        -align "center" 
+        -label "Harden Edge" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polyHardEdge.png" 
+        -image1 "polyHardEdge.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "SoftPolyEdgeElements 0" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Soften Edge" 
+        -enableBackground 0
+        -align "center" 
+        -label "Soften Edge" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polySoftEdge.png" 
+        -image1 "polySoftEdge.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "SoftPolyEdgeElements 1" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Reverse" 
+        -enableBackground 0
+        -align "center" 
+        -label "Reverse" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "polyNormal.png" 
+        -image1 "polyNormal.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "ReversePolygonNormals" 
+        -sourceType "mel" 
+        -doubleClickCommand "ReversePolygonNormalsOptions" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+
+} 

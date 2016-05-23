@@ -1,0 +1,98 @@
+global proc shelf_LocoVFX () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Viewport Renderer" 
+        -enableBackground 0
+        -align "center" 
+        -label "viewportRender" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "render_renderLayer.png" 
+        -image1 "render_renderLayer.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "if cmds.contextInfo('ViewportRenderContext1',ex=1) == False:\n    cmds.ViewportRenderContext()\ncmds.setToolTo('ViewportRenderContext1')" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 23
+        -height 23
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Animation Library" 
+        -enableBackground 0
+        -align "center" 
+        -label "AnimationLibrary" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "C:/Program Files/Autodesk/Maya2016/icons/mayaHIK/HIKCustomRigToolOpen.png" 
+        -image1 "C:/Program Files/Autodesk/Maya2016/icons/mayaHIK/HIKCustomRigToolOpen.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import studiolibrary\nstudiolibrary.main()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "spReticle" 
+        -enableBackground 0
+        -align "center" 
+        -label "spReticle" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "/data/production/pipeline/linux/maya/icons/lvfx_camTools_64.png" 
+        -image1 "/data/production/pipeline/linux/maya/icons/lvfx_camTools_64.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "source \"spReticleLoc\";\nspReticleLocCreate();" 
+        -sourceType "mel" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+
+} 
