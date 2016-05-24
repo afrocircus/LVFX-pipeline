@@ -31,6 +31,7 @@ class VRayStandaloneWidget(QtGui.QWidget):
         self.verbosityBox = QtGui.QComboBox()
         self.layout().addWidget(self.verbosityBox, 3, 1)
         self.populateVerbosityBox()
+        self.verbosityBox.setCurrentIndex(4)
         self.layout().addWidget(QtGui.QLabel('Output File'), 4, 0)
         self.outfileEdit = QtGui.QLineEdit()
         self.layout().addWidget(self.outfileEdit, 4, 1)
