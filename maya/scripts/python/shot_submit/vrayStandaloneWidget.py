@@ -9,7 +9,6 @@ class VRayStandaloneWidget(QtGui.QWidget):
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(QtGui.QLabel('Vray Filename:'), 0, 0)
         self.fileTextBox = QtGui.QLineEdit()
-        self.fileTextBox.setReadOnly(True)
         self.fileTextBox.setText('')
         browseButton = QtGui.QToolButton()
         browseButton.setText('...')
@@ -69,7 +68,7 @@ class VRayStandaloneWidget(QtGui.QWidget):
         rendererParams = ''
         filename = self.fileTextBox.text()
         fname, fext = os.path.splitext(filename)
-        if filename is '' or not os.path.exists(filename) or fext not in ['.vrscene']:
+        if filename is '' or fext not in ['.vrscene']:
             return '', rendererParams
         if str(self.frameRangeEdit.text()) is not '':
             rendererParams = '%s -frames %s' % (rendererParams, str(self.frameRangeEdit.text()))
