@@ -9,8 +9,6 @@ import logging
 import sys
 import traceback
 
-os.environ['FTRACK_EVENT_SERVER_PLUGINS'] = '/home/natasha/dev/pipeline/ftrack-events/plugins'
-
 # setup environment
 try:
     import config
