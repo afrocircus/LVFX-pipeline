@@ -1,4 +1,5 @@
 import sys
+import os
 import ftrack
 import logging
 import threading
@@ -112,12 +113,25 @@ def generate_structure(values):
 
 
 @async
-def create(parent, structure):
+def create(parent, structure, projectFolder, tmpFolder, createFolders):
     '''Create *structure* under *parent*.'''
-    return create_from_structure(parent, structure)
+    return create_from_structure(parent, structure, projectFolder, tmpFolder, createFolders)
 
 
-def create_from_structure(parent, structure):
+def createFoldersOnDisk(folder, create):
+    if not os.path.exists(folder) and create == 'Yes':
+        os.makedirs(folder)
+
+
+def createImgFolders(shotFolder, create):
+    shotFolder = os.path.join(shotFolder, 'img')
+    dirs = ['comps', 'plates', 'render']
+    for item in dirs:
+        folder = os.path.join(shotFolder, item)
+        createFoldersOnDisk(folder, create)
+
+
+def create_from_structure(parent, structure, projectFolder, tmpFolder, createFolders):
     '''Create *structure* under *parent*.'''
     level = structure[0]
     children = structure[1:]
@@ -125,14 +139,16 @@ def create_from_structure(parent, structure):
 
     for data in level['data']:
 
-        if object_type == 'episode':
-            new_object = parent.createEpisode(data)
-
         if object_type == 'sequence':
             new_object = parent.createSequence(data)
+            projectFolder = os.path.join(projectFolder, data)
 
         if object_type == 'shot':
             new_object = parent.createShot(data)
+            tmpFolder = os.path.join(projectFolder, data)
+            createImgFolders(tmpFolder, createFolders)
+            tmpFolder = os.path.join(tmpFolder, 'scene')
+            createFoldersOnDisk(tmpFolder, createFolders)
 
         if object_type == 'task':
             taskType = ftrack.TaskType(id=data['typeid'])
@@ -141,23 +157,20 @@ def create_from_structure(parent, structure):
                 taskType
             )
             new_object.set(data)
+            folder = os.path.join(tmpFolder, str(taskType.getName()).lower())
+            createFoldersOnDisk(folder, createFolders)
 
-        logging.info(
+        logging.debug(
             'Created {new_object} on parent {parent}'.format(
                 parent=parent, new_object=new_object
             )
         )
         if children:
-            create_from_structure(new_object, children)
+            create_from_structure(new_object, children, projectFolder, tmpFolder, createFolders)
 
 
 def get_form(number_of_tasks, structure_type):
     '''Return form from *number_of_tasks* and *structure_type*.'''
-    mappings = {
-        'episode': ['episode', 'sequence', 'shot'],
-        'sequence': ['sequence', 'shot'],
-        'shot': ['shot']
-    }
 
     items = []
 
@@ -177,7 +190,7 @@ def get_form(number_of_tasks, structure_type):
                 }, {
                     'label': 'Name',
                     'type': 'text',
-                    'value': 'sq010',
+                    'value': '001',
                     'name': 'sequence_name'
                 }, {
                     'type': 'label',
@@ -238,37 +251,12 @@ def get_form(number_of_tasks, structure_type):
         }
     ])
 
-    if sys.platform == 'linux2':
-        driveOptions = [{
-                'label': 'production',
-                'value': '/data/production/'
-            },{
-                'label': 'share',
-                'value': '/data/share01/'
-            },{
-                'label': 'work',
-                'value': '/data/work01/'
-            }
-        ]
-    else:
-        driveOptions = [{
-                'label': 'production',
-                'value': 'P:\\'
-            }, {
-                'label': 'share',
-                'value': 'S:\\'
-            }, {
-                'label': 'work',
-                'value': 'W:\\'
-            }
-        ]
-
     items.extend(
         [{
             'label': 'Create template folders on disk?',
             'type': 'enumerator',
             'value': 'Yes',
-            'name': 'createTemplate',
+            'name': 'create_template',
             'data': [
                 {
                     'label': 'Yes',
@@ -279,12 +267,6 @@ def get_form(number_of_tasks, structure_type):
                     'value': 'no'
                 }
             ]
-        }, {
-            'label': 'Select Drive:',
-            'type': 'enumerator',
-            'name': 'drive',
-            'value': 'production',
-            'data': driveOptions
         }, {
             'label': 'Create another sequence?',
             'type': 'enumerator',
@@ -314,7 +296,9 @@ class ProjectCreate(ftrack.Action):
     def discover(self, event):
         '''Return action config if triggered on a single selection.'''
         selection = event['data'].get('selection', [])
-        entityType = selection[0]['entityType']
+        entityType = None
+        if len(selection)>0:
+            entityType = selection[0]['entityType']
         if entityType == 'show':
             return {
                 'items': [{
@@ -325,9 +309,23 @@ class ProjectCreate(ftrack.Action):
         else:
             return
 
+    def getProjectFolder(self, project):
+        projFolder = project.get('root')
+        if projFolder == '':
+            disk = ftrack.Disk(project.get('diskid'))
+            rootFolder = ''
+            if sys.platform == 'win32':
+                rootFolder = disk.get('windows')
+            elif sys.platform == 'linux2':
+                rootFolder = disk.get('unix')
+            projFolder = os.path.join(rootFolder, project.getName())
+        projFolder = os.path.join(projFolder, 'shots')
+        return projFolder
+
     def launch(self, event):
         selection = event['data'].get('selection', [])
         project = ftrack.Project(selection[0]['entityId'])
+        projectFolder = self.getProjectFolder(project)
 
         if 'values' in event['data']:
             values = event['data']['values']
@@ -341,8 +339,8 @@ class ProjectCreate(ftrack.Action):
                 return form
             else:
                 structure = generate_structure(values)
-                logging.info('Creating structure "{0}"'.format(str(structure)))
-                create(project, structure)
+                logging.debug('Creating structure "{0}"'.format(str(structure)))
+                create(project, structure, projectFolder, projectFolder, values['create_template'])
                 if values['create_a_seq'] == 'Yes':
                     form = get_form(
                         self.numberOfTasks,
