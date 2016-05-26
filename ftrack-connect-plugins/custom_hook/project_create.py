@@ -4,6 +4,7 @@ import ftrack
 import logging
 import threading
 import collections
+import shutil
 
 
 STRUCTURE_NAMES = ['episode', 'sequence', 'shot']
@@ -113,9 +114,9 @@ def generate_structure(values):
 
 
 @async
-def create(parent, structure, projectFolder, tmpFolder, createFolders):
+def create(parent, structure, projectFolder, tmpFolder, createFolders, templateFolder):
     '''Create *structure* under *parent*.'''
-    return create_from_structure(parent, structure, projectFolder, tmpFolder, createFolders)
+    return create_from_structure(parent, structure, projectFolder, tmpFolder, createFolders, templateFolder)
 
 
 def createFoldersOnDisk(folder, create):
@@ -131,7 +132,23 @@ def createImgFolders(shotFolder, create):
         createFoldersOnDisk(folder, create)
 
 
-def create_from_structure(parent, structure, projectFolder, tmpFolder, createFolders):
+def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
+    taskName = task.getName().lower()
+    for file in os.listdir(templateFolder):
+        filepath = os.path.join(templateFolder, file)
+        if os.path.isfile(filepath):
+            if taskName in file:
+                fname, fext = os.path.splitext(file)
+                newFilepath = os.path.join(taskFolder, '%s_v01%s' % (shotName, fext))
+                if not os.path.exists(newFilepath):
+                    shutil.copy(filepath, newFilepath)
+                metadata = {
+                    'filename':newFilepath
+                }
+                task.setMeta(metadata)
+
+
+def create_from_structure(parent, structure, projectFolder, tmpFolder, createFolders, templateFolder):
     '''Create *structure* under *parent*.'''
     level = structure[0]
     children = structure[1:]
@@ -159,6 +176,7 @@ def create_from_structure(parent, structure, projectFolder, tmpFolder, createFol
             new_object.set(data)
             folder = os.path.join(tmpFolder, str(taskType.getName()).lower())
             createFoldersOnDisk(folder, createFolders)
+            copyTemplateFiles(templateFolder, new_object, folder, parent.getName())
 
         logging.debug(
             'Created {new_object} on parent {parent}'.format(
@@ -166,7 +184,7 @@ def create_from_structure(parent, structure, projectFolder, tmpFolder, createFol
             )
         )
         if children:
-            create_from_structure(new_object, children, projectFolder, tmpFolder, createFolders)
+            create_from_structure(new_object, children, projectFolder, tmpFolder, createFolders, templateFolder)
 
 
 def get_form(number_of_tasks, structure_type):
@@ -319,13 +337,14 @@ class ProjectCreate(ftrack.Action):
             elif sys.platform == 'linux2':
                 rootFolder = disk.get('unix')
             projFolder = os.path.join(rootFolder, project.getName())
-        projFolder = os.path.join(projFolder, 'shots')
         return projFolder
 
     def launch(self, event):
         selection = event['data'].get('selection', [])
         project = ftrack.Project(selection[0]['entityId'])
         projectFolder = self.getProjectFolder(project)
+        templateFolder = os.path.join(projectFolder, 'template_files')
+        projectFolder = os.path.join(projectFolder, 'shots')
 
         if 'values' in event['data']:
             values = event['data']['values']
@@ -340,7 +359,7 @@ class ProjectCreate(ftrack.Action):
             else:
                 structure = generate_structure(values)
                 logging.debug('Creating structure "{0}"'.format(str(structure)))
-                create(project, structure, projectFolder, projectFolder, values['create_template'])
+                create(project, structure, projectFolder, projectFolder, values['create_template'], templateFolder)
                 if values['create_a_seq'] == 'Yes':
                     form = get_form(
                         self.numberOfTasks,

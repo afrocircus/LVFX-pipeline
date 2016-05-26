@@ -12,14 +12,20 @@ def getSequence(task):
     return sq
 
 
-def copyTemplateFiles(templateFolder, task, taskFolder):
+def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
+    taskName = task.getName()
     for file in os.listdir(templateFolder):
         filepath = os.path.join(templateFolder, file)
         if os.path.isfile(filepath):
-            if task in file:
-                newFilepath = os.path.join(taskFolder, file)
+            if taskName in file:
+                fname, fext = os.path.splitext(file)
+                newFilepath = os.path.join(taskFolder, '%s_v01%s' % (shotName, fext))
                 if not os.path.exists(newFilepath):
                     shutil.copy(filepath, newFilepath)
+                metadata = {
+                    'filename':newFilepath
+                }
+                task.setMeta(metadata)
 
 
 def callback(event):
@@ -52,7 +58,7 @@ def callback(event):
                 taskFolder = os.path.join(sceneFolder, taskName)
                 if not os.path.exists(taskFolder):
                     os.makedirs(taskFolder)
-                copyTemplateFiles(templateFolder, taskName, taskFolder)
+                copyTemplateFiles(templateFolder, task, taskFolder, shotName)
 
 
 # Subscribe to events with the update topic.
