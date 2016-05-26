@@ -15,5 +15,6 @@
         "schedule"
       ],
       "reference":[],
-      "shots":[]
+      "shots":[],
+      "template_files":[]
 }

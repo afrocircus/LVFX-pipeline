@@ -2,9 +2,14 @@ import ftrack
 import sys
 import os
 import json
+from distutils.dir_util import copy_tree
 
 
 FOLDER_STRUCT = os.path.join(os.environ['FTRACK_EVENT_SERVER_PLUGINS'], 'folder_structure.json')
+if sys.platform == 'win32':
+    TEMPLATE_FILES = 'S:\\template_files'
+elif sys.platform == 'linux2':
+    TEMPLATE_FILES = '/data/share01/template_files'
 
 
 def callback(event):
@@ -26,6 +31,8 @@ def callback(event):
                         rootFolder = disk.get('unix')
                     projFolder = os.path.join(rootFolder, project.getName())
                 makeDirs(projFolder)
+                templateFolder = os.path.join(projFolder, 'template_files')
+                copy_tree(TEMPLATE_FILES, templateFolder)
 
 
 def makeDirs(projDir):
