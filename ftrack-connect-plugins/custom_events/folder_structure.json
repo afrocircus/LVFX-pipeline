@@ -1,0 +1,20 @@
+{
+    "assets":[
+        "3d",
+        "artwork",
+        "characters",
+        "hdri",
+        "props",
+        "sets"
+      ],
+      "production":[
+        "approvals",
+        "editorial",
+        "io",
+        "meetings",
+        "schedule"
+      ],
+      "reference":[],
+      "shots":[],
+      "template_files":[]
+}
