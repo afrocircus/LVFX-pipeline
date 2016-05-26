@@ -219,7 +219,7 @@ def get_form(number_of_tasks, structure_type):
                 }, {
                     'label': 'Expression',
                     'type': 'text',
-                    'value': '###',
+                    'value': '####',
                     'name': 'shot_expression'
                 }, {
                     'label': 'Incremental',
