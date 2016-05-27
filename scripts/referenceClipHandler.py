@@ -23,7 +23,7 @@ def makeMovie(sspec):
     if not os.path.exists(filePath):
         print '%s is not a valid path' % filePath
         return 1, None, None, None
-    files = [f for f in os.listdir(filePath) if f.endswith('.dpx')]
+    files = [f for f in os.listdir(filePath) if f.endswith('.jpeg')]
     files.sort()
     if files:
         plateName = files[0].split('.')[0]
@@ -34,15 +34,16 @@ def makeMovie(sspec):
         fullFile = os.path.join(filePath, filename)
         outputFile = os.path.join(filePath, '%s.mov' % plateName)
         tmpFile = os.path.join(filePath, 'output.mov')
-        cmd = 'ffmpeg -y -start_number %s -an -i %s -vcodec prores -profile:v 2 -r 24 %s' % (firstFrame,
+        cmd = 'ffmpeg -y -start_number %s -an -i "%s" -vcodec prores -profile:v 2 -r 24 "%s"' % (firstFrame,
                                                                                              fullFile, tmpFile)
+        print cmd
         args = shlex.split(cmd)
         result = subprocess.call(args)
         if result == 0:
-            cmd = 'ffmpeg -i %s -vcodec prores -profile:v 2 ' \
+            cmd = 'ffmpeg -i "%s" -vcodec prores -profile:v 2 ' \
                   '-vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
                   'fontsize=32:text=%%{n}: x=(w-tw)-50: y=h-(2*lh): ' \
-                  'fontcolor=white: box=1: boxcolor=0x00000099" -y %s' % (tmpFile, outputFile)
+                  'fontcolor=white: box=1: boxcolor=0x00000099" -y "%s"' % (tmpFile, outputFile)
             args = shlex.split(cmd)
             result = subprocess.call(args)
             os.remove(tmpFile)
