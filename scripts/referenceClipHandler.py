@@ -50,17 +50,28 @@ def makeMovie(sspec):
     return 1, None, None, None
 
 
+def isValidTask(taskPath):
+    try:
+        task = ftrack_utils.getTask(_session, taskPath)
+        return True
+    except Exception:
+        print "ftrack_api.exception.NoResultFoundError: %s is not a valid task" % taskPath
+        return False
+
+
 def uploadToFtrack(movieFile, sspec, firstFrame, lastFrame):
     specList = sspec.split(':')
     project = specList[0]
     sequence = specList[1]
     shot = specList[2]
     taskPath = '%s / %s / %s / compositing' % (project, sequence, shot)
-    try:
-        task = ftrack_utils.getTask(_session, taskPath)
-    except Exception:
-        print "ftrack_api.exception.NoResultFoundError: %s is not a valid task" % taskPath
-        return
+    if not isValidTask(taskPath):
+        taskPath = '%s / %s / %s / Compositing' % (project, sequence, shot)
+        print 'trying taskPath %s ' % taskPath
+        if not isValidTask(taskPath):
+            print "ftrack_api.exception.NoResultFoundError: %s is not a valid task" % taskPath
+            return
+
     outfilemp4, outfilewebm, thumbnail, metadata = prepMediaFiles(movieFile)
     upload(_session, firstFrame, lastFrame, taskPath, movieFile,
            outfilemp4, outfilewebm, thumbnail, metadata)
