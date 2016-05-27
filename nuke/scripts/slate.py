@@ -15,6 +15,14 @@ _session = ftrack_api.Session(
         api_key=os.environ['FTRACK_API_KEY']
     )
 
+def isValidTask(projPath):
+    task = None
+    try:
+        task = ftrack_utils.getTask(_session, projPath)
+    except Exception:
+        return False, None
+    return True, task
+
 
 def getProjectDetails():
     node = nuke.toNode('TextFields')  # The name of the node inside the slate gizmo
@@ -23,11 +31,13 @@ def getProjectDetails():
     shotName = node.knob('plate_shotname').value()
     seqName = filename.split('/%s/' % shotName)[0].split('/')[-1]
     projPath = '%s / %s / %s / compositing' % (projectName, seqName, shotName)
-    try:
-        task = ftrack_utils.getTask(_session, projPath)
-    except Exception:
-        print '%s is not a valid ftrack task' % projPath
-        task = None
+    result, task = isValidTask(projPath)
+    if not result:
+        projPath = '%s / %s / %s / Compositing' % (projectName, seqName, shotName)
+        result, task = isValidTask(projPath)
+        if not result:
+            print '%s is not a valid ftrack task' % projPath
+            task = None
     return task, projPath
 
 
@@ -35,7 +45,10 @@ def getArtist():
     task, projPath = getProjectDetails()
     username = ''
     if task is not None:
-        username = task['appointments'][0]['resource']['username']
+        try:
+            username = task['appointments'][0]['resource']['username']
+        except:
+            username = 'No user assigned'
     return username
 
 
@@ -93,3 +106,18 @@ def getVersion():
     else:
         version = int(parts[1])
     return version
+
+
+def getShotName():
+    filename = nuke.scriptName()
+    filepath, file = os.path.split(filename)
+    fname, fext = os.path.splitext(file)
+    shotName = fname.split('_v')[0]
+    return shotName
+
+
+def getJobName():
+    filename = nuke.scriptName()
+    jobDir = filename.split('shots')[0]
+    jobName = jobDir.split('/')[-2]
+    return jobName
