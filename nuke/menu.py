@@ -9,6 +9,7 @@ from plugins.shot_submit import submitUI
 from plugins.NukeProResPlugin import nukeProRes
 from scripts import ftrackUpload
 from scripts import writeNodeManager
+from scripts import readNodeManager
 from scripts import slate
 from scripts import easySave
 
