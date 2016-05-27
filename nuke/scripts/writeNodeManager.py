@@ -110,3 +110,20 @@ def copyNukeFile():
     nukeFile = nuke.root().name()
     import shutil
     shutil.copy(nukeFile, nkFolder)
+
+
+def setOutputPath(type):
+    filename = nuke.scriptName()
+    filepath, file = os.path.split(filename)
+    fname, fext = os.path.splitext(file)
+    version = fname.split('_')[-1]
+    shotDir = filename.split('scene')[0]
+    compDir = os.path.join(shotDir, 'img/comps/%s' % version)
+    outDir = os.path.join(compDir, type)
+    thisNode = nuke.thisNode()
+    fileType = thisNode.knob('file_type').value()
+    if type == 'img':
+        outFile = os.path.join(outDir, '%s.####.%s' % (fname, fileType))
+    elif type == 'mov':
+        outFile = os.path.join(outDir, '%s.%s' % (fname, fileType))
+    return outFile
