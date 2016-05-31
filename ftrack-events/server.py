@@ -9,6 +9,9 @@ import logging
 import sys
 import traceback
 
+os.environ['FTRACK_EVENT_SERVER_PLUGINS'] = '/home/natasha/dev/LVFX-pipeline/ftrack-events/plugins'
+os.environ['FTRACK_EVENT_PLUGIN_PATH'] = ''
+
 # setup environment
 try:
     import config
@@ -41,21 +44,21 @@ logging.basicConfig(
 
 
 class JobProcess(multiprocessing.Process):
-    def __init__(self, name, path):
+    def __init__(self, paths):
         super(JobProcess, self).__init__()
-        self.name = name
-        self.path = path
+        self.paths = paths
 
     def run(self):
-        thread_logger = logging.getLogger(self.name)
-        sys.stdout = StreamToLogger(thread_logger, logging.INFO)
-        sys.stderr = StreamToLogger(thread_logger, logging.ERROR)
-        sys.path.append(os.path.dirname(self.path))
+        for path in self.paths:
+            thread_logger = logging.getLogger(path)
+            sys.stdout = StreamToLogger(thread_logger, logging.INFO)
+            sys.stderr = StreamToLogger(thread_logger, logging.ERROR)
+            sys.path.append(os.path.dirname(path))
 
-        try:
-            execfile(self.path, {'__file__': self.path})
-        except:
-            print traceback.format_exc()
+            try:
+                execfile(path, {'__file__': path})
+            except:
+                print traceback.format_exc()
 
 
 def main():
@@ -78,11 +81,14 @@ def main():
                  for f in filenames if os.path.splitext(f)[1] == '.py']
 
     paths = list(set(paths))
+    print paths
+    t = JobProcess(paths)
+    t.start()
 
     # starting event plugins
-    for path in paths:
+    '''for path in paths:
         t = JobProcess(path, path)
-        t.start()
+        t.start()'''
 
     while True:
         pass
