@@ -52,4 +52,4 @@ def makeDirs(projDir):
         print "No directories created"
 
 # Subscribe to events with the update topic.
-ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+#ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)

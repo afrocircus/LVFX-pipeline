@@ -1,5 +1,6 @@
 import os
 import ftrack
+import getpass
 
 shotHoldThumbnail = '/data/production/pipeline/shotQuery.jpg'
 shotCutThumbnail = '/data/production/pipeline/shotProblem.jpg'
@@ -8,6 +9,8 @@ shotCutThumbnail = '/data/production/pipeline/shotProblem.jpg'
 def callback(event):
     """ This plugin sets the task thumbnail from the task status update.
     """
+
+    print "CALLED"
 
     for entity in event['data'].get('entities', []):
         if entity.get('entityType') == 'task' and entity['action'] == 'update':
@@ -31,4 +34,4 @@ def callback(event):
 
 
 # Subscribe to events with the update topic.
-ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+#ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
