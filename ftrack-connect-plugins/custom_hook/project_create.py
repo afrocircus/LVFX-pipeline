@@ -5,6 +5,7 @@ import logging
 import threading
 import collections
 import shutil
+import getpass
 
 
 STRUCTURE_NAMES = ['episode', 'sequence', 'shot']
@@ -306,10 +307,27 @@ def get_form(number_of_tasks, structure_type):
 
 class ProjectCreate(ftrack.Action):
 
-    label = 'Project Create'
+    label = 'Project Create1'
     identifier = 'com.ftrack.projCreate'
     numberOfTasks = 0
     structureType = ''
+
+    def register(self):
+        '''Register discover actions on logged in user.'''
+        ftrack.EVENT_HUB.subscribe(
+            'topic=ftrack.action.discover and source.user.username={0}'.format(
+                getpass.getuser()
+            ),
+            self.discover
+        )
+
+        ftrack.EVENT_HUB.subscribe(
+            'topic=ftrack.action.launch and source.user.username={0} '
+            'and data.actionIdentifier={1}'.format(
+                getpass.getuser(), self.identifier
+            ),
+            self.launch
+        )
 
     def discover(self, event):
         '''Return action config if triggered on a single selection.'''
@@ -409,18 +427,3 @@ def register(registry, **kw):
 
     action = ProjectCreate()
     action.register()
-
-
-def main():
-    '''Register action and listen for events.'''
-    logging.basicConfig(level=logging.INFO)
-
-    ftrack.setup()
-    action = ProjectCreate()
-    action.register()
-
-    ftrack.EVENT_HUB.wait()
-
-
-if __name__ == '__main__':
-    main()
