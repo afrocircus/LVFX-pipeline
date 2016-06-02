@@ -307,7 +307,7 @@ def get_form(number_of_tasks, structure_type):
 
 class ProjectCreate(ftrack.Action):
 
-    label = 'Project Create1'
+    label = 'Project Create'
     identifier = 'com.ftrack.projCreate'
     numberOfTasks = 0
     structureType = ''
