@@ -16,7 +16,6 @@ def async(fn):
 
 
 class RefClipUploader(ftrack.Action):
-
     """
     Creates a reference clip from the plates in <shots>/<sq>/<shot>/img/plates/*.dpx
     and the uploads it to the corresponding shot as a reference clip for the artists.
@@ -173,10 +172,12 @@ class RefClipUploader(ftrack.Action):
 
 
     @async
-    def makeMovie(self, shot):
+    def makeMovie(self, shot, user):
+
         job = ftrack.createJob(
-            'Creating Reference Clip', 'running'
-        )
+            'Creating Reference Clip for shot {0}'.format(shot.getName()),
+            'queued', user)
+        job.setStatus('running')
         platesFolder = self.getShotPlatesFolder(shot)
         if not os.path.exists(platesFolder):
             return
@@ -214,20 +215,26 @@ class RefClipUploader(ftrack.Action):
                 os.remove(tmpFile)
 
             if os.path.exists(outputFile):
+                job.setDescription('Reference Clip created successfully. Uploading...')
+                job.setStatus('running')
                 try:
                     self.uploadToFtrack(outputFile, firstFrame, lastFrame, shot)
+                    job.setStatus('done')
+                    job.setDescription('Uploaded reference clip successfully')
                 except Exception:
                     job.setStatus('failed')
-                    job.setDescription('Creating reference clip failed')
-                job.setStatus('done')
-                job.setDescription('Created reference clip successfully')
+                    job.setDescription('Uploading to ftrack failed')
+                    return
+            else:
+                job.setStatus('failed')
+                job.setDescription('Could not create reference clip')
 
     @async
-    def makeAllShots(self, sequence):
+    def makeAllShots(self, sequence, user):
         shots = sequence.getShots()
         for shot in shots:
             print shot.getName()
-            self.makeMovie(shot)
+            self.makeMovie(shot, user)
 
     def register(self):
         """
@@ -276,6 +283,7 @@ class RefClipUploader(ftrack.Action):
         Called when action is executed
         """
         selection = event['data'].get('selection', [])
+        user = ftrack.User(id=event['source']['user']['id'])
         result = 1
         selectionType = ''
 
@@ -284,11 +292,11 @@ class RefClipUploader(ftrack.Action):
 
         if selectionType == 'Sequence':
             sequence = ftrack.Sequence(id=selection[0]['entityId'])
-            self.makeAllShots(sequence)
+            self.makeAllShots(sequence, user)
 
         if selectionType == 'Shot':
             shot = ftrack.Shot(id=selection[0]['entityId'])
-            self.makeMovie(shot)
+            self.makeMovie(shot, user)
 
         return {
                 'success': True,
