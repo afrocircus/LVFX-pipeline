@@ -65,6 +65,6 @@ def callback(event):
 
 
 # Subscribe to events with the update topic.
-ftrack.setup()
-ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
-ftrack.EVENT_HUB.wait()
+#ftrack.setup()
+#ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+#ftrack.EVENT_HUB.wait()
