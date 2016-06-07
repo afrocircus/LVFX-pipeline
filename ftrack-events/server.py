@@ -44,21 +44,21 @@ logging.basicConfig(
 
 
 class JobProcess(multiprocessing.Process):
-    def __init__(self, paths):
+    def __init__(self, name, path):
         super(JobProcess, self).__init__()
-        self.paths = paths
+        self.name = name
+        self.path = path
 
     def run(self):
-        for path in self.paths:
-            thread_logger = logging.getLogger(path)
-            sys.stdout = StreamToLogger(thread_logger, logging.INFO)
-            sys.stderr = StreamToLogger(thread_logger, logging.ERROR)
-            sys.path.append(os.path.dirname(path))
+        thread_logger = logging.getLogger(self.name)
+        sys.stdout = StreamToLogger(thread_logger, logging.INFO)
+        sys.stderr = StreamToLogger(thread_logger, logging.ERROR)
+        sys.path.append(os.path.dirname(self.path))
 
-            try:
-                execfile(path, {'__file__': path})
-            except:
-                print traceback.format_exc()
+        try:
+            execfile(self.path, {'__file__': self.path})
+        except:
+            print traceback.format_exc()
 
 
 def main():
@@ -81,14 +81,11 @@ def main():
                  for f in filenames if os.path.splitext(f)[1] == '.py']
 
     paths = list(set(paths))
-    print paths
-    t = JobProcess(paths)
-    t.start()
 
     # starting event plugins
-    '''for path in paths:
+    for path in paths:
         t = JobProcess(path, path)
-        t.start()'''
+        t.start()
 
     while True:
         pass
