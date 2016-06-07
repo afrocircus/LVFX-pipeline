@@ -1,5 +1,6 @@
 import os
 import ftrack
+import getpass
 
 shotHoldThumbnail = '/data/production/pipeline/shotQuery.jpg'
 shotCutThumbnail = '/data/production/pipeline/shotProblem.jpg'
