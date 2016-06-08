@@ -60,6 +60,9 @@ class UpdateRVComponent(ftrack.Action):
         if 'values' in event['data']:
             values = event['data']['values']
             component = version.createComponent(name='movie', path=values['file_path'])
+            metadata = version.getMeta()
+            metadata['source_file'] = values['file_path']
+            version.setMeta(metadata)
             version.publish()
             return {
                 'success': True,
