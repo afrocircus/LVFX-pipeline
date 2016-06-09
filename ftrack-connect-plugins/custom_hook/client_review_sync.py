@@ -47,6 +47,16 @@ class ReviewSync(object):
     @async
     def prepRemoteSession(self, reviewSession):
         """Prep cloud ftrack server with project name and review session"""
+        # TODO: Job notification should show for multiple users
+        user = self.session.query('User where username is Natasha').one()
+        localJob = self.session.create('Job', {
+            'user': user,
+            'status': 'running',
+            'data': json.dumps({
+                'description': 'Sync Started'
+            })
+        })
+        self.session.commit()
         remoteSession = startRemoteSession()
         project = reviewSession['project']
 
@@ -58,6 +68,7 @@ class ReviewSync(object):
                 'full_name': project['full_name'],
                 'project_schema': project['project_schema']
             })
+            remoteSession.commit()
 
         try:
             remoteFolder = remoteSession.query('Folder where name is "{0}" and '
@@ -69,29 +80,30 @@ class ReviewSync(object):
                 'parent': remoteProject
             })
 
-        try:
-            remoteReviewSession = remoteSession.query('ReviewSession where name is "{0}" and '
-                                                      'project.id is {1}'.format(reviewSession['name'],
-                                                                                 remoteProject['id'])).one()
-        except Exception:
-            remoteReviewSession = remoteSession.create('ReviewSession', {
-                'name': reviewSession['name'],
-                'description': reviewSession['description'],
-                'project': remoteProject
-            })
+        # TODO: Possibly delete older existing session before creating new one?
+        remoteReviewSession = remoteSession.create('ReviewSession', {
+            'name': reviewSession['name'],
+            'description': reviewSession['description'],
+            'project': remoteProject
+        })
         remoteSession.commit()
 
         for reviewObject in reviewSession['review_session_objects']:
             self.uploadToRemoteFtrack(remoteSession, reviewObject, remoteProject,
-                                      remoteFolder, remoteReviewSession)
+                                      remoteFolder, remoteReviewSession, localJob)
+        localJob['status'] = 'done'
+        self.session.commit()
 
     def uploadToRemoteFtrack(self, remoteSession, reviewObject, remoteProject,
-                             remoteFolder, remoteReviewSession):
+                             remoteFolder, remoteReviewSession, localJob):
         """Upload asset versions to remote cloud account"""
 
         assetVersion = reviewObject['asset_version']
         fileToUpload = self.getFileToUpload(assetVersion['metadata'])
         if not fileToUpload:
+            localJob['data'] = json.dumps({'description':'file not found'})
+            localJob['status'] = 'failed'
+            self.session.commit()
             return
         defaultShotStatus = remoteProject['project_schema'].get_statuses('Shot')[0]
         # Create a shot under remoteFolder
@@ -127,6 +139,17 @@ class ReviewSync(object):
         remoteVersion['metadata'] = versionMeta
         remoteSession.commit()
 
+        try:
+            self.uploadAndAddToReview(remoteSession, fileToUpload, remoteVersion, remoteReviewSession,
+                                      remoteShot)
+        except Exception:
+            localJob['status'] = 'failed'
+            self.session.commit()
+
+    @async
+    def uploadAndAddToReview(self, remoteSession, fileToUpload, remoteVersion,
+                             remoteReviewSession, remoteShot):
+
         #Upload file
         job = remoteSession.encode_media(fileToUpload)
         jobData = job['data']
@@ -140,7 +163,6 @@ class ReviewSync(object):
             jobStatus = j['status']
             print jobStatus
         job_data = json.loads(jobData)
-        location = remoteSession.query('Location where name is "ftrack.server"').one()
         for output in job_data['output']:
             component = remoteSession.get('FileComponent', output['component_id'])
 
@@ -158,9 +180,6 @@ class ReviewSync(object):
             'version': 'Version {0}'.format(remoteVersion['version'])
         })
         remoteSession.commit()
-
-
-
 
     def register(self):
         """Register discover actions on logged in user."""
