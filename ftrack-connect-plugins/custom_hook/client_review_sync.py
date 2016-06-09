@@ -4,6 +4,7 @@ import threading
 import logging
 import json
 import time
+import urllib
 
 
 def async(fn):
@@ -36,10 +37,21 @@ class ReviewSync(object):
         )
         self.session = session
 
-    def getFileToUpload(self, metadata):
+    def getFileToUpload(self, metadata, assetVersion):
         filename = ''
+        location = self.session.query('Location where name is "ftrack.server"').one()
         if 'source_file' in metadata:
             filename = str(metadata['source_file'])
+        else:
+            for component in assetVersion['components']:
+                if component['name'] == 'ftrackreview-mp4':
+                    try:
+                        url = location.get_url(component)
+                        testFile = urllib.URLopener()
+                        filename = '/tmp/{0}.mov'.format(assetVersion['id'])
+                        testFile.retrieve(url, filename)
+                    except Exception:
+                        filename = ''
         if os.path.exists(filename):
             return filename
         return None
@@ -80,7 +92,14 @@ class ReviewSync(object):
                 'parent': remoteProject
             })
 
-        # TODO: Possibly delete older existing session before creating new one?
+        # Delete older existing session before creating new one
+        try:
+            remoteReviewSession = remoteSession.query('ReviewSession where name is "{0}"'.format(
+                reviewSession['name']
+            )).one()
+            remoteSession.delete(remoteReviewSession)
+        except Exception:
+            print "Creating a new review session"
         remoteReviewSession = remoteSession.create('ReviewSession', {
             'name': reviewSession['name'],
             'description': reviewSession['description'],
@@ -99,7 +118,7 @@ class ReviewSync(object):
         """Upload asset versions to remote cloud account"""
 
         assetVersion = reviewObject['asset_version']
-        fileToUpload = self.getFileToUpload(assetVersion['metadata'])
+        fileToUpload = self.getFileToUpload(assetVersion['metadata'], assetVersion)
         if not fileToUpload:
             localJob['data'] = json.dumps({'description':'file not found'})
             localJob['status'] = 'failed'
