@@ -38,6 +38,8 @@ class ShotSubmitUI(QtGui.QWidget):
         renderBoxLayout.addWidget(self.writeNodeBox, 3, 1)
         self.jobWidget = JobWidget('Nuke')
         self.layout().addWidget(self.jobWidget)
+        self.jobWidget.splitmodeDrop.setCurrentIndex(0)
+        self.jobWidget.poolDrop.setCurrentIndex(1)
         hlayout = QtGui.QHBoxLayout()
         submitButton = QtGui.QPushButton('Submit')
         submitButton.clicked.connect(self.submitRender)
@@ -62,6 +64,8 @@ class ShotSubmitUI(QtGui.QWidget):
         renderParams = ''
         if str(self.frameBox.text()) is not '':
             renderParams = '%s -frames %s' % (renderParams, str(self.frameBox.text()))
+        else:
+            renderParams = '%s -frames %s-%s' % (renderParams, nuke.tcl('frames first'), nuke.tcl('frames last'))
         if str(self.frameStepBox.text()) is not '':
             renderParams = '%s -fstep %s' % (renderParams, str(self.frameStepBox.text()))
         renderParams = '%s -writenode %s' % (renderParams, str(self.writeNodeBox.currentText()))
