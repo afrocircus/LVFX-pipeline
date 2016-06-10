@@ -21,7 +21,11 @@ def getFilenameMatte():
 
 def getOutputFile():
     node = nuke.thisNode()
-    return node.knob('file').value()
+    outfile = node.knob('file').value()
+    if 'writeNodeManager.setOutputPath' in outfile:
+        type = outfile.split("writeNodeManager.setOutputPath('")[-1].split("')")[0]
+        outfile = setOutputPath(type)
+    return outfile
 
 
 def getDate():
@@ -120,6 +124,8 @@ def setOutputPath(type):
     shotDir = filename.split('scene')[0]
     compDir = os.path.join(shotDir, 'img/comps/%s' % version)
     outDir = os.path.join(compDir, type)
+    if not os.path.exists(outDir):
+        os.makedirs(outDir)
     thisNode = nuke.thisNode()
     fileType = thisNode.knob('file_type').value()
     if type == 'img':
