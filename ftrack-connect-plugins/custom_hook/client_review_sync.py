@@ -52,6 +52,7 @@ class ReviewSync(object):
                         testFile.retrieve(url, filename)
                     except Exception:
                         filename = ''
+        print filename
         if os.path.exists(filename):
             return filename
         return None
@@ -100,6 +101,7 @@ class ReviewSync(object):
             remoteSession.delete(remoteReviewSession)
         except Exception:
             print "Creating a new review session"
+
         remoteReviewSession = remoteSession.create('ReviewSession', {
             'name': reviewSession['name'],
             'description': reviewSession['description'],
@@ -108,9 +110,12 @@ class ReviewSync(object):
         remoteSession.commit()
 
         for reviewObject in reviewSession['review_session_objects']:
+            localJob['data'] = json.dumps({'description': 'Syncing {0}'.format(reviewObject['name'])})
+            self.session.commit()
             self.uploadToRemoteFtrack(remoteSession, reviewObject, remoteProject,
                                       remoteFolder, remoteReviewSession, localJob)
-        localJob['status'] = 'done'
+        if localJob['status'] != 'failed':
+            localJob['status'] = 'done'
         self.session.commit()
 
     def uploadToRemoteFtrack(self, remoteSession, reviewObject, remoteProject,
@@ -156,7 +161,13 @@ class ReviewSync(object):
             'source_asset_id': assetVersion['id']
         }
         remoteVersion['metadata'] = versionMeta
-        remoteSession.commit()
+
+        try:
+            remoteSession.commit()
+        except Exception:
+            localJob['status'] = 'failed'
+            self.session.commit()
+            print "serverError for {0}".format(reviewObject['name'])
 
         try:
             self.uploadAndAddToReview(remoteSession, fileToUpload, remoteVersion, remoteReviewSession,
@@ -165,7 +176,6 @@ class ReviewSync(object):
             localJob['status'] = 'failed'
             self.session.commit()
 
-    @async
     def uploadAndAddToReview(self, remoteSession, fileToUpload, remoteVersion,
                              remoteReviewSession, remoteShot):
 
