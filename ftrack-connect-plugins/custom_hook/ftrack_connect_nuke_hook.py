@@ -296,6 +296,9 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
             filename = metadata['filename']
             command.append('-script')
             command.append(filename)
+
+        if os.path.exists('/usr/bin/optirun'):
+            command.insert(0, '/usr/bin/optirun')
         return command
 
     def _getApplicationEnvironment(
