@@ -7,6 +7,7 @@ import nuke
 from scripts import slate
 from scripts import ftrackUpload
 from scripts import writeNodeManager
+from scripts import readNodeManager
 
 print "Loading init.py...."
 nuke.pluginAddPath('./gizmos')
