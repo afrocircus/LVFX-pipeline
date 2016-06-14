@@ -1,10 +1,23 @@
 import os
+import sys
 import ftrack_api
 import threading
 import logging
 import json
 import time
 import urllib
+import getpass
+
+
+RESOURCE_DIRECTORY = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'resource')
+)
+
+if RESOURCE_DIRECTORY not in sys.path:
+    sys.path.append(RESOURCE_DIRECTORY)
+
+
+import config
 
 
 def async(fn):
@@ -17,9 +30,9 @@ def async(fn):
 
 def startRemoteSession():
     remoteSession = ftrack_api.Session(
-        server_url='https://locovfx.ftrackapp.com',
-        api_user='djw.ninedegrees@gmail.com',
-        api_key='d8d1dee0-2ca9-11e6-b627-f23c91df2148'
+        server_url=config.server_url,
+        api_user=config.api_user,
+        api_key=config.api_key
     )
     return remoteSession
 
@@ -52,7 +65,6 @@ class ReviewSync(object):
                         testFile.retrieve(url, filename)
                     except Exception:
                         filename = ''
-        print filename
         if os.path.exists(filename):
             return filename
         return None
@@ -61,7 +73,7 @@ class ReviewSync(object):
     def prepRemoteSession(self, reviewSession):
         """Prep cloud ftrack server with project name and review session"""
         # TODO: Job notification should show for multiple users
-        user = self.session.query('User where username is Natasha').one()
+        user = self.session.query('User where username is {0}'.format(getpass.getuser())).one()
         localJob = self.session.create('Job', {
             'user': user,
             'status': 'running',
@@ -100,7 +112,7 @@ class ReviewSync(object):
             )).one()
             remoteSession.delete(remoteReviewSession)
         except Exception:
-            print "Creating a new review session"
+            logging.info( "Creating a new review session")
 
         remoteReviewSession = remoteSession.create('ReviewSession', {
             'name': reviewSession['name'],
@@ -167,7 +179,7 @@ class ReviewSync(object):
         except Exception:
             localJob['status'] = 'failed'
             self.session.commit()
-            print "serverError for {0}".format(reviewObject['name'])
+            logging.error("serverError for {0}".format(reviewObject['name']))
 
         try:
             self.uploadAndAddToReview(remoteSession, fileToUpload, remoteVersion, remoteReviewSession,
@@ -190,7 +202,7 @@ class ReviewSync(object):
             remoteSession.reset()
             j = remoteSession.query('Job where id is {0}'.format(jobId)).one()
             jobStatus = j['status']
-            print jobStatus
+            logging.info(jobStatus)
         job_data = json.loads(jobData)
         for output in job_data['output']:
             component = remoteSession.get('FileComponent', output['component_id'])

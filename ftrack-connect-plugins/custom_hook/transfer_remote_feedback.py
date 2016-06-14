@@ -3,6 +3,19 @@ import logging
 import threading
 import urllib
 import os
+import sys
+
+
+RESOURCE_DIRECTORY = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'resource')
+)
+
+if RESOURCE_DIRECTORY not in sys.path:
+    sys.path.append(RESOURCE_DIRECTORY)
+
+
+import config
+
 
 def async(fn):
     """Run *fn* asynchronously."""
@@ -14,9 +27,9 @@ def async(fn):
 
 def startRemoteSession():
     remoteSession = ftrack_api.Session(
-        server_url='https://locovfx.ftrackapp.com',
-        api_user='djw.ninedegrees@gmail.com',
-        api_key='d8d1dee0-2ca9-11e6-b627-f23c91df2148'
+        server_url=config.server_url,
+        api_user=config.api_user,
+        api_key=config.api_key
     )
     return remoteSession
 
