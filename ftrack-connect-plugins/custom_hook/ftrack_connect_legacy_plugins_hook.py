@@ -267,6 +267,8 @@ class LegacyApplicationLauncher(
                 command.append('-file')
                 command.append(filename)
 
+        if os.path.exists('/usr/bin/optirun'):
+            command.insert(0, '/usr/bin/optirun')
         return command
 
     def _getApplicationEnvironment(self, application, context):
@@ -380,6 +382,22 @@ class LegacyApplicationLauncher(
 
 def register(registry, **kw):
     '''Register hooks for ftrack connect legacy plugins.'''
+
+    logger = logging.getLogger(
+        'ftrack_plugin:ftrack_connect_legacy_plugins_hook.register'
+    )
+
+    # Validate that registry is an instance of ftrack.Registry. If not,
+    # assume that register is being called from a new or incompatible API and
+    # return without doing anything.
+    if not isinstance(registry, ftrack.Registry):
+        logger.debug(
+            'Not subscribing plugin as passed argument {0!r} is not an '
+            'ftrack.Registry instance.'.format(registry)
+        )
+        return
+
+    # Create store containing applications.
     applicationStore = LegacyApplicationStore()
 
     launcher = LegacyApplicationLauncher(
