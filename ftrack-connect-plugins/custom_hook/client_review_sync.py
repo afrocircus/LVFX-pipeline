@@ -70,10 +70,9 @@ class ReviewSync(object):
         return None
 
     @async
-    def prepRemoteSession(self, reviewSession):
+    def prepRemoteSession(self, reviewSession, username):
         """Prep cloud ftrack server with project name and review session"""
-        # TODO: Job notification should show for multiple users
-        user = self.session.query('User where username is {0}'.format(getpass.getuser())).one()
+        user = self.session.query('User where username is {0}'.format(username)).one()
         localJob = self.session.create('Job', {
             'user': user,
             'status': 'running',
@@ -126,8 +125,12 @@ class ReviewSync(object):
             self.session.commit()
             self.uploadToRemoteFtrack(remoteSession, reviewObject, remoteProject,
                                       remoteFolder, remoteReviewSession, localJob)
+
         if localJob['status'] != 'failed':
             localJob['status'] = 'done'
+            localJob['data'] = json.dumps({
+                'description': 'Sync Completed'
+            })
         self.session.commit()
 
     def uploadToRemoteFtrack(self, remoteSession, reviewObject, remoteProject,
@@ -260,11 +263,12 @@ class ReviewSync(object):
         Called when action is executed
         """
         selection = event['data']['selection']
+        username = event['source']['user']['username']
 
         reviewSession = self.session.query('ReviewSession where id is {0}'.format(
             selection[0]['entityId'])).one()
 
-        self.prepRemoteSession(reviewSession)
+        self.prepRemoteSession(reviewSession, username)
 
         return {
             'success': True,
