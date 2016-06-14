@@ -10,10 +10,10 @@ from Utils import ftrack_utils
 
 
 _session = ftrack_api.Session(
-        server_url=os.environ['FTRACK_SERVER'],
-        api_user=os.environ['FTRACK_API_USER'],
-        api_key=os.environ['FTRACK_API_KEY']
-    )
+    server_url=os.environ['FTRACK_SERVER'],
+    api_user=os.environ['FTRACK_API_USER'],
+    api_key=os.environ['FTRACK_API_KEY']
+)
 
 
 def isValidTask(projPath):
@@ -191,7 +191,7 @@ def uploadToFtrack():
     for node in nuke.allNodes('Write'):
         if node.name() == 'Write_mov':
             break
-    if node and node.knob('uploadToFtrack').value():
+    if not nuke.GUI or (node and node.knob('uploadToFtrack').value()):
         print "Submitting to Dailies"
         outputFile = writeNodeManager.getOutputFile()
         nukeFile = nuke.scriptName()
