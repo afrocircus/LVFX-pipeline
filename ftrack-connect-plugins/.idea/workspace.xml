@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f9d5774f-54cb-4567-8bbf-72bee96b6b39" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../ftrack-events/plugins/task_folder_create.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/custom_events/folder_structure.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/custom_events/project_folder_create.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/custom_events/task_folder_create.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/custom_events/task_thumbnail.py" afterPath="" />
+    <list default="true" id="f9d5774f-54cb-4567-8bbf-72bee96b6b39" name="Default" comment="added a resource">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../ftrack-events/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/plugins/project_folder_create.py" afterPath="$PROJECT_DIR$/../ftrack-events/plugins/project_folder_create.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/plugins/status_assign.py" afterPath="$PROJECT_DIR$/../ftrack-events/plugins/status_assign.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/plugins/task_thumbnail.py" afterPath="$PROJECT_DIR$/../ftrack-events/plugins/task_thumbnail.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/server.py" afterPath="$PROJECT_DIR$/../ftrack-events/server.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../maya/scripts/python/shot_submit/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../maya/scripts/python/shot_submit/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/menu.py" afterPath="$PROJECT_DIR$/../nuke/menu.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/plugins/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/plugins/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/plugins/NukeProResPlugin/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/plugins/NukeProResPlugin/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/scripts/ftrackUpload.py" afterPath="$PROJECT_DIR$/../nuke/scripts/ftrackUpload.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/scripts/writeNodeManager.py" afterPath="$PROJECT_DIR$/../nuke/scripts/writeNodeManager.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../scripts/referenceClipHandler.py" afterPath="$PROJECT_DIR$/../scripts/referenceClipHandler.py" />
     </list>
     <ignored path="ftrack-connect-plugins.iws" />
@@ -38,35 +27,16 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
-    <favorites_list name="ftrack-connect-plugins" />
+    <favorites_list name="ftrack-connect-plugins">
+      <favorite_root url="file://$PROJECT_DIR$/custom" module="ftrack-connect-plugins" type="directory" klass="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode">
+        <favorite_root url="file://$PROJECT_DIR$/custom/hook" module="ftrack-connect-plugins" type="directory" klass="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode">
+          <favorite_root url="file://$PROJECT_DIR$/custom/hook/client_review_sync.py" type="psiFile" klass="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
+        </favorite_root>
+      </favorite_root>
+    </favorites_list>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="project_create.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/custom_hook/project_create.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="428" column="21" selection-start-line="428" selection-start-column="21" selection-end-line="428" selection-end-column="21" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="batch_create.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/custom_hook/batch_create.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.06541">
-              <caret line="56" column="40" selection-start-line="56" selection-start-column="40" selection-end-line="56" selection-end-column="40" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -81,7 +51,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py" />
         <option value="$PROJECT_DIR$/../nuke/menu.py" />
         <option value="$PROJECT_DIR$/task_folder_create.py" />
         <option value="$PROJECT_DIR$/test.py" />
@@ -92,10 +61,21 @@
         <option value="$PROJECT_DIR$/custom_hook/resource/ftrack_utils.py" />
         <option value="$PROJECT_DIR$/custom_hook/note_on_multiple_entities_action.py" />
         <option value="$PROJECT_DIR$/custom_hook/reference_upload.py" />
-        <option value="$PROJECT_DIR$/custom_hook/update_comp.py" />
         <option value="$PROJECT_DIR$/custom_hook/update_rv_component.py" />
+        <option value="$PROJECT_DIR$/custom_hook/config.py" />
+        <option value="$PROJECT_DIR$/custom_hook/__init__.py" />
+        <option value="$PROJECT_DIR$/custom/resource/__init__.py" />
+        <option value="$PROJECT_DIR$/custom/hook/client_review_sync.py" />
+        <option value="$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py" />
+        <option value="$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py" />
+        <option value="$PROJECT_DIR$/custom_hook/start_launch_timer.py" />
         <option value="$PROJECT_DIR$/custom_hook/project_create.py" />
+        <option value="$PROJECT_DIR$/custom_hook/update_comp.py" />
+        <option value="$PROJECT_DIR$/custom_hook/asset_create.py" />
         <option value="$PROJECT_DIR$/custom_hook/batch_create.py" />
+        <option value="$PROJECT_DIR$/resource/config.py" />
+        <option value="$PROJECT_DIR$/custom_hook/client_review_sync.py" />
+        <option value="$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py" />
       </list>
     </option>
   </component>
@@ -106,7 +86,7 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="25" />
-    <option name="width" value="1136" />
+    <option name="width" value="1125" />
     <option name="height" value="1030" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -231,12 +211,18 @@
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="Errors" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ftrack-events" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../nuke" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="two.files.diff.last.used.file" value="/data/production/pipeline/linux/ftrack-connect-package/resource/hook/ftrack_connect_legacy_plugins_hook.py" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/custom/hook" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/custom" />
+      <recent name="$PROJECT_DIR$/resource" />
       <recent name="$PROJECT_DIR$/custom_events" />
     </key>
   </component>
@@ -536,11 +522,95 @@
       <option name="project" value="LOCAL" />
       <updated>1465302362634</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="removed events folder. duplicate">
+      <created>1465303930332</created>
+      <option name="number" value="00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1465303930332</updated>
+    </task>
+    <task id="LOCAL-00017" summary="batch asset create action">
+      <created>1465311881122</created>
+      <option name="number" value="00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1465311881122</updated>
+    </task>
+    <task id="LOCAL-00018" summary="add source_file metadata">
+      <created>1465373396611</created>
+      <option name="number" value="00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1465373396611</updated>
+    </task>
+    <task id="LOCAL-00019" summary="syncs the local review session with the cloud one.">
+      <created>1465400327012</created>
+      <option name="number" value="00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1465400327012</updated>
+    </task>
+    <task id="LOCAL-00020" summary="working version.">
+      <created>1465467538087</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1465467538087</updated>
+    </task>
+    <task id="LOCAL-00021" summary="transfers client feedback from cloud ftrack server to the local ftrack server">
+      <created>1465480485778</created>
+      <option name="number" value="00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1465480485778</updated>
+    </task>
+    <task id="LOCAL-00022" summary="if 'source_file' not a part of metadata then download file from server.">
+      <created>1465487359773</created>
+      <option name="number" value="00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1465487359773</updated>
+    </task>
+    <task id="LOCAL-00023" summary="stable version">
+      <created>1465815534132</created>
+      <option name="number" value="00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1465815534132</updated>
+    </task>
+    <task id="LOCAL-00024" summary="added check for bumblebee">
+      <created>1465896190690</created>
+      <option name="number" value="00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1465896190690</updated>
+    </task>
+    <task id="LOCAL-00025" summary="removed hardcoded ftrack account information. moved it to a config file under resource.">
+      <created>1465900225271</created>
+      <option name="number" value="00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1465900225271</updated>
+    </task>
+    <task id="LOCAL-00026" summary="ftrack job created for the correct user">
+      <created>1465901193408</created>
+      <option name="number" value="00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1465901193408</updated>
+    </task>
+    <task id="LOCAL-00027" summary="no more duplicate icons">
+      <created>1465917306161</created>
+      <option name="number" value="00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1465917306161</updated>
+    </task>
+    <task id="LOCAL-00028" summary="starts user timer on application launch">
+      <created>1465917414401</created>
+      <option name="number" value="00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1465917414401</updated>
+    </task>
+    <task id="LOCAL-00029" summary="separated common and user hooks">
+      <created>1465999620124</created>
+      <option name="number" value="00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1465999620124</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1136" height="1030" extended-state="0" />
+    <frame x="0" y="25" width="1125" height="1030" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -548,7 +618,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24911661" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2515611" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -556,7 +626,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -576,10 +646,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="removed batch_create and timelogs actions" />
-    <MESSAGE value="creates seqs and shots. creates folder structure on disk." />
-    <MESSAGE value="Moving ftrack events folder" />
-    <MESSAGE value="creates template file per task, updates task metadata" />
     <MESSAGE value="shot name padding changed to 4" />
     <MESSAGE value="moved task_thumbnail to plugins folder" />
     <MESSAGE value="disabled events in this folder.&#10;Events are executed by the event-server" />
@@ -591,7 +657,21 @@
     <MESSAGE value="updates compositing task filename metadata to the latest file." />
     <MESSAGE value="adds a movie component to the version so that it is playable in RV" />
     <MESSAGE value="batch create" />
-    <option name="LAST_COMMIT_MESSAGE" value="batch create" />
+    <MESSAGE value="removed events folder. duplicate" />
+    <MESSAGE value="batch asset create action" />
+    <MESSAGE value="add source_file metadata" />
+    <MESSAGE value="syncs the local review session with the cloud one." />
+    <MESSAGE value="working version." />
+    <MESSAGE value="transfers client feedback from cloud ftrack server to the local ftrack server" />
+    <MESSAGE value="if 'source_file' not a part of metadata then download file from server." />
+    <MESSAGE value="stable version" />
+    <MESSAGE value="added check for bumblebee" />
+    <MESSAGE value="removed hardcoded ftrack account information. moved it to a config file under resource." />
+    <MESSAGE value="ftrack job created for the correct user" />
+    <MESSAGE value="no more duplicate icons" />
+    <MESSAGE value="starts user timer on application launch" />
+    <MESSAGE value="separated common and user hooks" />
+    <option name="LAST_COMMIT_MESSAGE" value="separated common and user hooks" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -606,11 +686,36 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#58#72#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="77" column="56" selection-start-line="77" selection-start-column="56" selection-end-line="77" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="77" column="56" selection-start-line="77" selection-start-column="56" selection-end-line="77" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="180" column="75" selection-start-line="180" selection-start-column="8" selection-end-line="180" selection-end-column="75" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -618,9 +723,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#24#37#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -635,9 +737,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="173" column="32" selection-start-line="173" selection-start-column="16" selection-end-line="173" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -652,9 +751,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="221" column="34" selection-start-line="221" selection-start-column="34" selection-end-line="221" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -669,9 +765,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="221" column="34" selection-start-line="221" selection-start-column="34" selection-end-line="221" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -679,9 +772,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="221" column="34" selection-start-line="221" selection-start-column="34" selection-end-line="221" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -689,9 +779,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="221" column="34" selection-start-line="221" selection-start-column="34" selection-end-line="221" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -699,9 +786,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="221" column="34" selection-start-line="221" selection-start-column="34" selection-end-line="221" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -709,9 +793,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -719,9 +800,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -729,9 +807,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -739,9 +814,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -753,20 +825,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.02589">
-          <caret line="191" column="14" selection-start-line="191" selection-start-column="14" selection-end-line="191" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Downloads/modify_app_launch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/lib/python2.7/site-packages/ftrack_api/session.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33261105">
@@ -775,13 +833,6 @@
             <marker date="1463999674271" expanded="true" signature="24409:24425" placeholder="select missi... missing_value" />
             <marker date="1463999674271" expanded="true" signature="35379:35395" placeholder="select missi... missing_value" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="31" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="33" />
         </state>
       </provider>
     </entry>
@@ -817,55 +868,101 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.118625276">
           <caret line="335" column="6" selection-start-line="335" selection-start-column="6" selection-end-line="335" selection-end-column="6" />
-          <folding>
-            <element signature="e#24#37#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="180" column="75" selection-start-line="180" selection-start-column="8" selection-end-line="180" selection-end-column="75" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/custom_hook/update_rv_component.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.51773834">
-          <caret line="47" column="28" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="84" column="29" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.4257207">
+          <caret line="21" column="7" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resource/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/modify_app_launch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9002217">
+          <caret line="62" column="0" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
           <folding>
-            <element signature="e#0#9#0" expanded="false" />
+            <element signature="e#0#14#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/start_launch_timer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7150776">
+          <caret line="43" column="5" selection-start-line="43" selection-start-column="5" selection-end-line="43" selection-end-column="5" />
+          <folding>
+            <element signature="e#0#14#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4821634">
+          <caret line="392" column="49" selection-start-line="392" selection-start-column="49" selection-end-line="392" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6840355">
-          <caret line="90" column="31" selection-start-line="90" selection-start-column="31" selection-end-line="90" selection-end-column="31" />
-          <folding />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.41796008">
+          <caret line="374" column="0" selection-start-line="374" selection-start-column="0" selection-end-line="374" selection-end-column="0" />
+          <folding>
+            <element signature="e#58#72#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/custom_hook/project_create.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="428" column="21" selection-start-line="428" selection-start-column="21" selection-end-line="428" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
+          <caret line="144" column="42" selection-start-line="144" selection-start-column="42" selection-end-line="144" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/batch_create.py">
+    <entry file="file://$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.06541">
-          <caret line="56" column="40" selection-start-line="56" selection-start-column="40" selection-end-line="56" selection-end-column="40" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.7505543">
+          <caret line="174" column="24" selection-start-line="174" selection-start-column="24" selection-end-line="174" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resource/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.016629713">
+          <caret line="1" column="48" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="48" />
+          <folding />
         </state>
       </provider>
     </entry>
