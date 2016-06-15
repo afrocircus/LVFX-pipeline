@@ -12,7 +12,6 @@ def loadAndInit():
 
 
 def onClose():
-    print "Maya closing..."
     if 'FTRACK_TASKID' in os.environ.keys():
         session = ftrack_api.Session(
             server_url=os.environ['FTRACK_SERVER'],
@@ -25,7 +24,6 @@ def onClose():
 
 
 def addQuitAppCallback():
-    print "addQuitAppCallback called"
     mc.scriptJob(e=["quitApplication", "onClose()"])
 
 
