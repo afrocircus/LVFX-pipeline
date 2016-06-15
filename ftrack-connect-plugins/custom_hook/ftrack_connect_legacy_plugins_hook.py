@@ -286,7 +286,6 @@ class LegacyApplicationLauncher(
             applicationIdentifier.startswith('hiero') and
             'player' not in applicationIdentifier
         )
-
         if (
             os.path.isdir(self.legacyPluginsPath) and
             (isMaya or isHiero)
@@ -406,7 +405,7 @@ def register(registry, **kw):
             'FTRACK_PYTHON_LEGACY_PLUGINS_PATH',
             os.path.abspath(
                 os.path.join(
-                    os.path.dirname(__file__), '..', 'legacy_plugins'
+                    os.path.dirname(__file__), '..'
                 )
             )
         )
