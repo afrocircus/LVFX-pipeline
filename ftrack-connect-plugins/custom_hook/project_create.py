@@ -424,6 +424,3 @@ def register(registry, **kw):
             'ftrack.Registry instance.'.format(registry)
         )
         return
-
-    action = ProjectCreate()
-    action.register()
