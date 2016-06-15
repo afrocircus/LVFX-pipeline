@@ -3,6 +3,7 @@ import sys
 import ftrack
 import getpass
 import logging
+import re
 
 
 class UpdateCompMetadata(ftrack.Action):
@@ -25,6 +26,22 @@ class UpdateCompMetadata(ftrack.Action):
             projFolder = os.path.join(rootFolder, projectName)
         return projFolder
 
+    def version_get(self, string, prefix):
+        """
+        Extract version information from filenames.
+        Code from Foundry's nukescripts.version_get()
+        """
+
+        if string is None:
+            raise ValueError("Empty version string - no match")
+
+        regex = "[/_.]"+prefix+"\d+"
+        matches = re.findall(regex, string, re.IGNORECASE)
+        if not len(matches):
+            msg = "No \"_"+prefix+"#\" found in \""+string+"\""
+            raise ValueError(msg)
+        return (matches[-1:][0][1], re.search("\d+", matches[-1:][0]).group())
+
     def getLatestCompScript(self, task):
         filename = ''
         project = ftrack.Project(task.get('showid'))
@@ -34,10 +51,13 @@ class UpdateCompMetadata(ftrack.Action):
         sceneFolder = os.path.join(projectFolder, 'shots', sequence.getName(), shot.getName(), 'scene')
         taskFolder = os.path.join(sceneFolder, task.getName().lower())
         files = [f for f in os.listdir(taskFolder) if f.endswith('.nk')]
-
+        maxVersion = 1
         if files:
-            files.sort()
-            filename = os.path.join(taskFolder, files[-1])
+            for f in files:
+                if int(self.version_get(f, 'v')[1]) >= maxVersion:
+                    filename = f
+                    maxVersion = int(self.version_get(f, 'v')[1])
+        filename = os.path.join(taskFolder, filename)
         return filename
 
 
@@ -69,7 +89,7 @@ class UpdateCompMetadata(ftrack.Action):
 
         if entityType == 'task':
             task = ftrack.Task(selection[0]['entityId'])
-            if task.getName().lower() == 'compositing':
+            if task.getName().lower() == 'compositing' or task.getName().lower() == 'rotoscoping':
                 return {
                     'items': [{
                         'label': self.label,
