@@ -70,6 +70,8 @@ class TransferFeedback(object):
             remoteNotes = remoteVersion['notes']
             remoteLocation = remoteSession.query('Location where name is "ftrack.server"').one()
             localLocation = self.session.query('Location where name is "ftrack.server"').one()
+            localApprovedStatusObj = self.session.query('Status where name is Approved').one()
+            localReviewStatusObj = self.session.query('Status where name is "Review Changes"').one()
 
             # Add all notes from remote asset version to the corresponding local asset version.
             for remoteNote in remoteNotes:
@@ -104,6 +106,19 @@ class TransferFeedback(object):
                             os.remove(saveFile)
                     except Exception:
                         print "Note not found at location"
+
+            # Update the task status to that of the asset version.
+            if len(remoteObject['statuses']) > 0:
+                status = remoteObject['statuses'][-1] #latest status
+                if status == 'approved':
+                    statusObj = localApprovedStatusObj
+                else:
+                    statusObj = localReviewStatusObj
+
+                localVersion['status'] = statusObj
+                if localVersion['task']:
+                    localVersion['task']['status'] = statusObj
+
         self.session.commit()
 
     def register(self):
