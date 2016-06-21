@@ -53,3 +53,31 @@ A client review session that mirrors your local client session will be available
 
 You can now add clients as collaborators and send invites for the client review. Once again, you may refer
 to the video mentioned above on how to do this.
+
+
+Syncing the Client Feedback
+---------------------------
+
+The client feedback sync is a two step process.
+
+1. Watch `this video`_ to learn transfer feedback from the client session.
+
+.. _this video: https://www.ftrack.com/portfolio/internal-client-review-ftrack
+The client review session as seen by the clients is a separate entity from the Ftrack account. As a result,
+any information that the client adds to this review session must be transferred back to the Ftrack account.
+
+.. note:: The feedback is transfered to our cloud Ftrack account. Proceed with step 2 to transfer
+and update our local Ftrack server.
+
+2. In the local Ftrack session, navigate to the review session once again. Select 'Actions' from the drop
+down menu.
+
+.. image:: /img/client-review-selection.png
+
+Select 'Feedback Sync' Action from the actions that pop up on your screen.
+
+.. image:: /img/client-review-actions.png
+
+This will sync the feedback from the cloud Ftrack account to the local Ftrack server. It will update
+the status of the tasks to either 'Review Changes' or 'Approved' depending on the feedback. Asset Versions
+will be also be updated with the client notes.
