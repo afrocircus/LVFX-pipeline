@@ -67,7 +67,7 @@ The client review session as seen by the clients is a separate entity from the F
 any information that the client adds to this review session must be transferred back to the Ftrack account.
 
 .. note:: The feedback is transfered to our cloud Ftrack account. Proceed with step 2 to transfer
-and update our local Ftrack server.
+          and update our local Ftrack server.
 
 2. In the local Ftrack session, navigate to the review session once again. Select 'Actions' from the drop
 down menu.
