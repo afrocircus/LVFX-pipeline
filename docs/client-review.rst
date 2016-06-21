@@ -43,7 +43,7 @@ The progress of the sync can be seen by clicking the 'jobs' icon in the top righ
 browser.
 
 When the sync is going on:
-.. image:: /img/client-review-update.png
+.. image:: /img/client-review-actions.png
 
 When the sync is complete:
 .. image:: /img/client-review-complete.png
