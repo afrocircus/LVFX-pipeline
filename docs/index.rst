@@ -6,7 +6,8 @@
 Loco VFX Pipeline Documentation
 ===============================
 
-User Documentation
-==================
+.. toctree::
+   :maxdepth: 2
+   :caption: User Documentation
 
-* :ref: client-review
+   client-review
