@@ -28,3 +28,13 @@ You can watch `this video`_ to learn about how create a client review session in
 .. _this video: https://www.ftrack.com/portfolio/internal-client-review-ftrack
 
 
+Once you have created your client review session, click on the session and select 'Actions' from the
+drop down menu.
+
+.. image:: /img/client-review-selection.png
+
+When you click on Actions, these actions should pop up on your screen.
+
+.. image:: /img/client-review-actions.png
+
+Select the 'Review Sync' action.
