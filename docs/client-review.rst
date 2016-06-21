@@ -37,4 +37,21 @@ When you click on Actions, these actions should pop up on your screen.
 
 .. image:: /img/client-review-actions.png
 
-Select the 'Review Sync' action.
+Select the 'Review Sync' action. This will start the sync.
+
+The progress of the sync can be seen by clicking the 'jobs' icon in the top right corner of your Ftrack
+browser.
+
+When the sync is going on:
+.. image:: /img/client-review-update.png
+
+When the sync is complete:
+.. image:: /img/client-review-complete.png
+
+Once the sync is completed, go over to `the ftrack cloud account`_. Sign in and navigate to your project.
+A client review session that mirrors your local client session will be available to you.
+
+.. _the ftrack cloud account: https://locovfx.ftrackapp.com
+
+You can now add clients as collaborators and send invites for the client review. Once again, you may refer
+to the video mentioned above on how to do this.
