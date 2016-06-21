@@ -20,3 +20,11 @@ Setup
 * An action running locally that syncs the feedback from the remote cloud account to the local ftrack session.
 
 
+Syncing the Client Review Session
+---------------------------------
+
+You can watch `this video`_ to learn about how create a client review session in Ftrack.
+
+.. _this video: https://www.ftrack.com/portfolio/internal-client-review-ftrack
+
+
