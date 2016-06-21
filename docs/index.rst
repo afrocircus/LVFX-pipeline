@@ -9,4 +9,4 @@ Loco VFX Pipeline Documentation
 User Documentation
 ==================
 
-*:ref:`client-review`
+* :ref: client-review
