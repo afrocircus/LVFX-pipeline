@@ -13,8 +13,10 @@ minimum.
 
 
 Setup
-=====
+-----
 
 * A single user ftrack cloud account
 * An action running locally that syncs the local client review session with the remote cloud account
 * An action running locally that syncs the feedback from the remote cloud account to the local ftrack session.
+
+
