@@ -146,6 +146,8 @@ class RefClipUploader(ftrack.Action):
             version = asset.createVersion('Reference Clip Upload')
             self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, 24, metadata)
             self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, 24, metadata)
+            version.createComponent(name='movie', path=inputFile)
+            version.publish()
             if os.path.exists(thumnbail):
                 attachment = version.createThumbnail(thumnbail)
                 shot.setThumbnail(attachment)
