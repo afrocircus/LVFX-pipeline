@@ -121,3 +121,18 @@ def getJobName():
     jobDir = filename.split('shots')[0]
     jobName = jobDir.split('/')[-2]
     return jobName
+
+
+def getTaskName():
+    task = None
+    if 'FTRACK_TASKID' in os.environ.keys():
+        try:
+            task = _session.query('Task where id is {0}'.format(os.environ['FTRACK_TASKID'])).one()
+        except:
+            print 'No task found'
+    if not task:
+        task, projPath = getProjectDetails()
+    if task:
+        return task['name']
+    else:
+        return 'No task found'
