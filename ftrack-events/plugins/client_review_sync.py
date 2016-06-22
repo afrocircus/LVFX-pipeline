@@ -50,6 +50,16 @@ class ReviewSync(object):
         )
         self.session = session
 
+    def getComponentFilename(self, location, component, assetVersionId, ext):
+        try:
+            url = location.get_url(component)
+            testFile = urllib.URLopener()
+            filename = '/tmp/{0}.{1}'.format(assetVersionId, ext)
+            testFile.retrieve(url, filename)
+        except Exception:
+            filename = ''
+        return filename
+
     def getFileToUpload(self, metadata, assetVersion):
         filename = ''
         location = self.session.query('Location where name is "ftrack.server"').one()
@@ -58,13 +68,11 @@ class ReviewSync(object):
         else:
             for component in assetVersion['components']:
                 if component['name'] == 'ftrackreview-mp4':
-                    try:
-                        url = location.get_url(component)
-                        testFile = urllib.URLopener()
-                        filename = '/tmp/{0}.mov'.format(assetVersion['id'])
-                        testFile.retrieve(url, filename)
-                    except Exception:
-                        filename = ''
+                    filename = self.getComponentFilename(location, component, assetVersion['id'], 'mov')
+                    break
+                if component['name'] == 'ftrackreview-image':
+                    filename = self.getComponentFilename(location, component, assetVersion['id'], 'jpeg')
+                    break
         if os.path.exists(filename):
             return filename
         return None
@@ -272,7 +280,7 @@ class ReviewSync(object):
 
         return {
             'success': True,
-            'message': 'Action completed successfully'
+            'message': 'Action launched successfully'
         }
 
 
