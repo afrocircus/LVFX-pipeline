@@ -122,7 +122,11 @@ def setOutputPath(type):
     fname, fext = os.path.splitext(file)
     version = fname.split('_')[-1]
     shotDir = filename.split('scene')[0]
-    compDir = os.path.join(shotDir, 'img/comps/%s' % version)
+    parentDir = os.path.dirname(filename)
+    if os.path.split(parentDir)[-1] == 'rotoscoping':
+        compDir = os.path.join(shotDir, 'img/roto/%s' % version)
+    else:
+        compDir = os.path.join(shotDir, 'img/comps/%s' % version)
     outDir = os.path.join(compDir, type)
     if not os.path.exists(outDir):
         os.makedirs(outDir)
