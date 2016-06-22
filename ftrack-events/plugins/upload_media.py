@@ -113,10 +113,11 @@ class UploadMedia(ftrack.Action):
         outfilemp4, outfilewebm, thumbnail, metadata = self.prepMediaFiles(filename)
         ff, lf = self.getFrameLength(filename)
         result = self.convertFiles(filename, outfilemp4, outfilewebm)
+        status = ftrack.Status('Pending Internal Review')
         if result:
             self.createThumbnail(outfilemp4, thumbnail)
             asset = self.getAsset(shot, 'ReviewAsset')
-            version = asset.createVersion('Reference Clip Upload', taskid)
+            version = asset.createVersion('Upload for Internal Review', taskid)
             try:
                 self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, 24, metadata)
                 self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, 24, metadata)
@@ -126,6 +127,7 @@ class UploadMedia(ftrack.Action):
                 return
             version.createComponent(name='movie', path=filename)
             version.publish()
+            version.setStatus(status)
             if os.path.exists(thumbnail):
                 try:
                     attachment = version.createThumbnail(thumbnail)
