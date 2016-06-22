@@ -141,7 +141,7 @@ def ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
         taskMeta = {'filename': nukeFile}
         ftrack_utils.addTaskMetadata(session, taskPath, taskMeta)
         print "file upload successful"
-        # addToList(session, projPath, outputFile, version)
+        ftrack_utils.addToList(session, projPath, getDate(), version)
     deleteFiles(outfilemp4, outfilewebm, thumnbail)
 
 
@@ -168,7 +168,11 @@ def copyToApprovals(outputFile):
 def getDate():
     import datetime
     today = datetime.datetime.today()
-    date = '%d-%02d-%02d' % (today.year, today.month, today.day)
+    if today.hour > 10:
+        dailiesDate = today + datetime.timedelta(1)
+    else:
+        dailiesDate = today
+    date = '%d-%02d-%02d' % (dailiesDate.year, dailiesDate.month, dailiesDate.day)
     return date
 
 
