@@ -27,13 +27,15 @@ def isValidTask(projPath):
 def getProjectDetails():
     node = nuke.toNode('TextFields')  # The name of the node inside the slate gizmo
     filename = nuke.scriptName()
+    parentDir = os.path.dirname(filename)
+    taskName = os.path.split(parentDir)[-1]
     projectName = node.knob('plate_jobname').value()
     shotName = node.knob('plate_shotname').value()
     seqName = filename.split('/%s/' % shotName)[0].split('/')[-1]
-    projPath = '%s / %s / %s / compositing' % (projectName, seqName, shotName)
+    projPath = '%s / %s / %s / %s' % (projectName, seqName, shotName, taskName)
     result, task = isValidTask(projPath)
     if not result:
-        projPath = '%s / %s / %s / Compositing' % (projectName, seqName, shotName)
+        projPath = '%s / %s / %s / %s' % (projectName, seqName, shotName, taskName.capitalize())
         result, task = isValidTask(projPath)
         if not result:
             print '%s is not a valid ftrack task' % projPath
