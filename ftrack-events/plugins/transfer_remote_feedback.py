@@ -109,7 +109,7 @@ class TransferFeedback(object):
 
             # Update the task status to that of the asset version.
             if len(remoteObject['statuses']) > 0:
-                status = remoteObject['statuses'][-1] #latest status
+                status = remoteObject['statuses'][-1]['status'] #latest status
                 if status == 'approved':
                     statusObj = localApprovedStatusObj
                 else:
