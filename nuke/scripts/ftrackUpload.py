@@ -95,10 +95,10 @@ def newThreadUpload(session, projPath, inputFile, outfilemp4, outfilewebm, thumn
     firstFrame = int(nuke.tcl('frames first'))
     lastFrame = int(nuke.tcl('frames last'))
     frameCount = lastFrame-firstFrame
-    '''if frameCount > 400:
+    if frameCount > 400:
         time.sleep(80)
     else:
-        time.sleep(40)'''
+        time.sleep(30)
     if os.path.exists(outputFile):
         ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
                            thumnbail, metadata, outputFile, nukeFile)
