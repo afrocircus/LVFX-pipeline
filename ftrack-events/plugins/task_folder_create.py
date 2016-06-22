@@ -1,5 +1,6 @@
 import ftrack
 import os
+import stat
 import sys
 import shutil
 
@@ -35,6 +36,7 @@ def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
                 newFilepath = os.path.join(taskFolder, '%s_v01%s' % (shotName, fext))
                 if not os.path.exists(newFilepath):
                     shutil.copy(filepath, newFilepath)
+                    os.chmod(newFilepath, 0666)
                 metadata = {
                     'filename':newFilepath
                 }
@@ -50,6 +52,7 @@ def createAssetFolders(task, projectFolder):
     taskFolder = os.path.join(projectFolder, taskName)
     if not os.path.exists(taskFolder):
         os.makedirs(taskFolder)
+        os.chmod(taskFolder, stat.S_IWUSR | stat.S_IWOTH | stat.S_IWGRP)
     return taskFolder
 
 
