@@ -1,4 +1,5 @@
 import logging
+import datetime
 import os
 import threading
 import ftrack
@@ -103,6 +104,27 @@ class UploadMedia(ftrack.Action):
             asset = shot.createAsset(assetName, assetType)
         return asset
 
+    def getDate(self):
+        today = datetime.datetime.today()
+        if today.hour > 10:
+            dailiesDate = today + datetime.timedelta(1)
+        else:
+            dailiesDate = today
+        date = '%d-%02d-%02d' % (dailiesDate.year, dailiesDate.month, dailiesDate.day)
+        return date
+
+    def addToList(self, taskid, version):
+        task = ftrack.Task(id=taskid)
+        project = task.getProject()
+        listCategory = ftrack.ListCategory('Reviews')
+        date = self.getDate()
+        listName = 'Dailies_{0}'.format(date)
+        try:
+            listObj = project.getList(listName)
+        except:
+            listObj = project.createList(listName, listCategory, ftrack.AssetVersion)
+        listObj.append(version)
+
     @async
     def uploadToFtrack(self, filename, taskid, shot, user):
         job = ftrack.createJob(
@@ -128,6 +150,7 @@ class UploadMedia(ftrack.Action):
             version.createComponent(name='movie', path=filename)
             version.publish()
             version.setStatus(status)
+            self.addToList(taskid, version)
             if os.path.exists(thumbnail):
                 try:
                     attachment = version.createThumbnail(thumbnail)
