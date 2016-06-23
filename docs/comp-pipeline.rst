@@ -55,7 +55,7 @@ Usually this will be::
 
 The slate adds shot and user information to the movie.
 
-.. image:: /img/nuke-slate-eg
+.. image:: /img/nuke-slate-eg.png
 
 A bunch of python scripts in the slate node pull in the shot and artist information from ftrack
 and populate the slate. You shouldn't have to touch any of these scripts, just make sure the slate node
@@ -68,6 +68,7 @@ is connected to your write_mov node and it should work for you.
 .. image:: /img/nuke-write.png
 
 There will be 2 write nodes in the nuke script.
+
 1. The Write_dpx node will output dpx images. These are normally used during final delivery.
 The python script in the file attribute calculates the correct path for your output images.
 Usually this should point to::
