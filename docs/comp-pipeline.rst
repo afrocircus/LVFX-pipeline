@@ -86,6 +86,18 @@ Usually this should point to::
 .. note:: Make sure the codec is set to Avid DNxHD Codec, so that the shot can viewed correctly
           for dailies.
 
+
+Saving a New Version
+--------------------
+
+To save a new version, simply click on "LVFX-Save New Version" option under the File menu or hit
+Alt+Shift+S
+
+.. image:: /img/nuke-save.png
+
+This will save a new version of the file using the correct naming convention.
+
+
 Submitting To Dailies
 ---------------------
 
@@ -115,11 +127,11 @@ it will render the entire frame range with a frame step 1.
 
 Don't change anything under the job set section. The default options will work for you.
 
-.. note:: Make sure the client pool is set to Linux Farm and Frame Spilit Mode is set to "No Splitting".
+.. note:: Make sure the client pool is set to "Linux Farm" and Frame Spilit Mode is set to "No Splitting".
           (The default options) This will ensure your job will be run on a single linux farm machine and
           your job does not consume all or run out of nuke render licenses.
 
-If you render a movie on the farm the movie will automatically be encoded and submitted to Ftrack for
+If you render a movie on the farm, the movie will automatically be encoded and submitted to Ftrack for
 dailies post render.
 
 
