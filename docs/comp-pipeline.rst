@@ -11,5 +11,5 @@ Artist Workflow
 Once an artist is assigned a compositing task in Ftrack, the artist must navigate to the Ftrack task
 and open Nuke from the actions menu.
 
-
+.. image:: /img/comp.gif
 
