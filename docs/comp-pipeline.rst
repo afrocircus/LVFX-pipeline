@@ -16,6 +16,11 @@ and open the Nuke scene file from the actions menu.
 
 .. image:: /img/comp.gif
 
+When the application launches, the artist timer will start in Ftrack. This tracks the time the
+artist spends on the task.
+
+.. image:: /img/ftrack-timer.png
+
 
 Nuke File Location
 -------------------
@@ -36,3 +41,54 @@ Nuke File Structure
 A nuke file for a brand new shot must have the following nodes.
 
 .. image:: /img/nuke-template.png
+
+* The read node
+
+.. image:: /img/nuke-read.png
+
+The python script in the file attribute calculates the correct path of the read image.
+Usually this will be::
+
+    /data/production/<show>/shots/<sq>/<shot>/img/plates/<filename>.<frame>.dpx
+
+* The slate
+
+The slate adds shot and user information to the movie.
+
+.. image:: /img/nuke-slate-eg
+
+A bunch of python scripts in the slate node pull in the shot and artist information from ftrack
+and populate the slate. You shouldn't have to touch any of these scripts, just make sure the slate node
+is connected to your write_mov node and it should work for you.
+
+.. image:: /img/nuke-slate.png
+
+* The write nodes
+
+.. image:: /img/nuke-write.png
+
+There will be 2 write nodes in the nuke script.
+1. The Write_dpx node will output dpx images. These are normally used during final delivery.
+The python script in the file attribute calculates the correct path for your output images.
+Usually this should point to::
+
+    /data/production/<show>/shots/<sq>/<shot>/img/comps/<version>/img/<filename>.<frame>.dpx
+
+2. The Write_mov node will output a movie. The movie is used for internal reviews.
+The python script in the file attribute calculates the correct path for your output movie.
+Usually this should point to::
+
+    /data/production/<show>/shots/<sq>/<shot>/img/comps/<version>/mov/<filename>.mov
+
+
+Submitting To Dailies
+---------------------
+
+The Write_mov node has a tab called Dailies with a 'Submit to Dailies' button.
+
+.. image:: /img/nuke-dailies.png
+
+When an artist wishes to submit the movie to dailies, they can click this button.
+This will render the shot and then encode and upload the movie to Ftrack. This process can take a while,
+so be patient!
+
