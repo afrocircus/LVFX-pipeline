@@ -26,6 +26,24 @@ def findMovieFile(plateDir):
     return outfile
 
 
+def getProxyPath():
+    outfile = outfilePath = ''
+    filename = nuke.scriptName()
+    shotDir = filename.split('scene')[0]
+    plateDir = os.path.join(shotDir, 'img/plates/')
+    proxyDir = os.path.join(shotDir, 'img/plates/proxy')
+    if os.path.exists(proxyDir):
+        outfile = findOutFile(proxyDir, '.jpeg')
+        #Try and find a movie if no jpeg found
+        if outfile == '':
+            outfile = findMovieFile(plateDir)
+            if outfile is not '':
+                outfilePath = os.path.join(plateDir, outfile)
+        else:
+            outfilePath = os.path.join(proxyDir, outfile)
+    return outfilePath
+
+
 def getReadPath():
     filename = nuke.scriptName()
     shotDir = filename.split('scene')[0]
@@ -60,6 +78,23 @@ def findFrameByExt(plateDir, fext):
             if tmpSplit.isdigit():
                 frameList.append(int(tmpSplit))
     return frameList
+
+
+def getFramesProxy(position):
+    filename = nuke.scriptName()
+    shotDir = filename.split('scene')[0]
+    proxyDir = os.path.join(shotDir, 'img/plates/proxy')
+    frameList = []
+    if os.path.exists(proxyDir):
+        frameList = findFrameByExt(proxyDir, '.jpeg')
+    if len(frameList) > 0:
+        frameList.sort()
+        if position == 'first':
+            return frameList[0]
+        elif position == 'last':
+            return frameList[-1]
+    else:
+        return 1
 
 
 def getFrames(position):
