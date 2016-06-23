@@ -104,6 +104,38 @@ class UploadMedia(ftrack.Action):
             asset = shot.createAsset(assetName, assetType)
         return asset
 
+    def publishImage(self, filename, taskid, shot, job):
+        asset = self.getAsset(shot, 'ReviewAsset')
+        status = ftrack.Status('Pending Internal Review')
+        meta = {
+            'source_file': filename
+        }
+        version = asset.createVersion('Upload for Internal Review', taskid)
+        location = ftrack.Location('ftrack.server')
+        try:
+            component = version.createComponent(name='ftrackreview-image', path=filename, location=location)
+            metaData = json.dumps({
+                'format': 'image'
+            })
+            component.setMeta(key='ftr_meta', value=metaData)
+            version.setMeta(meta)
+            version.createComponent(name='movie', path=filename)
+            version.publish()
+        except:
+            job.setDescription('Failed to Upload Media')
+            job.setStatus('failed')
+            return
+        version.setStatus(status)
+        try:
+            attachment = version.createThumbnail(filename)
+            shot.setThumbnail(attachment)
+        except:
+            job.setDescription('Failed to Upload Thumbnail')
+            job.setStatus('failed')
+            return
+        job.setDescription('Upload complete for shot {0}'.format(shot.getName()))
+        job.setStatus('done')
+
     @async
     def uploadToFtrack(self, filename, taskid, shot, user):
         job = ftrack.createJob(
@@ -111,6 +143,14 @@ class UploadMedia(ftrack.Action):
             'queued', user)
         job.setStatus('running')
         filename = '/' + filename.strip('file:/')
+        fname, fext = os.path.splitext(filename)
+
+        # If file is an image
+        if fext in ['.jpeg', '.jpg', '.png', '.bmp', '.dpx']:
+            self.publishImage(filename, taskid, shot, job)
+            return
+
+        # if file is a movie
         outfilemp4, outfilewebm, thumbnail, metadata = self.prepMediaFiles(filename)
         ff, lf = self.getFrameLength(filename)
         result = self.convertFiles(filename, outfilemp4, outfilewebm)
