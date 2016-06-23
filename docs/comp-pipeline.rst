@@ -81,6 +81,8 @@ Usually this should point to::
 
     /data/production/<show>/shots/<sq>/<shot>/img/comps/<version>/mov/<filename>.mov
 
+.. note:: Make sure the codec is set to Avid DNxHD Codec, so that the shot can viewed correctly
+          for dailies.
 
 Submitting To Dailies
 ---------------------
@@ -93,3 +95,24 @@ When an artist wishes to submit the movie to dailies, they can click this button
 This will render the shot and then encode and upload the movie to Ftrack. This process can take a while,
 so be patient!
 
+
+Submit To Render Farm
+---------------------
+
+Open the Shot Submit plugin by selecting it from the Loco VFX menu in the nuke menu bar.
+
+.. image:: /img/nuke-menu.png
+
+This should open the Shot Submit window.
+
+.. image:: /img/nuke-submit.png
+
+The plugin should come pre-populated with your current nuke file. You can select the write node that
+you want to render from the drop down menu. Specify a frame range and frame step if you want, by default
+it will render the entire frame range with a frame step 1.
+
+Don't change anything under the job set section. The default options will work for you.
+
+.. note:: Make sure the client pool is set to Linux Farm and Frame Spilit Mode is set to "No Splitting".
+          (The default options) This will ensure your job will be run on a single linux farm machine and
+          your job does not consume all or run out of nuke render licenses.
