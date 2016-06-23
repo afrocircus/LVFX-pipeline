@@ -137,7 +137,7 @@ def ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
         version = ftrack_utils.createAndPublishVersion(session, taskPath, comment, asset,
                                                        outfilemp4, outfilewebm, thumnbail,
                                                        firstFrame, lastFrame, 24)
-        createRVComponent(session, version, approvedFile)
+        createRVComponent(session, version, outputFile)
 
         ftrack_utils.setTaskStatus(session, taskPath, version, 'Pending Internal Review')
         ftrack_utils.addMetadata(session, version, metadata)
@@ -163,6 +163,7 @@ def copyToApprovals(outputFile):
     appFolder = os.path.join(approvals, date)
     if not os.path.exists(appFolder):
         os.makedirs(appFolder)
+    os.chmod(appFolder, 0777)
     dstFile = os.path.join(appFolder, filename)
     shutil.copyfile(outputFile, dstFile)
     return dstFile
