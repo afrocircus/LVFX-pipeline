@@ -23,11 +23,11 @@ Nuke File Location
 When the artist starts nuke from ftrack, the corresponding shot's nuke script will be launched.
 The file should be called <shotname_version>.nk and will be located at::
 
-    $ /data/production/<show>/shots/<sq>/<shot>/scene/compositing/
+    /data/production/<show>/shots/<sq>/<shot>/scene/compositing/
 
 For example the location of a nuke file for shot '001_0010' in sequence '001' for project 'test' will be::
 
-    $ /data/production/test/shots/001/001_0010/scene/compositing/001_0010_v01.nk
+    /data/production/test/shots/001/001_0010/scene/compositing/001_0010_v01.nk
 
 
 Nuke File Structure
