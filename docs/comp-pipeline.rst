@@ -21,6 +21,8 @@ artist spends on the task.
 
 .. image:: /img/ftrack-timer.png
 
+The timer stops when the application is closed.
+
 
 Nuke File Location
 -------------------
@@ -116,3 +118,17 @@ Don't change anything under the job set section. The default options will work f
 .. note:: Make sure the client pool is set to Linux Farm and Frame Spilit Mode is set to "No Splitting".
           (The default options) This will ensure your job will be run on a single linux farm machine and
           your job does not consume all or run out of nuke render licenses.
+
+
+Starting and Stopping the Ftrack Timer.
+---------------------------------------
+
+As mentioned above, the artist timer for the task starts when the application is launched.
+Sometimes, an artist may want to leave their nuke session open overnight (if a render is on going) but
+may not want to keep their timer running. Similarly, an artist may want to restart the timer without
+having to restart the application.
+
+For instances such as these, the artist can use the 'Start Ftrack Timer' and 'Stop Ftrack Timer' scripts
+located in the 'Loco VFX' menu in the nuke menu bar.
+
+.. image:: /img/nuke-start-stop-timer.png
