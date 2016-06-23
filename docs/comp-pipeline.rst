@@ -3,7 +3,7 @@ Compositing Pipeline
 
 .. note:: Before you start anything, make sure that `ftrack-connect`_ is running.
 
-.. _ftrack-connect: ftrack-connect
+.. _ftrack-connect: ftrack-connect.html
 
 Artist Workflow
 ---------------
