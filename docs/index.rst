@@ -10,5 +10,6 @@ Loco VFX Pipeline Documentation
    :maxdepth: 2
    :caption: User Documentation
 
+   ftrack-connect
    client-review
    comp-pipeline
