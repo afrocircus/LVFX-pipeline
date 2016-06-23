@@ -1,7 +1,7 @@
 Compositing Pipeline
 ====================
 
-.. note:: Before you start anything, make sure that ``ftrack-connect``_ is running.
+.. note:: Before you start anything, make sure that `ftrack-connect`_ is running.
 
 .. _ftrack-connect: ftrack-connect
 
