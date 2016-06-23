@@ -119,6 +119,9 @@ Don't change anything under the job set section. The default options will work f
           (The default options) This will ensure your job will be run on a single linux farm machine and
           your job does not consume all or run out of nuke render licenses.
 
+If you render a movie on the farm the movie will automatically be encoded and submitted to Ftrack for
+dailies post render.
+
 
 Starting and Stopping the Ftrack Timer.
 ---------------------------------------
