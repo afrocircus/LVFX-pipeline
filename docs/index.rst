@@ -11,3 +11,4 @@ Loco VFX Pipeline Documentation
    :caption: User Documentation
 
    client-review
+   comp-pipeline
