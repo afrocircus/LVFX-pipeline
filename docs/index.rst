@@ -13,3 +13,4 @@ Loco VFX Pipeline Documentation
    ftrack-connect
    client-review
    comp-pipeline
+   roto-pipeline
