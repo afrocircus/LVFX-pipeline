@@ -123,7 +123,10 @@ def createRVComponent(session, version, outputFile):
 
 def ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
                        thumnbail, metadata, outputFile, nukeFile):
-    approvedFile = copyToApprovals(outputFile)
+    try:
+        approvedFile = copyToApprovals(outputFile)
+    except:
+        print "file permissions issue. Could not copy file to approvals folder."
     firstFrame = int(nuke.tcl('frames first'))
     lastFrame = int(nuke.tcl('frames last'))
     result = convertFiles(inputFile, outfilemp4, outfilewebm)
