@@ -81,3 +81,11 @@ Select 'Feedback Sync' Action from the actions that pop up on your screen.
 This will sync the feedback from the cloud Ftrack account to the local Ftrack server. It will update
 the status of the tasks to either 'Review Changes' or 'Approved' depending on the feedback. Asset Versions
 will be also be updated with the client's notes.
+
+
+Client Session Tutorial
+-----------------------
+
+You can refer to `this`_ page for a client side review session tutorial.
+
+.. _this: clientside-review.html
