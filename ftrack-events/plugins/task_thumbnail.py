@@ -2,8 +2,8 @@ import os
 import ftrack
 import getpass
 
-shotHoldThumbnail = '/data/production/pipeline/shotQuery.jpg'
-shotCutThumbnail = '/data/production/pipeline/shotProblem.jpg'
+shotHoldThumbnail = '/data/production/pipeline/linux/common/icons/JPEG/shotQuery.jpg'
+shotCutThumbnail = '/data/production/pipeline/linux/common/icons/JPEG/shotProblem.jpg'
 
 
 def callback(event):
