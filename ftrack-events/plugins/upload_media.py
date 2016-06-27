@@ -1,5 +1,6 @@
 import logging
 import datetime
+import re
 import os
 import threading
 import ftrack
@@ -136,14 +137,107 @@ class UploadMedia(ftrack.Action):
         job.setDescription('Upload complete for shot {0}'.format(shot.getName()))
         job.setStatus('done')
 
+    def version_get(self, string, prefix):
+        """
+        Extract version information from filenames.
+        Code from Foundry's nukescripts.version_get()
+        """
+        if string is None:
+            raise ValueError("Empty version string - no match")
+
+        regex = "[/_.]"+prefix+"\d+"
+        matches = re.findall(regex, string, re.IGNORECASE)
+        if not len(matches):
+            msg = "No \"_"+prefix+"#\" found in \""+string+"\""
+            raise ValueError(msg)
+        return matches[-1:][0][1], re.search("\d+", matches[-1:][0]).group()
+
+    def addSlateToMedia(self, filename, taskid, shot, user):
+        # Create a slate
+        projectName = shot.getProject().getName()
+        shotName = shot.getName()
+        taskName = ftrack.Task(taskid).getName()
+        try:
+            version = 'v' + self.version_get(filename, 'v')[1]
+        except:
+            version = 'v01'
+        artist = user.getUsername()
+        today = datetime.datetime.today()
+        date = '%d-%02d-%02d' % (today.year, today.month, today.day)
+        shotInfo = '{0} | {1} | {2} | {3} | {4}'.format(projectName, shotName, taskName, version, artist)
+        slateFolder, outfileName = os.path.split(filename)
+        fname,fext = os.path.splitext(outfileName)
+
+        # get Img size
+        ffprobecmd = 'ffprobe -v error -of flat=s=_ -select_streams v:0 ' \
+                     '-show_entries stream=height,width {0}'.format(filename)
+        process = subprocess.Popen(ffprobecmd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+        try:
+            output = process.communicate()[0]
+            parts = output.split('\n')
+            width = parts[0].split('=')[-1]
+            height = parts[1].split('=')[-1]
+        except:
+            width = 1920
+            height = 1080
+        size = '{0}x{1}'.format(width, height)
+
+        # generate slate
+        slate = os.path.join(slateFolder, 'slate.png')
+        slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold -pointsize 32 ' \
+                   '-fill white -gravity NorthWest -annotate +25+25 "{1}" ' \
+                   '-gravity NorthEast -annotate +25+25 "{2}" -gravity SouthEast ' \
+                   '{3}'.format(size, shotInfo, date, slate)
+        process = subprocess.Popen(slateCmd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+        process.wait()
+
+        # overlay slate on movie
+        slateMov = os.path.join(slateFolder, '{0}_slate.{1}'.format(fname, fext))
+        ffmpegSlate = 'ffmpeg -y -i {0} -i {1} -filter_complex "overlay=5:5" {2}'.format(filename,
+                                                                                      slate, slateMov)
+        process = subprocess.Popen(ffmpegSlate, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+        process.wait()
+
+        if fext in ['.jpeg', '.jpg', '.png', '.bmp', '.dpx']:
+            if os.path.exists(slate):
+                os.remove(slate)
+            return slateMov
+
+        #overlay frame nos
+        slateMovFinal = os.path.join(slateFolder, '{0}_slate_final.{1}'.format(fname, fext))
+        ffmpegFrames = 'ffmpeg -y -i %s -vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
+                       'fontsize=32:text=%%{n}: x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
+                       'boxcolor=0x00000099" %s' % (slateMov, slateMovFinal)
+
+        process = subprocess.Popen(ffmpegFrames, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+        process.wait()
+
+        if os.path.exists(slate):
+            os.remove(slate)
+        if os.path.exists(slateMov):
+            os.remove(slateMov)
+        return slateMovFinal
+
+
     @async
-    def uploadToFtrack(self, filename, taskid, shot, user):
+    def uploadToFtrack(self, filename, addSlate, taskid, shot, user):
         job = ftrack.createJob(
             'Uploading media for shot {0}'.format(shot.getName()),
             'queued', user)
         job.setStatus('running')
         filename = '/' + filename.strip('file:/')
         fname, fext = os.path.splitext(filename)
+
+        if addSlate == 'Yes':
+            job.setDescription('Adding slate for shot {0}'.format(shot.getName()))
+            slateFile = self.addSlateToMedia(filename, taskid, shot, user)
+            if os.path.exists(slateFile):
+                filename = slateFile
+                job.setDescription('Uploading media for shot {0}'.format(shot.getName()))
 
         # If file is an image
         if fext in ['.jpeg', '.jpg', '.png', '.bmp', '.dpx']:
@@ -210,7 +304,8 @@ class UploadMedia(ftrack.Action):
             return {
                 'items': [{
                     'label': self.label,
-                    'actionIdentifier': self.identifier
+                    'actionIdentifier': self.identifier,
+                    'icon': 'https://raw.githubusercontent.com/afrocircus/LVFX-pipeline/master/ftrack-events/icons/image-13.png'
                 }]
             }
         else:
@@ -227,7 +322,7 @@ class UploadMedia(ftrack.Action):
 
         if 'values' in event['data']:
             values = event['data']['values']
-            self.uploadToFtrack(values['file_path'], selection[0]['entityId'], shot, user)
+            self.uploadToFtrack(values['file_path'], values['add_slate'], selection[0]['entityId'], shot, user)
             return {
                 'success': True,
                 'message': 'Action completed successfully'
@@ -242,6 +337,18 @@ class UploadMedia(ftrack.Action):
                     'type': 'text',
                     'value': '',
                     'name': 'file_path'
+                }, {
+                    'label':'Add Slate',
+                    'type':'enumerator',
+                    'value': 'Yes',
+                    'name':'add_slate',
+                    'data':[{
+                        'label': 'Yes',
+                        'value': 'Yes'
+                    }, {
+                        'label': 'No',
+                        'value': 'No'
+                    }]
                 }]
             }
 
