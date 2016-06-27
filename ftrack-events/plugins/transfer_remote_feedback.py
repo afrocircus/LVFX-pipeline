@@ -148,7 +148,8 @@ class TransferFeedback(object):
             return {
                 'items': [{
                     'label': self.label,
-                    'actionIdentifier': self.identifier
+                    'actionIdentifier': self.identifier,
+                    'icon': 'https://raw.githubusercontent.com/afrocircus/LVFX-pipeline/master/ftrack-events/icons/cloud-computing-14.png'
                 }]
             }
         else:

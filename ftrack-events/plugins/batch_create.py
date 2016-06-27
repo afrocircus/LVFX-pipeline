@@ -420,7 +420,8 @@ class BatchCreate(ftrack.Action):
             return {
                 'items': [{
                     'label': self.label,
-                    'actionIdentifier': self.identifier
+                    'actionIdentifier': self.identifier,
+                    'icon':'https://raw.githubusercontent.com/afrocircus/LVFX-pipeline/master/ftrack-events/icons/list.png'
                 }]
             }
         else:
