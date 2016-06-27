@@ -30,3 +30,25 @@ The action will work for movies and images.
 Producer Workflow
 ~~~~~~~~~~~~~~~~~
 
+Reviewing with Lists
+--------------------
+
+Select a review list from the side bar on the left. Right click on the list and select Launch RV.
+
+.. image:: /img/internal-review-sidebar.png
+
+This will launch RV and create a playlist of all the asset versions in the list.
+
+
+Reviewing without Lists
+-----------------------
+
+If no review lists exists, you can still review in RV by selecting the individual asset versions.
+
+Navigate to the project sequence and select the 'Versions' tab.
+Ctrl select the versions you would like to review. Right click on the selected versions and select
+'Play selection in RV'
+
+.. image:: /img/internal-review-versions.png
+
+This will launch RV and create a playlist of all the asset versions in the list.
