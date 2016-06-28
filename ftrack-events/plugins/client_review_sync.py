@@ -203,6 +203,7 @@ class ReviewSync(object):
                              remoteReviewSession, remoteShot):
 
         #Upload file
+        print "encoding %s" % fileToUpload
         job = remoteSession.encode_media(fileToUpload)
         jobData = job['data']
         jobId = job['id']
