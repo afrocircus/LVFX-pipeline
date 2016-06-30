@@ -75,13 +75,17 @@ class TransferFeedback(object):
 
             # Add all notes from remote asset version to the corresponding local asset version.
             for remoteNote in remoteNotes:
+                # Don't add note if it's a reply
+                if remoteNote['in_reply_to']:
+                    break
                 # Create a new note
                 note = self.session.create('Note', {
                     'content': remoteNote['content'],
                     'author': user,
                     'category': category
                 })
-                localVersion['notes'].append(note)
+                # Add note to the beginning of the list
+                localVersion['notes'].insert(0,note)
                 # If the remote note has attachments then transfer those as well
                 for remoteNoteComponent in remoteNote['note_components']:
                     try:
