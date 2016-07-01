@@ -194,7 +194,7 @@ class UploadMedia(ftrack.Action):
         process.wait()
 
         # overlay slate on movie
-        slateMov = os.path.join(slateFolder, '{0}_slate.{1}'.format(fname, fext))
+        slateMov = os.path.join(slateFolder, '{0}_slate{1}'.format(fname, fext))
         ffmpegSlate = 'ffmpeg -y -i {0} -i {1} -filter_complex "overlay=5:5" {2}'.format(filename,
                                                                                       slate, slateMov)
         process = subprocess.Popen(ffmpegSlate, stdout=subprocess.PIPE,
@@ -207,7 +207,7 @@ class UploadMedia(ftrack.Action):
             return slateMov
 
         #overlay frame nos
-        slateMovFinal = os.path.join(slateFolder, '{0}_slate_final.{1}'.format(fname, fext))
+        slateMovFinal = os.path.join(slateFolder, '{0}_slate_final{1}'.format(fname, fext))
         ffmpegFrames = 'ffmpeg -y -i %s -vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
                        'fontsize=32:text=%%{n}: x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
                        'boxcolor=0x00000099" %s' % (slateMov, slateMovFinal)
