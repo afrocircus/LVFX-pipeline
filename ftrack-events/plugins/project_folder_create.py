@@ -5,7 +5,7 @@ import json
 from distutils.dir_util import copy_tree
 
 
-FOLDER_STRUCT = os.path.join(os.environ['FTRACK_EVENT_SERVER_PLUGINS'], 'plugins/folder_structure.json')
+FOLDER_STRUCT = os.path.join(os.environ['FTRACK_EVENT_SERVER_PLUGINS'], 'folder_structure.json')
 if sys.platform == 'win32':
     TEMPLATE_FILES = 'S:\\template_files'
 elif sys.platform == 'linux2':
