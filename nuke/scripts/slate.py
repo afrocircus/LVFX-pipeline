@@ -89,7 +89,8 @@ def getLine(lineno):
     line = ''
     if lineno in lines:
         line = lines[lineno]
-    return line
+    #return line
+    return '' # Removing notes feature
 
 
 def getDate():
