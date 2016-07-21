@@ -1,9 +1,10 @@
 import ftrack_api
 import logging
 import threading
-import urllib
+import uuid
+import urllib2
 import os
-import sys
+import json
 
 
 '''RESOURCE_DIRECTORY = os.path.abspath(
@@ -48,7 +49,7 @@ class TransferFeedback(object):
         self.session = session
 
     @async
-    def startTransfer(self, reviewSession):
+    def startTransfer(self, reviewSession, username):
 
         remoteSession = startRemoteSession()
         try:
@@ -58,9 +59,28 @@ class TransferFeedback(object):
             print "No such review session found"
             return
 
-        remoteReviewObjects = remoteReviewSession['review_session_objects']
+        user = self.session.query('User where username is {0}'.format(username)).one()
+        localJob = self.session.create('Job', {
+            'user': user,
+            'status': 'running',
+            'data': json.dumps({
+                'description': 'Feedback Sync Started'
+            })
+        })
+        self.session.commit()
 
+        remoteReviewObjects = remoteReviewSession['review_session_objects']
+        remoteLocation = remoteSession.query('Location where name is "ftrack.server"').one()
+        localLocation = self.session.query('Location where name is "ftrack.server"').one()
+        localApprovedStatusObj = self.session.query('Status where name is Approved').one()
+        localReviewStatusObj = self.session.query('Status where name is "Review Changes"').one()
+        count = 0
+        remoteObjsLen = len(remoteReviewObjects)
         for remoteObject in remoteReviewObjects:
+            count+=1
+            localJob['data'] = json.dumps({
+                'description': 'Syncing {0}/{1}'.format(count, remoteObjsLen)
+            })
             remoteVersion = remoteObject['asset_version']
             localVersionId = remoteVersion['metadata']['source_asset_id']
             localVersion = self.session.query('AssetVersion where id is {0}'.format(localVersionId)).one()
@@ -68,13 +88,9 @@ class TransferFeedback(object):
             # Using David as the author for all client notes.
             user = self.session.query('User where username is djw').one()
             remoteNotes = remoteVersion['notes']
-            remoteLocation = remoteSession.query('Location where name is "ftrack.server"').one()
-            localLocation = self.session.query('Location where name is "ftrack.server"').one()
-            localApprovedStatusObj = self.session.query('Status where name is Approved').one()
-            localReviewStatusObj = self.session.query('Status where name is "Review Changes"').one()
 
             # Add all notes from remote asset version to the corresponding local asset version.
-            for remoteNote in remoteNotes:
+            for remoteNote in reversed(remoteNotes):
                 # Don't add note if it's a reply
                 if remoteNote['in_reply_to']:
                     break
@@ -91,15 +107,18 @@ class TransferFeedback(object):
                     try:
                         # Get the URL of the remote attachment
                         remoteURL = remoteLocation.get_url(remoteNoteComponent['component'])
-                        testFile = urllib.URLopener()
-                        saveFile = '/tmp/note.jpg'
+                        print remoteURL
+                        response = urllib2.urlopen(remoteURL)
+                        saveFile = '/tmp/{0}.jpg'.format(uuid.uuid4())
                         # Download the attachment
-                        testFile.retrieve(remoteURL, saveFile)
+                        fh = open(saveFile, 'w')
+                        fh.write(response.read())
+                        fh.close()
                         # Create a new component and with the new attachment
-                        component = self.session.create(
+                        component = self.session.create_component(
                             saveFile,
                             data={'name':remoteNoteComponent['component']['name']},
-                            location = localLocation
+                            location=localLocation
                         )
                         # add this component to the note on the local asset version.
                         self.session.create(
@@ -123,6 +142,10 @@ class TransferFeedback(object):
                 if localVersion['task']:
                     localVersion['task']['status'] = statusObj
 
+        localJob['status'] = 'done'
+        localJob['data'] = json.dumps({
+            'description': 'Feedback Sync Completed'
+        })
         self.session.commit()
 
     def register(self):
@@ -164,11 +187,12 @@ class TransferFeedback(object):
         Called when action is executed
         """
         selection = event['data']['selection']
+        username = event['source']['user']['username']
 
         reviewSession = self.session.query('ReviewSession where id is {0}'.format(
             selection[0]['entityId'])).one()
 
-        self.startTransfer(reviewSession)
+        self.startTransfer(reviewSession, username)
 
         return {
             'success': True,
