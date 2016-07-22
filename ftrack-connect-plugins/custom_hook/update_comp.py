@@ -50,13 +50,17 @@ class UpdateCompMetadata(ftrack.Action):
         sequence = shot.getParent()
         sceneFolder = os.path.join(projectFolder, 'shots', sequence.getName(), shot.getName(), 'scene')
         taskFolder = os.path.join(sceneFolder, task.getName().lower())
-        files = [f for f in os.listdir(taskFolder) if f.endswith('.nk')]
+        files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))]
         maxVersion = 1
         if files:
             for f in files:
-                if int(self.version_get(f, 'v')[1]) >= maxVersion:
+                try:
+                    version = int(self.version_get(f, 'v')[1])
+                except ValueError:
+                    version = 0
+                if version >= maxVersion:
                     filename = f
-                    maxVersion = int(self.version_get(f, 'v')[1])
+                    maxVersion = version
         filename = os.path.join(taskFolder, filename)
         return filename
 
@@ -89,7 +93,7 @@ class UpdateCompMetadata(ftrack.Action):
 
         if entityType == 'task':
             task = ftrack.Task(selection[0]['entityId'])
-            if task.getName().lower() == 'compositing' or task.getName().lower() == 'rotoscoping':
+            if task.get('objecttypename') == 'Task':
                 return {
                     'items': [{
                         'label': self.label,
