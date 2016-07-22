@@ -129,7 +129,8 @@ class UploadMedia(ftrack.Action):
         version.setStatus(status)
         try:
             attachment = version.createThumbnail(filename)
-            shot.setThumbnail(attachment)
+            task = ftrack.Task(taskid)
+            task.setThumbnail(attachment)
         except:
             job.setDescription('Failed to Upload Thumbnail')
             job.setStatus('failed')
@@ -266,7 +267,8 @@ class UploadMedia(ftrack.Action):
             if os.path.exists(thumbnail):
                 try:
                     attachment = version.createThumbnail(thumbnail)
-                    shot.setThumbnail(attachment)
+                    task = ftrack.Task(taskid)
+                    task.setThumbnail(attachment)
                 except:
                     job.setDescription('Failed to Upload Thumbnail')
                     job.setStatus('failed')
