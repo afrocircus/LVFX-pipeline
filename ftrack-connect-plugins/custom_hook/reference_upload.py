@@ -179,6 +179,8 @@ class RefClipUploader(ftrack.Action):
         job.setStatus('running')
         platesFolder = self.getShotPlatesFolder(shot)
         if not os.path.exists(platesFolder):
+            job.setStatus('failed')
+            job.setDescription('No plates found')
             return
         files = [f for f in os.listdir(platesFolder) if f.endswith('.dpx')]
         if len(files) == 0:
@@ -186,6 +188,8 @@ class RefClipUploader(ftrack.Action):
             files = [f for f in os.listdir(platesFolder) if f.endswith('.jpeg')]
             if len(files) == 0:
                 # if no jpegs found then return
+                job.setStatus('failed')
+                job.setDescription('No plates found')
                 return
         if files:
             files.sort()
@@ -227,6 +231,9 @@ class RefClipUploader(ftrack.Action):
             else:
                 job.setStatus('failed')
                 job.setDescription('Could not create reference clip')
+        else:
+            job.setStatus('failed')
+            job.setDescription('No plates found')
 
     @async
     def makeAllShots(self, sequence, user):
