@@ -27,7 +27,7 @@ def getProjectFolder(project):
 
 
 def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
-    taskName = task.getName()
+    taskName = task.getName().lower()
     for file in os.listdir(templateFolder):
         filepath = os.path.join(templateFolder, file)
         if os.path.isfile(filepath):
@@ -49,12 +49,11 @@ def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
 
 def createAssetFolders(task, projectFolder):
     taskName = task.getName().lower()
-    parents = task.getParents()
-    parents.reverse()
-    for parent in parents:
-        if 'objecttypename' in parent.keys():
-            projectFolder = os.path.join(projectFolder, parent.getName().lower())
-    taskFolder = os.path.join(projectFolder, taskName)
+    asset = task.getParent()
+    assetType = asset.getType().getName().lower()
+    assetName = asset.getName()
+    assetFolder = os.path.join(projectFolder, 'assets', assetType, assetName)
+    taskFolder = os.path.join(assetFolder, taskName)
     if not os.path.exists(taskFolder):
         os.makedirs(taskFolder)
     return taskFolder
