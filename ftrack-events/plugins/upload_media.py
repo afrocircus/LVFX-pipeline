@@ -208,7 +208,7 @@ class UploadMedia(ftrack.Action):
             return slateMov
 
         #overlay frame nos
-        slateMovFinal = os.path.join(slateFolder, '{0}_slate_final{1}'.format(fname, fext))
+        slateMovFinal = os.path.join(slateFolder, '{0}_with_slate{1}'.format(fname, fext))
         ffmpegFrames = 'ffmpeg -y -i %s -vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
                        'fontsize=32:text=%%{n}: x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
                        'boxcolor=0x00000099" %s' % (slateMov, slateMovFinal)
