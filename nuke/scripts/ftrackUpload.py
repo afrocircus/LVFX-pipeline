@@ -45,7 +45,7 @@ def getProjectDetails(outputFile):
 def prepMediaFiles(outputFile):
     outfilemp4 = os.path.splitext(outputFile)[0] + '.mp4'
     outfilewebm = os.path.splitext(outputFile)[0] + '.webm'
-    thumbnail = os.path.join(os.path.split(outputFile)[0], 'thumbnail.png')
+    thumbnail = os.path.splitext(outputFile)[0] + '_thumbnail.png'
     metadata = {
         'source_file': outputFile
         }
