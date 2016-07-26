@@ -81,6 +81,7 @@ class TransferFeedback(object):
             localJob['data'] = json.dumps({
                 'description': 'Syncing {0}/{1}'.format(count, remoteObjsLen)
             })
+            session.commit()
             remoteVersion = remoteObject['asset_version']
             localVersionId = remoteVersion['metadata']['source_asset_id']
             localVersion = self.session.query('AssetVersion where id is {0}'.format(localVersionId)).one()
