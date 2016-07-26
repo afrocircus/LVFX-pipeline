@@ -9,8 +9,8 @@ import logging
 import sys
 import traceback
 
-os.environ['FTRACK_EVENT_SERVER_PLUGINS'] = '/home/natasha/dev/LVFX-pipeline/ftrack-events/plugins'
-os.environ['FTRACK_EVENT_PLUGIN_PATH'] = ''
+#os.environ['FTRACK_EVENT_SERVER_PLUGINS'] = '/data/production/pipeline/linux/ftrack-events/plugins'
+#os.environ['FTRACK_EVENT_PLUGIN_PATH'] = ''
 
 # setup environment
 try:

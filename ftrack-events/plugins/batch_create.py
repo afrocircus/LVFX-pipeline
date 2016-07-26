@@ -150,26 +150,6 @@ class BatchCreate(ftrack.Action):
             }
         ])
 
-        items.extend(
-            [{
-                'label': 'Create template folders on disk?',
-                'type': 'enumerator',
-                'value': 'Yes',
-                'name': 'create_template',
-                'data': [
-                    {
-                        'label': 'Yes',
-                        'value': 'yes'
-                    },
-                    {
-                        'label': 'No',
-                        'value': 'no'
-                    }
-                ]
-            }
-            ]
-        )
-
         if structure_type == 'show':
             items.extend([
                 {
@@ -272,32 +252,6 @@ class BatchCreate(ftrack.Action):
             task_data.append(task)
         return structure
 
-    def createFoldersOnDisk(self, folder, create):
-        if not os.path.exists(folder) and create == 'Yes':
-            os.makedirs(folder)
-
-    def createImgFolders(self, shotFolder, create):
-        shotFolder = os.path.join(shotFolder, 'img')
-        dirs = ['comps', 'plates', 'render']
-        for item in dirs:
-            folder = os.path.join(shotFolder, item)
-            self.createFoldersOnDisk(folder, create)
-
-    def copyTemplateFiles(self, templateFolder, task, taskFolder, shotName):
-        taskName = task.getName().lower()
-        for file in os.listdir(templateFolder):
-            filepath = os.path.join(templateFolder, file)
-            if os.path.isfile(filepath):
-                if taskName in file:
-                    fname, fext = os.path.splitext(file)
-                    newFilepath = os.path.join(taskFolder, '%s_v01%s' % (shotName, fext))
-                    if not os.path.exists(newFilepath):
-                        shutil.copy(filepath, newFilepath)
-                    metadata = {
-                        'filename':newFilepath
-                    }
-                    task.setMeta(metadata)
-
     def getPath(self, parent, data):
         try:
             parents = parent.getParents()
@@ -311,14 +265,12 @@ class BatchCreate(ftrack.Action):
         path.append(data)
         return path
 
-
     @async
-    def create(self, parent, structure, projectFolder, tmpFolder, createFolders, templateFolder):
+    def create(self, parent, structure):
         """Create *structure* under *parent*."""
-        return self.create_from_structure(parent, structure, projectFolder,
-                                          tmpFolder, createFolders, templateFolder)
+        return self.create_from_structure(parent, structure)
 
-    def create_from_structure(self, parent, structure, projectFolder, tmpFolder, createFolders, templateFolder):
+    def create_from_structure(self, parent, structure):
         """Create *structure* under *parent*."""
         level = structure[0]
         children = structure[1:]
@@ -332,20 +284,14 @@ class BatchCreate(ftrack.Action):
                     logging.info('Sequence {0} already exists. Doing nothing'.format(data))
                     path = self.getPath(parent, data)
                     new_object = ftrack.getSequence(path)
-                projectFolder = os.path.join(projectFolder, data)
 
             if object_type == 'shot':
                 try:
                     new_object = parent.createShot(data)
-                    tmpFolder = os.path.join(projectFolder, data)
-                    self.createImgFolders(tmpFolder, createFolders)
-                    tmpFolder = os.path.join(tmpFolder, 'scene')
-                    self.createFoldersOnDisk(tmpFolder, createFolders)
                 except Exception:
                     logging.info('Shot {0} already exists. Doing nothing'.format(data))
                     path = self.getPath(parent, data)
                     new_object = ftrack.getShot(path)
-                    tmpFolder = os.path.join(projectFolder, data, 'scene')
 
             if object_type == 'task':
                 taskType = ftrack.TaskType(id=data['typeid'])
@@ -355,9 +301,6 @@ class BatchCreate(ftrack.Action):
                         taskType
                     )
                     new_object.set(data)
-                    folder = os.path.join(tmpFolder, str(taskType.getName()).lower())
-                    self.createFoldersOnDisk(folder,createFolders)
-                    self.copyTemplateFiles(templateFolder, new_object, folder, parent.getName())
                 except Exception:
                     logging.info('Task {0} already exists. Doing nothing'.format(
                         TASK_TYPE_LOOKUP[data['typeid']]))
@@ -369,22 +312,7 @@ class BatchCreate(ftrack.Action):
                 )
             )
             if children:
-                self.create_from_structure(new_object, children, projectFolder,
-                                           tmpFolder, createFolders, templateFolder)
-
-
-    def getProjectFolder(self, project):
-        projFolder = project.get('root')
-        if projFolder == '':
-            disk = ftrack.Disk(project.get('diskid'))
-            rootFolder = ''
-            if sys.platform == 'win32':
-                rootFolder = disk.get('windows')
-            elif sys.platform == 'linux2':
-                rootFolder = disk.get('unix')
-            projFolder = os.path.join(rootFolder, project.getName())
-        return projFolder
-
+                self.create_from_structure(new_object, children)
 
     def getTaskType(self, entityId):
         task = ftrack.Task(entityId)
@@ -427,35 +355,14 @@ class BatchCreate(ftrack.Action):
         else:
             return
 
-    def getParentFolders(self, task, shotFolder):
-        parents = task.getParents()
-        parents.reverse()
-        for parent in parents:
-            if 'objecttypename' in parent.keys():
-                shotFolder = os.path.join(shotFolder, parent.getName())
-        return shotFolder
-
-
-    def getFolders(self, entityType, entityId):
+    def getParent(self, entityType, entityId):
         if entityType == 'show':
             project = ftrack.Project(entityId)
-            rootFolder = self.getProjectFolder(project)
-            projectFolder = os.path.join(rootFolder, 'shots')
-            shotsFolder = projectFolder
             parent = project
         else:
             task = ftrack.Task(entityId)
-            project = ftrack.Project(task.get('showid'))
-            rootFolder = self.getProjectFolder(project)
-            projectFolder = os.path.join(rootFolder, 'shots')
-            shotsFolder = self.getParentFolders(task, projectFolder)
-            shotsFolder = os.path.join(shotsFolder, task.getName())
-            if entityType == 'Shot':
-                shotsFolder = os.path.join(shotsFolder, 'scene')
             parent = task
-
-        templateFolder = os.path.join(rootFolder, 'template_files')
-        return parent, projectFolder, shotsFolder, templateFolder
+        return parent
 
     def launch(self, event):
         selection = event['data'].get('selection', [])
@@ -486,11 +393,10 @@ class BatchCreate(ftrack.Action):
             else:
                 structure = self.generateStructure(values, selection[0]['entityId'])
                 logging.debug('Creating structure "{0}"'.format(str(structure)))
-                parent, projectFolder, shotsFolder, templateFolder = self.getFolders(
+                parent = self.getParent(
                     entityType, selection[0]['entityId']
                 )
-                self.create(parent, structure, shotsFolder, shotsFolder,
-                            values['create_template'], templateFolder)
+                self.create(parent, structure)
                 if 'create_a_seq' in values:
                     if values['create_a_seq'] == 'Yes':
                         form = self.get_form(
