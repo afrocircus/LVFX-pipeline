@@ -204,6 +204,7 @@ def createAndPublishVersion(session, task, asset, status, comment, thumbnail, fi
     createAttachment(session, version, 'ftrackreview-webm', outfilewebm, framein, frameout, framerate)
     createRVComponent(session, version, filename)
     if os.path.exists(thumbnail):
-        version.create_thumbnail(thumbnail)
+        fileComponent = version.create_thumbnail(thumbnail)
+        task['thumbnail'] = fileComponent
     addMetadata(session, version, metadata)
     session.commit()
