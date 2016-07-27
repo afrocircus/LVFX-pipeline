@@ -7,8 +7,8 @@ from maya.utils import executeDeferred
 print "loading custom plugins! ..."
 
 def loadAndInit():
-    mc.loadPlugin('shotSubmitPlugin.py', quiet=True)
-    mc.spLoadSubmitPlugin()
+    mc.loadPlugin('locoVFXPlugins.py', quiet=True)
+    mc.spLocoVFXPlugin()
 
 
 def onClose():
