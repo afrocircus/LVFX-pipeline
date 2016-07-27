@@ -4,7 +4,7 @@ import maya.OpenMayaMPx as OpenMayaMPx
 import maya.mel as mm
 import maya.cmds as cmds
 
-kPluginCmdName = "spLoadSubmitPlugin"
+kPluginCmdName = "spLocoVFXPlugin"
 
 # Command
 class scriptedCommand(OpenMayaMPx.MPxCommand):
@@ -19,6 +19,14 @@ class scriptedCommand(OpenMayaMPx.MPxCommand):
         showMyMenuCtrl = cmds.menu('LocoVFX', parent=gMainWindow, tearOff=False, label='LocoVFX')
         cmd = self.constructShotSubmitCmd()
         cmds.menuItem(parent=showMyMenuCtrl, label='ShotSubmit', command=cmd)
+        animCmd = self.constructAnimBakerCmd()
+        cmds.menuItem(parent=showMyMenuCtrl, label='AnimBaker', command=animCmd)
+
+    def constructAnimBakerCmd(self):
+        cmd = 'from anim_baker import animBakerUI\n'
+        cmd += 'form = animBakerUI.AnimBakerUI()\n'
+        cmd += 'form.createDockLayout()'
+        return cmd
 
     def constructShotSubmitCmd(self):
         cmd = 'from shot_submit import submitUI\n'
