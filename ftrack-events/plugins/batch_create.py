@@ -252,6 +252,18 @@ class BatchCreate(ftrack.Action):
             task_data.append(task)
         return structure
 
+    def createImgFolders(self, shotFolder):
+        shotFolder = os.path.join(shotFolder, 'img')
+        dirs = ['comps', 'plates', 'render']
+        for item in dirs:
+            folder = os.path.join(shotFolder, item)
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+                try:
+                    os.chmod(folder, 0777)
+                except:
+                    print "could not change permissions"
+
     def getPath(self, parent, data):
         try:
             parents = parent.getParents()
@@ -266,11 +278,11 @@ class BatchCreate(ftrack.Action):
         return path
 
     @async
-    def create(self, parent, structure):
+    def create(self, parent, structure, projectFolder, tmpFolder):
         """Create *structure* under *parent*."""
-        return self.create_from_structure(parent, structure)
+        return self.create_from_structure(parent, structure, projectFolder, tmpFolder)
 
-    def create_from_structure(self, parent, structure):
+    def create_from_structure(self, parent, structure, projectFolder, tmpFolder):
         """Create *structure* under *parent*."""
         level = structure[0]
         children = structure[1:]
@@ -284,10 +296,13 @@ class BatchCreate(ftrack.Action):
                     logging.info('Sequence {0} already exists. Doing nothing'.format(data))
                     path = self.getPath(parent, data)
                     new_object = ftrack.getSequence(path)
+                projectFolder = os.path.join(projectFolder, data)
 
             if object_type == 'shot':
                 try:
                     new_object = parent.createShot(data)
+                    tmpFolder = os.path.join(projectFolder, data)
+                    self.createImgFolders(tmpFolder)
                 except Exception:
                     logging.info('Shot {0} already exists. Doing nothing'.format(data))
                     path = self.getPath(parent, data)
@@ -312,7 +327,19 @@ class BatchCreate(ftrack.Action):
                 )
             )
             if children:
-                self.create_from_structure(new_object, children)
+                self.create_from_structure(new_object, children, projectFolder, tmpFolder)
+
+    def getProjectFolder(self, project):
+        projFolder = project.get('root')
+        if projFolder == '':
+            disk = ftrack.Disk(project.get('diskid'))
+            rootFolder = ''
+            if sys.platform == 'win32':
+                rootFolder = disk.get('windows')
+            elif sys.platform == 'linux2':
+                rootFolder = disk.get('unix')
+            projFolder = os.path.join(rootFolder, project.getName())
+        return projFolder
 
     def getTaskType(self, entityId):
         task = ftrack.Task(entityId)
@@ -355,14 +382,31 @@ class BatchCreate(ftrack.Action):
         else:
             return
 
-    def getParent(self, entityType, entityId):
+    def getParentFolders(self, task, shotFolder):
+        parents = task.getParents()
+        parents.reverse()
+        for parent in parents:
+            if 'objecttypename' in parent.keys():
+                shotFolder = os.path.join(shotFolder, parent.getName())
+        return shotFolder
+
+    def getFolders(self, entityType, entityId):
         if entityType == 'show':
             project = ftrack.Project(entityId)
+            rootFolder = self.getProjectFolder(project)
+            shotsFolder = os.path.join(rootFolder, 'shots')
             parent = project
         else:
             task = ftrack.Task(entityId)
+            project = ftrack.Project(task.get('showid'))
+            rootFolder = self.getProjectFolder(project)
+            projectFolder = os.path.join(rootFolder, 'shots')
+            shotsFolder = self.getParentFolders(task, projectFolder)
+            shotsFolder = os.path.join(shotsFolder, task.getName())
+            if entityType == 'Shot':
+                shotsFolder = os.path.join(shotsFolder, 'scene')
             parent = task
-        return parent
+        return parent, shotsFolder
 
     def launch(self, event):
         selection = event['data'].get('selection', [])
@@ -393,10 +437,10 @@ class BatchCreate(ftrack.Action):
             else:
                 structure = self.generateStructure(values, selection[0]['entityId'])
                 logging.debug('Creating structure "{0}"'.format(str(structure)))
-                parent = self.getParent(
+                parent, shotsFolder = self.getFolders(
                     entityType, selection[0]['entityId']
                 )
-                self.create(parent, structure)
+                self.create(parent, structure, shotsFolder, shotsFolder)
                 if 'create_a_seq' in values:
                     if values['create_a_seq'] == 'Yes':
                         form = self.get_form(

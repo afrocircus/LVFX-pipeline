@@ -56,6 +56,10 @@ def createAssetFolders(task, projectFolder):
     taskFolder = os.path.join(assetFolder, taskName)
     if not os.path.exists(taskFolder):
         os.makedirs(taskFolder)
+        try:
+            os.chmod(taskFolder, 0777)
+        except:
+            print "could not change directory permission for %s" % taskFolder
     return taskFolder
 
 
@@ -71,7 +75,7 @@ def callback(event):
                 projFolder = getProjectFolder(project)
                 if task.getParent().get('objecttypename') == 'Asset Build':
                     taskFolder = createAssetFolders(task, projFolder)
-                    shotName = task.getParent().getName().lower()
+                    shotName = task.getParent().getName()
                     shotName = '{0}_{1}'.format(shotName, taskName)
                 else:
                     sq = getSequence(task)
@@ -85,6 +89,10 @@ def callback(event):
                     taskFolder = os.path.join(sceneFolder, taskName)
                     if not os.path.exists(taskFolder):
                         os.makedirs(taskFolder)
+                        try:
+                            os.chmod(taskFolder, 0777)
+                        except:
+                            print "could not change directory permission for %s" % taskFolder
                 templateFolder = os.path.join(projFolder, 'template_files')
                 copyTemplateFiles(templateFolder, task, taskFolder, shotName)
 
