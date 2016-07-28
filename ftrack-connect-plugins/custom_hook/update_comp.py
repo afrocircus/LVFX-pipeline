@@ -31,7 +31,6 @@ class UpdateCompMetadata(ftrack.Action):
         Extract version information from filenames.
         Code from Foundry's nukescripts.version_get()
         """
-
         if string is None:
             raise ValueError("Empty version string - no match")
 
@@ -46,22 +45,31 @@ class UpdateCompMetadata(ftrack.Action):
         filename = ''
         project = ftrack.Project(task.get('showid'))
         projectFolder = self.getProjectFolder(project)
-        shot = task.getParent()
-        sequence = shot.getParent()
-        sceneFolder = os.path.join(projectFolder, 'shots', sequence.getName(), shot.getName(), 'scene')
+        parent = task.getParent()
+        if parent.get('objecttypename') == 'Asset Build':
+            assetType = parent.getType().getName().lower()
+            assetName = parent.getName()
+            sceneFolder = os.path.join(projectFolder, 'assets', assetType, assetName)
+        elif parent.get('objecttypename') == 'Shot':
+            sequence = parent.getParent()
+            sceneFolder = os.path.join(projectFolder, 'shots', sequence.getName(),
+                                       parent.getName(), 'scene')
+        else:
+            sceneFolder = projectFolder
         taskFolder = os.path.join(sceneFolder, task.getName().lower())
-        files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))]
-        maxVersion = 1
-        if files:
-            for f in files:
-                try:
-                    version = int(self.version_get(f, 'v')[1])
-                except ValueError:
-                    version = 0
-                if version >= maxVersion:
-                    filename = f
-                    maxVersion = version
-        filename = os.path.join(taskFolder, filename)
+        if os.path.exists(taskFolder):
+            files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))]
+            maxVersion = 1
+            if files:
+                for f in files:
+                    try:
+                        version = int(self.version_get(f, 'v')[1])
+                    except ValueError:
+                        version = 0
+                    if version >= maxVersion:
+                        filename = f
+                        maxVersion = version
+            filename = os.path.join(taskFolder, filename)
         return filename
 
 
