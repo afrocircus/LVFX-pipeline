@@ -60,7 +60,7 @@ class UploadMedia(ftrack.Action):
 
     def getFrameLength(self, filename):
         cmd = 'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames ' \
-              '-of default=nokey=1:noprint_wrappers=1 {0}'.format(filename)
+              '-of default=nokey=1:noprint_wrappers=1 "{0}"'.format(filename)
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, shell=True)
         output = process.communicate()
@@ -171,7 +171,7 @@ class UploadMedia(ftrack.Action):
 
         # get Img size
         ffprobecmd = 'ffprobe -v error -of flat=s=_ -select_streams v:0 ' \
-                     '-show_entries stream=height,width {0}'.format(filename)
+                     '-show_entries stream=height,width "{0}"'.format(filename)
         process = subprocess.Popen(ffprobecmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
         try:
@@ -189,14 +189,14 @@ class UploadMedia(ftrack.Action):
         slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold -pointsize 32 ' \
                    '-fill white -gravity NorthWest -annotate +25+25 "{1}" ' \
                    '-gravity NorthEast -annotate +25+25 "{2}" -gravity SouthEast ' \
-                   '{3}'.format(size, shotInfo, date, slate)
+                   '"{3}"'.format(size, shotInfo, date, slate)
         process = subprocess.Popen(slateCmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
         process.wait()
 
         # overlay slate on movie
         slateMov = os.path.join(slateFolder, '{0}_slate{1}'.format(fname, fext))
-        ffmpegSlate = 'ffmpeg -y -i {0} -i {1} -filter_complex "overlay=5:5" {2}'.format(filename,
+        ffmpegSlate = 'ffmpeg -y -i "{0}" -i "{1}" -filter_complex "overlay=5:5" "{2}"'.format(filename,
                                                                                       slate, slateMov)
         process = subprocess.Popen(ffmpegSlate, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
@@ -209,9 +209,9 @@ class UploadMedia(ftrack.Action):
 
         #overlay frame nos
         slateMovFinal = os.path.join(slateFolder, '{0}_with_slate{1}'.format(fname, fext))
-        ffmpegFrames = 'ffmpeg -y -i %s -vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
+        ffmpegFrames = 'ffmpeg -y -i "%s" -vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
                        'fontsize=32:text=%%{n}: x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
-                       'boxcolor=0x00000099" %s' % (slateMov, slateMovFinal)
+                       'boxcolor=0x00000099" "%s"' % (slateMov, slateMovFinal)
 
         process = subprocess.Popen(ffmpegFrames, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
@@ -236,6 +236,7 @@ class UploadMedia(ftrack.Action):
         if addSlate == 'Yes':
             job.setDescription('Adding slate for shot {0}'.format(shot.getName()))
             slateFile = self.addSlateToMedia(filename, taskid, shot, user)
+            print slateFile
             if os.path.exists(slateFile):
                 filename = slateFile
                 job.setDescription('Uploading media for shot {0}'.format(shot.getName()))
