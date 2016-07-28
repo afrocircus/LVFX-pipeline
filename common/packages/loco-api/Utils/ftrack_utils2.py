@@ -1,10 +1,12 @@
 import ftrack_api
 import logging
+import datetime
 import os
 import re
 import uuid
 import subprocess
 import json
+import shutil
 
 
 def startSession():
@@ -31,20 +33,44 @@ def getTask(session, taskid, filename):
             logging.error(e)
     else:
         # if no task id found we rely on the folder structure.
-        # /data/production/project/shots/sq/shot/scene/task/file.ext
-        try:
-            filePathSplit = filename.split('shots')
-            projectPart = filePathSplit[0].strip('/')
-            sqShotPart = filePathSplit[1].strip('/')
-            project = projectPart.split('/')[-1]
-            seq = sqShotPart.split('/')[0]
-            shot = sqShotPart.split('/')[1]
-            taskName = sqShotPart.split('/')[3]
-            task = session.query('Task where name is {0} and project.name is {1} '
-                                 'and parent.name is {2}'.format(taskName, project, shot)).one()
-        except Exception, e:
-            logging.error(e)
+        if '/shots/' in filename:
+            # /data/production/project/shots/sq/shot/scene/task/file.ext
+            task = parentIsShot(session, filename, task)
+        elif '/assets/' in filename:
+            # /data/production/project/assets/assetType/assetName/task/file.ext
+            task = parentIsAsset(session, filename, task)
+    return task
 
+
+def parentIsShot(session, filename, task):
+    try:
+        filePathSplit = filename.split('shots')
+        projectPart = filePathSplit[0].strip('/')
+        sqShotPart = filePathSplit[1].strip('/')
+        project = projectPart.split('/')[-1]
+        seq = sqShotPart.split('/')[0]
+        shot = sqShotPart.split('/')[1]
+        taskName = sqShotPart.split('/')[3]
+        task = session.query('Task where name is "{0}" and project.name is "{1}" '
+                             'and parent.name is "{2}"'.format(taskName, project, shot)).one()
+    except Exception, e:
+        logging.error(e)
+    return task
+
+
+def parentIsAsset(session, filename, task):
+    try:
+        filePathSplit = filename.split('/assets/')
+        projectPart = filePathSplit[0]
+        assetPart = filePathSplit[1]
+        project = projectPart.split('/')[-1]
+        assetType = assetPart.split('/')[0]
+        assetName = assetPart.split('/')[1]
+        taskName = assetPart.split('/')[2]
+        task = session.query('Task where name is "{0}" and project.name is "{1}" '
+                             'and parent.name is "{2}"'.format(taskName, project, assetName)).one()
+    except Exception, e:
+        logging.error(e)
     return task
 
 
@@ -108,7 +134,7 @@ def convertWebmFiles(inputFile, outfilewebm):
 
 def getFrameLength(filename):
     cmd = 'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames ' \
-          '-of default=nokey=1:noprint_wrappers=1 {0}'.format(filename)
+          '-of default=nokey=1:noprint_wrappers=1 "{0}"'.format(filename)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
     output = process.communicate()
@@ -208,3 +234,40 @@ def createAndPublishVersion(session, task, asset, status, comment, thumbnail, fi
         task['thumbnail'] = fileComponent
     addMetadata(session, version, metadata)
     session.commit()
+
+
+def copyToApprovals(outputFile, project):
+    filename = os.path.split(outputFile)[-1]
+    projFolder = getProjectFolder(project)
+    approvals = os.path.join(projFolder, 'production', 'approvals')
+    date = getDate()
+    appFolder = os.path.join(approvals, date)
+    if not os.path.exists(appFolder):
+        os.makedirs(appFolder)
+    os.chmod(appFolder, 0777)
+    dstFile = os.path.join(appFolder, filename)
+    shutil.copyfile(outputFile, dstFile)
+    return dstFile
+
+
+def getProjectFolder(project):
+    projFolder = project['root']
+    if projFolder == '':
+        disk = project['disk']
+        rootFolder = ''
+        if sys.platform == 'win32':
+            rootFolder = disk['windows']
+        elif sys.platform == 'linux2':
+            rootFolder = disk['unix']
+        projFolder = os.path.join(rootFolder, project.getName())
+    return projFolder
+
+
+def getDate():
+    today = datetime.datetime.today()
+    if today.hour > 10:
+        dailiesDate = today + datetime.timedelta(1)
+    else:
+        dailiesDate = today
+    date = '%d-%02d-%02d' % (dailiesDate.year, dailiesDate.month, dailiesDate.day)
+    return date
