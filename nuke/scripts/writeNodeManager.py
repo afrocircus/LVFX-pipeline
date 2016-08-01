@@ -140,7 +140,8 @@ def setOutputPath(type):
 
 
 def checkDailiesTab():
-    # onScriptLoad callback. Checks if Dailies tab exists. If not, adds it to Write_mov node
+    # onScriptLoad callback. Checks if Dailies tab exists.
+    # If not, adds it to Write_mov node
     node = nuke.toNode('Write_mov')
     if node and not 'Dailies' in node.knobs():
         userTab = nuke.Tab_Knob('Dailies')
