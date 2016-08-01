@@ -46,21 +46,21 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
 
         self._fixExtensionForNukeScriptsPath()
 
-
     def _changeExtension(self, filepath):
         """ Returns the filepath with new extension."""
         return re.sub('\.nk$', '.nknc', filepath)
-
 
     def _fixExtensionForNukeScriptsPath(self):
         """ Checks if the nuke script extensions in the preset are correct according
         to the application mode"""
         if _nuke.env['nc']:
             if self._exportPath.endswith('.nk'):
-                self._exportPath = self._changeExtension( self._exportPath )
+                self._exportPath = self._changeExtension(self._exportPath)
 
     def writingSequence(self):
-        """ Check if we're writing a single clip or a sequence.  This is the case if the object was initialised with a sequence, or if the collate option is set. """
+        """ Check if we're writing a single clip or a sequence.
+        This is the case if the object was initialised with a sequence,
+        or if the collate option is set. """
         return isinstance(self._item, hiero.core.Sequence) or self._collate
 
     def _createWriteNodes(self, firstFrame, start, end, framerate, rootNode):
@@ -76,7 +76,7 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
 
         # Create a stack to prevent multiple write nodes inputting into each other
         stackId = "ScriptEnd"
-        writeNodes.append( nuke.SetNode(stackId, 0) )
+        writeNodes.append(nuke.SetNode(stackId, 0))
 
         writePaths = self._preset.properties()["writePaths"]
 
@@ -85,18 +85,18 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
                 if writePath == itemPath:
                     # Generate a task on same items as this one but swap in the shot path that goes with this preset.
                     taskData = hiero.core.TaskData(itemPreset,
-                                                     self._item,
-                                                     self._exportRoot,
-                                                     itemPath,
-                                                     self._version,
-                                                     self._exportTemplate,
-                                                     project=self._project,
-                                                     cutHandles=self._cutHandles,
-                                                     retime=self._retime,
-                                                     startFrame=firstFrame,
-                                                     resolver=self._resolver,
-                                                     skipOffline=self._skipOffline,
-                                                     shotNameIndex=self._shotNameIndex)
+                                                   self._item,
+                                                   self._exportRoot,
+                                                   itemPath,
+                                                   self._version,
+                                                   self._exportTemplate,
+                                                   project=self._project,
+                                                   cutHandles=self._cutHandles,
+                                                   retime=self._retime,
+                                                   startFrame=firstFrame,
+                                                   resolver=self._resolver,
+                                                   skipOffline=self._skipOffline,
+                                                   shotNameIndex=self._shotNameIndex)
                     task = hiero.core.taskRegistry.createTaskFromPreset(itemPreset, taskData)
                     if hasattr(task, "nukeWriteNode"):
 
@@ -120,7 +120,10 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
                             writeNode.setKnob("first", start)
                             writeNode.setKnob("last", end)
                             if writeNode.knob('file_type') == 'mov':
+                                writeNode.setKnob('file',"[python writeNodeManager.setOutputPath('mov')]")
                                 writeNode.setKnob('afterRender', 'ftrackUpload.uploadToFtrack()')
+                            else:
+                                writeNode.setKnob('file',"[python writeNodeManager.setOutputPath('img')]")
                             writeNodes.append(writeNode)
 
                             # Set the first write node in the list as the one to be shown/rendered in the timeline
@@ -148,18 +151,17 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
         additionalNodes = []
 
         self._sequence.addToNukeScript(script,
-                                        includeRetimes=True,
-                                        additionalNodes=additionalNodes,
-                                        retimeMethod=self._preset.properties()["method"],
-                                        offset=offset,
-                                        skipOffline = self._skipOffline,
-                                        disconnected=sequenceDisconnected,
-                                        masterTrackItem=self._masterTrackItemCopy,
-                                        includeAnnotations=self.includeAnnotations(),
-                                        outputToFormat=self._collatedSequenceOutputFormat,
-                                        **addToScriptCommonArgs)
+                                       includeRetimes=True,
+                                       additionalNodes=additionalNodes,
+                                       retimeMethod=self._preset.properties()["method"],
+                                       offset=offset,
+                                       skipOffline=self._skipOffline,
+                                       disconnected=sequenceDisconnected,
+                                       masterTrackItem=self._masterTrackItemCopy,
+                                       includeAnnotations=self.includeAnnotations(),
+                                       outputToFormat=self._collatedSequenceOutputFormat,
+                                       **addToScriptCommonArgs)
         script.popLayoutContext()
-
 
     def addCustomReadPaths(self, script, addToScriptCommonArgs, firstFrame):
         """ If other export items are selected as Read nodes, add those to the script.  This allows for e.g. using the output
@@ -202,10 +204,10 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
 
                     if self._cutHandles is None:
                         newClip.addToNukeScript(script,
-                                            firstFrame=itemFirstFrame,
-                                            trimmed=True,
-                                            nodeLabel=self._item.parent().name(),
-                                            **addToScriptCommonArgs)
+                                                firstFrame=itemFirstFrame,
+                                                trimmed=True,
+                                                nodeLabel=self._item.parent().name(),
+                                                **addToScriptCommonArgs)
                     else:
                         # Copy track item and replace source with new clip (which may be offline)
                         newTrackItem = hiero.core.TrackItem(self._item.name(), self._item.mediaType())
@@ -466,6 +468,8 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
         # Create the root node, this specifies the global frame range and frame rate
         rootNode = nuke.RootNode(start, end, fps, showAnnotations)
         rootNode.addProjectSettings(self._projectSettings)
+        dailiesScriptCheck = 'writeNodeManager.checkDailiesTab()'
+        rootNode.setKnob("onScriptLoad", dailiesScriptCheck)
         script.addNode(rootNode)
 
         if isinstance(self._item, hiero.core.TrackItem):
@@ -552,7 +556,7 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
         for node in writeNodes:
             if node.knobs().has_key('file_type'):
                 if node.knob('file_type') == 'mov':
-                    slateNode = self.setupSlateNode(scriptFilename)
+                    slateNode = nuke.Node('slate')
                     script.addNode(slateNode)
             script.addNode(node)
 
@@ -585,33 +589,6 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
 
         # Nothing left to do, return False.
         return False
-
-    def setupSlateNode(self, scriptFilename):
-        slate = nuke.Node('slate')
-        shotname = version = project = ''
-        split = self._exportRoot.split('/')
-        if len(split) > 0:
-            if split[-1] == '':
-                project = split[-2]
-                if split[-2] == 'shots':
-                    project = split[-3]
-            elif split[-1] == 'shots':
-                project = split[-2]
-            else:
-                project = split[-1]
-        directory, filename = os.path.split(scriptFilename)
-        fname, ext = os.path.splitext(filename)
-        shotSplit = fname.split('_')
-        if len(shotSplit) > 2:
-            shotname = shotSplit[0]
-            for i in shotSplit[1:-1]: shotname = shotname + '_' + i
-            version = shotSplit[-1]
-            if version.startswith('v'):
-                version = version.strip('v')
-        slate.setKnob('plate_shotname', shotname)
-        slate.setKnob('plate_version', version)
-        slate.setKnob('plate_jobname', project)
-        return slate
 
     def startTask(self):
         hiero.core.TaskBase.startTask(self)
