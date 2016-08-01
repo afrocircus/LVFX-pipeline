@@ -23,7 +23,7 @@ def makeMovie(sspec):
     if not os.path.exists(filePath):
         print '%s is not a valid path' % filePath
         return 1, None, None, None
-    files = [f for f in os.listdir(filePath) if f.endswith('.jpeg')]
+    files = [f for f in os.listdir(filePath) if f.endswith('.dpx')]
     files.sort()
     if files:
         plateName = files[0].split('.')[0]

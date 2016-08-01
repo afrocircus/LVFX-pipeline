@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9ee75500-1ba9-4fda-b341-f5d278657fb7" name="Default" comment="" />
+    <list default="true" id="9ee75500-1ba9-4fda-b341-f5d278657fb7" name="Default" comment="checks asset type when creating asset folders">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../docs/internal-review.rst" afterPath="$PROJECT_DIR$/../docs/internal-review.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-connect-plugins/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../ftrack-connect-plugins/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/gizmos/slate.gizmo" afterPath="$PROJECT_DIR$/../nuke/gizmos/slate.gizmo" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/plugins/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/plugins/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/plugins/NukeProResPlugin/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/plugins/NukeProResPlugin/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../scripts/referenceClipHandler.py" afterPath="$PROJECT_DIR$/../scripts/referenceClipHandler.py" />
+    </list>
     <ignored path="ftrack-events.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -25,45 +34,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="server.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/server.py">
+      <file leaf-file-name="task_folder_create.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugins/task_folder_create.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.45937163">
-              <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
+            <state vertical-scroll-proportion="-6.787879">
+              <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
               <folding>
-                <element signature="e#112#121#0" expanded="true" />
+                <marker date="1469707698898" expanded="true" signature="3970:4082" placeholder="update topic... " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="status_assign.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/status_assign.py">
+      <file leaf-file-name="upload_media.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plugins/upload_media.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="task_thumbnail.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
+              <caret line="363" column="31" selection-start-line="363" selection-start-column="31" selection-end-line="363" selection-end-column="31" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#0#14#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.py">
+      <file leaf-file-name="batch_create.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/plugins/batch_create.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
+            <state vertical-scroll-proportion="0.38434982">
+              <caret line="267" column="12" selection-start-line="267" selection-start-column="12" selection-end-line="267" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -78,14 +77,28 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/ftrack_event_test.py" />
+        <option value="$PROJECT_DIR$/plugins/folder_structure.json" />
+        <option value="$PROJECT_DIR$/../ftrack-connect-plugins/task_folder_create.py" />
         <option value="$PROJECT_DIR$/server.py" />
-        <option value="$PROJECT_DIR$/plugins/task_thumbnail.py" />
         <option value="$PROJECT_DIR$/plugins/status_assign.py" />
+        <option value="$PROJECT_DIR$/plugins/add_version_to_list.py" />
+        <option value="$PROJECT_DIR$/plugins/update_rv_component.py" />
+        <option value="$PROJECT_DIR$/plugins/task_thumbnail.py" />
+        <option value="$PROJECT_DIR$/plugins/client_review_sync.py" />
+        <option value="$PROJECT_DIR$/plugins/project_folder_create.py" />
+        <option value="$PROJECT_DIR$/plugins/transfer_remote_feedback.py" />
+        <option value="$PROJECT_DIR$/plugins/asset_create.py" />
+        <option value="$PROJECT_DIR$/plugins/upload_media.py" />
+        <option value="$PROJECT_DIR$/plugins/task_folder_create.py" />
+        <option value="$PROJECT_DIR$/plugins/batch_create.py" />
       </list>
     </option>
   </component>
@@ -95,11 +108,11 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1922" />
-    <option name="width" value="1136" />
-    <option name="height" value="1051" />
+    <option name="y" value="25" />
+    <option name="width" value="1125" />
+    <option name="height" value="1030" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
     <OptionsSetting value="true" id="Checkout" />
@@ -130,6 +143,14 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="ftrack-events" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Python 2.7.9 (/usr/local/bin/python2.7) &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -167,6 +188,7 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -405,17 +427,277 @@
       <option name="number" value="Default" />
       <updated>1456818715393</updated>
     </task>
+    <task id="LOCAL-00001" summary="creates template folder structure when new project is created">
+      <created>1464102659897</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1464102659897</updated>
+    </task>
+    <task id="LOCAL-00002" summary="removed hardcoded plugin path">
+      <created>1464102751007</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1464102751007</updated>
+    </task>
+    <task id="LOCAL-00003" summary="added template_files folder">
+      <created>1464251820334</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1464251820334</updated>
+    </task>
+    <task id="LOCAL-00004" summary="working version">
+      <created>1464687858277</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1464687858277</updated>
+    </task>
+    <task id="LOCAL-00005" summary="creates template folder on disk for every task created">
+      <created>1465303752224</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1465303752224</updated>
+    </task>
+    <task id="LOCAL-00006" summary="disabled">
+      <created>1465303768437</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1465303768437</updated>
+    </task>
+    <task id="LOCAL-00007" summary="bug fix">
+      <created>1465303858940</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1465303858940</updated>
+    </task>
+    <task id="LOCAL-00008" summary="bug fix">
+      <created>1465303875999</created>
+      <option name="number" value="00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1465303875999</updated>
+    </task>
+    <task id="LOCAL-00009" summary="bug fix">
+      <created>1465303886373</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1465303886373</updated>
+    </task>
+    <task id="LOCAL-00010" summary="handles asset task creation">
+      <created>1465566568414</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1465566568414</updated>
+    </task>
+    <task id="LOCAL-00011" summary="moved from custom_hook folder">
+      <created>1465999682688</created>
+      <option name="number" value="00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1465999682688</updated>
+    </task>
+    <task id="LOCAL-00012" summary="updates status on local asset version.">
+      <created>1466410730376</created>
+      <option name="number" value="00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1466410730376</updated>
+    </task>
+    <task id="LOCAL-00013" summary="moved rv component to common events">
+      <created>1466494028014</created>
+      <option name="number" value="00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1466494028014</updated>
+    </task>
+    <task id="LOCAL-00014" summary="uploads media to ftrack">
+      <created>1466512179804</created>
+      <option name="number" value="00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1466512179804</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Upload description changed. Updates status to &quot;Pending Internal Review&quot;">
+      <created>1466582815622</created>
+      <option name="number" value="00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1466582815622</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Now handles images">
+      <created>1466586372399</created>
+      <option name="number" value="00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1466586372399</updated>
+    </task>
+    <task id="LOCAL-00017" summary="status update bug fix">
+      <created>1466586405403</created>
+      <option name="number" value="00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1466586405403</updated>
+    </task>
+    <task id="LOCAL-00018" summary="changes file permission on a+w">
+      <created>1466588168721</created>
+      <option name="number" value="00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1466588168721</updated>
+    </task>
+    <task id="LOCAL-00019" summary="changes file permission on a+w">
+      <created>1466591284007</created>
+      <option name="number" value="00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1466591284007</updated>
+    </task>
+    <task id="LOCAL-00020" summary="creates and adds to list">
+      <created>1466607156474</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1466607156474</updated>
+    </task>
+    <task id="LOCAL-00021" summary="creates and adds to asset versions to list">
+      <created>1466669469276</created>
+      <option name="number" value="00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1466669469276</updated>
+    </task>
+    <task id="LOCAL-00022" summary="removed add to list">
+      <created>1466669537766</created>
+      <option name="number" value="00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1466669537766</updated>
+    </task>
+    <task id="LOCAL-00023" summary="handles images">
+      <created>1466683734898</created>
+      <option name="number" value="00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1466683734898</updated>
+    </task>
+    <task id="LOCAL-00024" summary="icons added">
+      <created>1467018709989</created>
+      <option name="number" value="00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1467018709989</updated>
+    </task>
+    <task id="LOCAL-00025" summary="icons added">
+      <created>1467019143986</created>
+      <option name="number" value="00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1467019143986</updated>
+    </task>
+    <task id="LOCAL-00026" summary="icons added">
+      <created>1467019385062</created>
+      <option name="number" value="00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1467019385062</updated>
+    </task>
+    <task id="LOCAL-00027" summary="thumbnail path changed">
+      <created>1467020846157</created>
+      <option name="number" value="00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1467020846157</updated>
+    </task>
+    <task id="LOCAL-00028" summary="adds slate">
+      <created>1467025512506</created>
+      <option name="number" value="00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1467025512506</updated>
+    </task>
+    <task id="LOCAL-00029" summary="debug statement added">
+      <created>1467130817748</created>
+      <option name="number" value="00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1467130817748</updated>
+    </task>
+    <task id="LOCAL-00030" summary="prepend note to list. Don't transfer a reply to a client note.">
+      <created>1467278374067</created>
+      <option name="number" value="00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1467278374067</updated>
+    </task>
+    <task id="LOCAL-00031" summary="icon added">
+      <created>1467300368126</created>
+      <option name="number" value="00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1467300368126</updated>
+    </task>
+    <task id="LOCAL-00032" summary="icon added">
+      <created>1467300409548</created>
+      <option name="number" value="00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1467300409548</updated>
+    </task>
+    <task id="LOCAL-00033" summary="slate filename corrected.">
+      <created>1467369016450</created>
+      <option name="number" value="00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1467369016450</updated>
+    </task>
+    <task id="LOCAL-00034" summary="folder_structure json file path corrected">
+      <created>1468857831871</created>
+      <option name="number" value="00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1468857831871</updated>
+    </task>
+    <task id="LOCAL-00035" summary="thumbnail bug fix">
+      <created>1469020963817</created>
+      <option name="number" value="00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1469020963817</updated>
+    </task>
+    <task id="LOCAL-00036" summary="syncs annotations to local server">
+      <created>1469113538938</created>
+      <option name="number" value="00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1469113538938</updated>
+    </task>
+    <task id="LOCAL-00037" summary="bug fix: attach thumbnail to task, not shot.">
+      <created>1469178574061</created>
+      <option name="number" value="00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1469178574061</updated>
+    </task>
+    <task id="LOCAL-00038" summary="slate movie name changed to shot_with_slate instead of shot_slate_final">
+      <created>1469524039585</created>
+      <option name="number" value="00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1469524039585</updated>
+    </task>
+    <task id="LOCAL-00039" summary="bug fix">
+      <created>1469524162923</created>
+      <option name="number" value="00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1469524162923</updated>
+    </task>
+    <task id="LOCAL-00040" summary="checks asset type when creating asset folders">
+      <created>1469529592711</created>
+      <option name="number" value="00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1469529592711</updated>
+    </task>
+    <task id="LOCAL-00041" summary="does not create folders. the task create event creates folders">
+      <created>1469529650422</created>
+      <option name="number" value="00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1469529650422</updated>
+    </task>
+    <task id="LOCAL-00042" summary="handles spaces in filenames">
+      <created>1469699314774</created>
+      <option name="number" value="00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1469699314774</updated>
+    </task>
+    <task id="LOCAL-00043" summary="bug fixes">
+      <created>1469710571968</created>
+      <option name="number" value="00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1469710571968</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1922" y="0" width="1136" height="1051" extended-state="0" />
-    <editor active="false" />
+    <frame x="0" y="25" width="1125" height="1030" extended-state="0" />
+    <editor active="true" />
     <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20229682" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2016057" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -442,44 +724,150 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Upload description changed. Updates status to &quot;Pending Internal Review&quot;" />
+    <MESSAGE value="Now handles images" />
+    <MESSAGE value="status update bug fix" />
+    <MESSAGE value="changes file permission on a+w" />
+    <MESSAGE value="creates and adds to list" />
+    <MESSAGE value="creates and adds to asset versions to list" />
+    <MESSAGE value="removed add to list" />
+    <MESSAGE value="handles images" />
+    <MESSAGE value="icons added" />
+    <MESSAGE value="thumbnail path changed" />
+    <MESSAGE value="adds slate" />
+    <MESSAGE value="debug statement added" />
+    <MESSAGE value="prepend note to list. Don't transfer a reply to a client note." />
+    <MESSAGE value="icon added" />
+    <MESSAGE value="slate filename corrected." />
+    <MESSAGE value="folder_structure json file path corrected" />
+    <MESSAGE value="thumbnail bug fix" />
+    <MESSAGE value="syncs annotations to local server" />
+    <MESSAGE value="bug fix: attach thumbnail to task, not shot." />
+    <MESSAGE value="slate movie name changed to shot_with_slate instead of shot_slate_final" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="checks asset type when creating asset folders" />
+    <MESSAGE value="does not create folders. the task create event creates folders" />
+    <MESSAGE value="handles spaces in filenames" />
+    <MESSAGE value="bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
+  </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/server.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#112#121#0" expanded="true" />
-          </folding>
+          <caret line="11" column="46" selection-start-line="11" selection-start-column="46" selection-end-line="11" selection-end-column="46" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/plugins/status_assign.py">
+    <entry file="file://$PROJECT_DIR$/plugins/project_folder_create.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
-          <folding />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
+          <caret line="35" column="23" selection-start-line="35" selection-start-column="23" selection-end-line="35" selection-end-column="23" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
+    <entry file="file://$PROJECT_DIR$/plugins/task_folder_create.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
-          <folding />
+          <caret line="66" column="23" selection-start-line="66" selection-start-column="23" selection-end-line="66" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="86" column="20" selection-start-line="86" selection-start-column="20" selection-end-line="86" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/project_folder_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/folder_structure.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="25" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/task_folder_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/project_folder_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/folder_structure.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="1" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="79" selection-start-line="12" selection-start-column="50" selection-end-line="12" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/project_folder_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/folder_structure.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="1" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="79" selection-start-line="12" selection-start-column="50" selection-end-line="12" selection-end-column="79" />
         </state>
       </provider>
     </entry>
@@ -487,9 +875,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#112#121#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -497,7 +882,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -505,9 +889,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -515,7 +896,62 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/status_assign.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/status_assign.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
         </state>
       </provider>
     </entry>
@@ -523,9 +959,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="26" column="55" selection-start-line="26" selection-start-column="55" selection-end-line="26" selection-end-column="55" />
-          <folding>
-            <element signature="e#112#121#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -533,7 +966,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -541,9 +973,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -551,42 +980,146 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///data/production/pipeline/linux/ftrack-events/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.032502707">
+          <caret line="2" column="20" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="36" selection-start-line="0" selection-start-column="13" selection-end-line="0" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../ftrack-connect-plugins/custom_hook/ftrack_connect_legacy_plugins_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.884701">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45937163">
-          <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
-          <folding>
-            <element signature="e#112#121#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0">
+          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../ftrack-connect-plugins/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.16851442">
+          <caret line="284" column="60" selection-start-line="284" selection-start-column="8" selection-end-line="284" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/folder_structure.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.30751708">
+          <caret line="18" column="25" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/status_assign.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
-          <folding />
+        <state vertical-scroll-proportion="0.05210643">
+          <caret line="18" column="61" selection-start-line="18" selection-start-column="61" selection-end-line="18" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../common/packages/loco-api/Utils/ftrack_utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.085365854">
+          <caret line="333" column="0" selection-start-line="333" selection-start-column="0" selection-end-line="333" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/update_rv_component.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25166297">
+          <caret line="39" column="134" selection-start-line="39" selection-start-column="134" selection-end-line="39" selection-end-column="134" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/add_version_to_list.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.08314856">
+          <caret line="6" column="23" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/plugins/task_thumbnail.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5820399">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/project_folder_create.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="12" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="12" />
+          <caret line="52" column="0" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/transfer_remote_feedback.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6651885">
+          <caret line="107" column="24" selection-start-line="107" selection-start-column="24" selection-end-line="107" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../nuke/scripts/ftrackUpload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.018847007">
+          <caret line="162" column="13" selection-start-line="162" selection-start-column="13" selection-end-line="162" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/client_review_sync.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.9789357">
+          <caret line="219" column="82" selection-start-line="219" selection-start-column="82" selection-end-line="219" selection-end-column="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/asset_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.2283814">
+          <caret line="28" column="25" selection-start-line="28" selection-start-column="25" selection-end-line="28" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/upload_media.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="363" column="31" selection-start-line="363" selection-start-column="31" selection-end-line="363" selection-end-column="31" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
+    <entry file="file://$PROJECT_DIR$/plugins/task_folder_create.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1" column="48" selection-start-line="1" selection-start-column="48" selection-end-line="1" selection-end-column="48" />
+        <state vertical-scroll-proportion="-6.787879">
+          <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
+          <folding>
+            <marker date="1469707698898" expanded="true" signature="3970:4082" placeholder="update topic... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plugins/batch_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38434982">
+          <caret line="267" column="12" selection-start-line="267" selection-start-column="12" selection-end-line="267" selection-end-column="12" />
           <folding />
         </state>
       </provider>

@@ -2,11 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f9d5774f-54cb-4567-8bbf-72bee96b6b39" name="Default" comment="added a resource">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../maya/scripts/python/animPlayblast.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../common/packages/loco-api/Utils/ftrack_utils2.py" afterPath="$PROJECT_DIR$/../common/packages/loco-api/Utils/ftrack_utils2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../docs/internal-review.rst" afterPath="$PROJECT_DIR$/../docs/internal-review.rst" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../ftrack-events/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ftrack-events/server.py" afterPath="$PROJECT_DIR$/../ftrack-events/server.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../maya/scripts/python/shot_submit/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../maya/scripts/python/shot_submit/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../maya/scripts/python/anim_baker/animPlayblast.py" afterPath="$PROJECT_DIR$/../maya/scripts/python/anim_baker/animPlayblast.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../maya/scripts/python/anim_baker/animPlayblastWidget.py" afterPath="$PROJECT_DIR$/../maya/scripts/python/anim_baker/animPlayblastWidget.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/gizmos/slate.gizmo" afterPath="$PROJECT_DIR$/../nuke/gizmos/slate.gizmo" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/plugins/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/plugins/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../nuke/plugins/NukeProResPlugin/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../nuke/plugins/NukeProResPlugin/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../scripts/referenceClipHandler.py" afterPath="$PROJECT_DIR$/../scripts/referenceClipHandler.py" />
@@ -36,7 +40,20 @@
     </favorites_list>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="update_comp.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.46784922">
+              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -60,22 +77,22 @@
         <option value="$PROJECT_DIR$/resource/ftrack_utils.py" />
         <option value="$PROJECT_DIR$/custom_hook/resource/ftrack_utils.py" />
         <option value="$PROJECT_DIR$/custom_hook/note_on_multiple_entities_action.py" />
-        <option value="$PROJECT_DIR$/custom_hook/reference_upload.py" />
         <option value="$PROJECT_DIR$/custom_hook/update_rv_component.py" />
         <option value="$PROJECT_DIR$/custom_hook/config.py" />
         <option value="$PROJECT_DIR$/custom_hook/__init__.py" />
         <option value="$PROJECT_DIR$/custom/resource/__init__.py" />
         <option value="$PROJECT_DIR$/custom/hook/client_review_sync.py" />
         <option value="$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py" />
-        <option value="$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py" />
         <option value="$PROJECT_DIR$/custom_hook/start_launch_timer.py" />
-        <option value="$PROJECT_DIR$/custom_hook/project_create.py" />
-        <option value="$PROJECT_DIR$/custom_hook/update_comp.py" />
         <option value="$PROJECT_DIR$/custom_hook/asset_create.py" />
         <option value="$PROJECT_DIR$/custom_hook/batch_create.py" />
         <option value="$PROJECT_DIR$/resource/config.py" />
         <option value="$PROJECT_DIR$/custom_hook/client_review_sync.py" />
         <option value="$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py" />
+        <option value="$PROJECT_DIR$/custom_hook/project_create.py" />
+        <option value="$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py" />
+        <option value="$PROJECT_DIR$/custom_hook/reference_upload.py" />
+        <option value="$PROJECT_DIR$/custom_hook/update_comp.py" />
       </list>
     </option>
   </component>
@@ -114,7 +131,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -199,21 +215,37 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="icons" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ftrack-connect-plugins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ftrack-connect-plugins" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="custom_hook" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="Errors" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../nuke" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ftrack-events" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="two.files.diff.last.used.file" value="/data/production/pipeline/linux/ftrack-connect-package/resource/hook/ftrack_connect_legacy_plugins_hook.py" />
+    <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -606,7 +638,73 @@
       <option name="project" value="LOCAL" />
       <updated>1465999620124</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="removed resource">
+      <created>1465999642469</created>
+      <option name="number" value="00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1465999642469</updated>
+    </task>
+    <task id="LOCAL-00031" summary="disabled project_create">
+      <created>1466006057728</created>
+      <option name="number" value="00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1466006057728</updated>
+    </task>
+    <task id="LOCAL-00032" summary="legacy plugin path changed">
+      <created>1466006669126</created>
+      <option name="number" value="00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1466006669126</updated>
+    </task>
+    <task id="LOCAL-00033" summary="adds a movie component for rv">
+      <created>1466493411258</created>
+      <option name="number" value="00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1466493411258</updated>
+    </task>
+    <task id="LOCAL-00034" summary="moved update_rv_components to ftrack_events.">
+      <created>1466494088855</created>
+      <option name="number" value="00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1466494088855</updated>
+    </task>
+    <task id="LOCAL-00035" summary="action icons">
+      <created>1467018156257</created>
+      <option name="number" value="00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1467018156257</updated>
+    </task>
+    <task id="LOCAL-00036" summary="icons added">
+      <created>1467018276163</created>
+      <option name="number" value="00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1467018276163</updated>
+    </task>
+    <task id="LOCAL-00037" summary="thumbnail bug fix">
+      <created>1469020993620</created>
+      <option name="number" value="00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1469020993620</updated>
+    </task>
+    <task id="LOCAL-00038" summary="updates script for any task">
+      <created>1469183273939</created>
+      <option name="number" value="00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1469183273939</updated>
+    </task>
+    <task id="LOCAL-00039" summary="sets job status to failed if no plates found.">
+      <created>1469186514881</created>
+      <option name="number" value="00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1469186514881</updated>
+    </task>
+    <task id="LOCAL-00040" summary="handles asset builds">
+      <created>1469694652166</created>
+      <option name="number" value="00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1469694652166</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -646,17 +744,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="shot name padding changed to 4" />
-    <MESSAGE value="moved task_thumbnail to plugins folder" />
-    <MESSAGE value="disabled events in this folder.&#10;Events are executed by the event-server" />
-    <MESSAGE value="bug fix" />
-    <MESSAGE value="action name corrected." />
-    <MESSAGE value="uploads reference clip for a shot" />
-    <MESSAGE value="ftrack job used to give feedback to user." />
-    <MESSAGE value="minor change" />
-    <MESSAGE value="updates compositing task filename metadata to the latest file." />
-    <MESSAGE value="adds a movie component to the version so that it is playable in RV" />
-    <MESSAGE value="batch create" />
     <MESSAGE value="removed events folder. duplicate" />
     <MESSAGE value="batch asset create action" />
     <MESSAGE value="add source_file metadata" />
@@ -671,7 +758,18 @@
     <MESSAGE value="no more duplicate icons" />
     <MESSAGE value="starts user timer on application launch" />
     <MESSAGE value="separated common and user hooks" />
-    <option name="LAST_COMMIT_MESSAGE" value="separated common and user hooks" />
+    <MESSAGE value="removed resource" />
+    <MESSAGE value="disabled project_create" />
+    <MESSAGE value="legacy plugin path changed" />
+    <MESSAGE value="adds a movie component for rv" />
+    <MESSAGE value="moved update_rv_components to ftrack_events." />
+    <MESSAGE value="action icons" />
+    <MESSAGE value="icons added" />
+    <MESSAGE value="thumbnail bug fix" />
+    <MESSAGE value="updates script for any task" />
+    <MESSAGE value="sets job status to failed if no plates found." />
+    <MESSAGE value="handles asset builds" />
+    <option name="LAST_COMMIT_MESSAGE" value="handles asset builds" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -686,29 +784,177 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py">
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#58#72#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py">
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="77" column="56" selection-start-line="77" selection-start-column="56" selection-end-line="77" selection-end-column="56" />
+          <caret line="51" column="67" selection-start-line="51" selection-start-column="67" selection-end-line="51" selection-end-column="67" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py">
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="77" column="56" selection-start-line="77" selection-start-column="56" selection-end-line="77" selection-end-column="56" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="113" column="58" selection-start-line="113" selection-start-column="58" selection-end-line="113" selection-end-column="58" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="57" column="32" selection-start-line="57" selection-start-column="32" selection-end-line="57" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="274" column="138" selection-start-line="274" selection-start-column="138" selection-end-line="274" selection-end-column="138" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="42" column="78" selection-start-line="28" selection-start-column="4" selection-end-line="42" selection-end-column="78" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/project_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="425" column="14" selection-start-line="425" selection-start-column="14" selection-end-line="425" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/project_create.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_nuke_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -829,10 +1075,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33261105">
           <caret line="278" column="8" selection-start-line="278" selection-start-column="8" selection-end-line="278" selection-end-column="8" />
-          <folding>
-            <marker date="1463999674271" expanded="true" signature="24409:24425" placeholder="select missi... missing_value" />
-            <marker date="1463999674271" expanded="true" signature="35379:35395" placeholder="select missi... missing_value" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -871,36 +1113,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/update_rv_component.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="84" column="29" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.4257207">
-          <caret line="21" column="7" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resource/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Downloads/modify_app_launch.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.9002217">
           <caret line="62" column="0" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#14#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -908,27 +1124,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.7150776">
           <caret line="43" column="5" selection-start-line="43" selection-start-column="5" selection-end-line="43" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#14#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4821634">
-          <caret line="392" column="49" selection-start-line="392" selection-start-column="49" selection-end-line="392" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -936,33 +1131,48 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.41796008">
           <caret line="374" column="0" selection-start-line="374" selection-start-column="0" selection-end-line="374" selection-end-column="0" />
-          <folding>
-            <element signature="e#58#72#0" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/ftrack_connect_legacy_plugins_hook.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28159645">
+          <caret line="219" column="0" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/custom_hook/project_create.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.883592">
+          <caret line="425" column="14" selection-start-line="425" selection-start-column="14" selection-end-line="425" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../common/packages/loco-api/Utils/ftrack_utils2.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="144" column="42" selection-start-line="144" selection-start-column="42" selection-end-line="144" selection-end-column="42" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#17#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom_hook/reference_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.96674055">
+          <caret line="235" column="49" selection-start-line="235" selection-start-column="49" selection-end-line="235" selection-end-column="49" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/custom_hook/transfer_remote_feedback.py">
+    <entry file="file://$PROJECT_DIR$/custom_hook/update_comp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7505543">
-          <caret line="174" column="24" selection-start-line="174" selection-start-column="24" selection-end-line="174" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/resource/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.016629713">
-          <caret line="1" column="48" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="48" />
-          <folding />
+        <state vertical-scroll-proportion="0.46784922">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

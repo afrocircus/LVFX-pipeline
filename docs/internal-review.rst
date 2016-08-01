@@ -43,7 +43,7 @@ This will launch RV and create a playlist of all the asset versions in the list.
 Reviewing without Lists
 -----------------------
 
-If no review lists exists, you can still review in RV by selecting the individual asset versions.
+If no review list exists, you can still review in RV by selecting the individual asset versions.
 
 Navigate to the project sequence and select the 'Versions' tab.
 Ctrl select the versions you would like to review. Right click on the selected versions and select

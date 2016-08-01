@@ -309,8 +309,8 @@ Gizmo {
   xpos -120
   ypos -441
  }
- set C5f8e1e0 [stack 0]
-set N5f8e1e0 [stack 0]
+ set C12635550 [stack 0]
+set N12635550 [stack 0]
  Transform {
   center {914 778}
   name CenterReference
@@ -328,7 +328,7 @@ set N5f8e1e0 [stack 0]
   xpos 2554
   ypos -708
  }
-set N5faf580 [stack 0]
+set N13e516d0 [stack 0]
  Dot {
   name Dot18
   xpos 4634
@@ -355,7 +355,7 @@ set N5faf580 [stack 0]
   xpos 1039
   ypos 898
  }
-set N5fc1e30 [stack 0]
+set N145607d0 [stack 0]
  Radial {
   area {0 0 {input.format.w i} {input.format.h i}}
   softness 0
@@ -364,7 +364,7 @@ set N5fc1e30 [stack 0]
   xpos 1160
   ypos 999
  }
-push $N5fc1e30
+push $N145607d0
  Radial {
   area {0 0 {input.format.w i} {input.format.h i}}
   softness 0
@@ -373,7 +373,7 @@ push $N5fc1e30
   xpos 1039
   ypos 999
  }
-push $N5fc1e30
+push $N145607d0
  Radial {
   area {0 0 {input.format.w i} {input.format.h i}}
   softness 0
@@ -389,7 +389,7 @@ push $N5fc1e30
   xpos 1039
   ypos 1035
  }
- set C5ff7900 [stack 0]
+ set C158fb950 [stack 0]
  Reformat {
   type scale
   scale {1 {"\[exists parent.input]==1?parent.input.pixel_aspect:root.pixel_aspect" i}}
@@ -399,7 +399,7 @@ push $N5fc1e30
   xpos 1039
   ypos 1053
  }
- set C5fffaa0 [stack 0]
+ set C15904010 [stack 0]
  Reformat {
   type "to box"
   box_width {{"\[value Text_Status.size]" i}}
@@ -439,7 +439,7 @@ push $N5fc1e30
   xpos 1640
   ypos 351
  }
-set N60342c0 [stack 0]
+set N159382a0 [stack 0]
  Dot {
   name Dot14
   xpos 1313
@@ -523,7 +523,7 @@ set N60342c0 [stack 0]
   xpos 1279
   ypos 711
  }
-set N60a9d50 [stack 0]
+set N1652e0b0 [stack 0]
  Text {
   message "CGI Version:"
   font "\[value Arial.font]"
@@ -537,7 +537,7 @@ set N60a9d50 [stack 0]
   xpos 1279
   ypos 747
  }
-push $N60a9d50
+push $N1652e0b0
  Dot {
   name Dot15
   xpos 1153
@@ -551,8 +551,8 @@ push $N60a9d50
   xpos 1119
   ypos 747
  }
- set C6259e70 [stack 0]
-set N6259e70 [stack 0]
+ set C1655a070 [stack 0]
+set N1655a070 [stack 0]
  Text {
   message "Focal Length:"
   font "\[value Arial.font]"
@@ -566,7 +566,7 @@ set N6259e70 [stack 0]
   xpos 1279
   ypos 783
  }
-push $N6259e70
+push $N1655a070
  Switch {
   inputs 2
   which {{FocalLength.focaldisplay==0?(FocalLength.focalmm==0?0:1):FocalLength.focaldisplay==1?1:0}}
@@ -575,7 +575,7 @@ push $N6259e70
   xpos 1119
   ypos 783
  }
- set C62758c0 [stack 0]
+ set C16576130 [stack 0]
  Text {
   message "Frame Count:"
   font "\[value Arial.font]"
@@ -589,7 +589,7 @@ push $N6259e70
   xpos 1279
   ypos 819
  }
-set N627da80 [stack 0]
+set N1657dfa0 [stack 0]
  Text {
   message "Handles  Head | Tail:"
   font "\[value Arial.font]"
@@ -603,7 +603,7 @@ set N627da80 [stack 0]
   xpos 1279
   ypos 855
  }
-push $N627da80
+push $N1657dfa0
  Dot {
   name Dot16
   xpos 1153
@@ -617,7 +617,7 @@ push $N627da80
   xpos 1119
   ypos 855
  }
- set C62a98c0 [stack 0]
+ set C165a9bb0 [stack 0]
  Text {
   message "Frame Range:"
   font "\[value Arial.font]"
@@ -662,7 +662,7 @@ push $N627da80
   xpos 1313
   ypos 1074
  }
-push $N60342c0
+push $N159382a0
  Text {
   message "\[expr \[value parent.versiononname]==false?\"\[knob TextFields.plate_shotname]\":\"\[knob TextFields.plate_shotname]_v\[knob Text_Version.message]\"]"
   font "\[value ArialBold.font]"
@@ -700,7 +700,7 @@ push $N60342c0
   ypos 459
   disable true
  }
-set N6318b20 [stack 0]
+set N16619010 [stack 0]
  Dot {
   name Dot45
   xpos 1914
@@ -711,7 +711,7 @@ set N6318b20 [stack 0]
   xpos 1914
   ypos 552
  }
-push $N6318b20
+push $N16619010
  Text {
   message "\[expr \[value StatusSwitcher.which]==2?\"\[knob TextFields.CustomStatus]\":\"\[knob TextFields.plate_status]\"]"
   font "\[value ArialBold.font]"
@@ -725,7 +725,7 @@ push $N6318b20
   xpos 1720
   ypos 495
  }
-push $N6318b20
+push $N16619010
  Text {
   message "\[knob TextFields.plate_status]"
   font "\[value ArialBold.font]"
@@ -739,7 +739,7 @@ push $N6318b20
   xpos 1640
   ypos 495
  }
-push $N6318b20
+push $N16619010
  Text {
   message "\[knob TextFields.plate_status]"
   font "\[value ArialBold.font]"
@@ -753,7 +753,7 @@ push $N6318b20
   xpos 1560
   ypos 495
  }
-clone $C5ff7900 {
+clone $C158fb950 {
   inputs 4
   xpos 1640
   ypos 549
@@ -803,7 +803,7 @@ clone $C5ff7900 {
   xpos 1640
   ypos 674
  }
-set N63b5fc0 [stack 0]
+set N166b62f0 [stack 0]
  Text {
   inject true
   message "\[knob CGIver.ver]"
@@ -816,19 +816,19 @@ set N63b5fc0 [stack 0]
   xpos 1640
   ypos 711
  }
-push $N63b5fc0
+push $N166b62f0
  Dot {
   name Dot9
   xpos 1834
   ypos 678
  }
-clone $C6259e70 {
+clone $C1655a070 {
   inputs 2
   xpos 1800
   ypos 711
   selected false
  }
-set N63e1f90 [stack 0]
+set N166e2120 [stack 0]
  Text {
   message "\[knob FocalLength.focalmm] mm"
   font "\[value Arial.font]"
@@ -840,8 +840,8 @@ set N63e1f90 [stack 0]
   xpos 1640
   ypos 747
  }
-push $N63e1f90
-clone $C62758c0 {
+push $N166e2120
+clone $C16576130 {
   inputs 2
   xpos 1800
   ypos 747
@@ -858,7 +858,7 @@ clone $C62758c0 {
   xpos 1640
   ypos 783
  }
-set N63e9b40 [stack 0]
+set N166e9bc0 [stack 0]
  Text {
   message "\[expr \[exists parent.input]==1?\[value Handles.handlesIN]:0] frames | \[expr \[exists parent.input]==1?\[value Handles.handlesOUT]:0] frames"
   font "\[value Arial.font]"
@@ -870,13 +870,13 @@ set N63e9b40 [stack 0]
   xpos 1640
   ypos 819
  }
-push $N63e9b40
+push $N166e9bc0
  Dot {
   name Dot12
   xpos 1834
   ypos 786
  }
-clone $C62a98c0 {
+clone $C165a9bb0 {
   inputs 2
   xpos 1800
   ypos 819
@@ -1001,7 +1001,7 @@ clone $C62a98c0 {
   ypos -182
   disable {{CompanyLogo.format 1}}
  }
-set N64f5830 [stack 0]
+set N167f58d0 [stack 0]
  Saturation {
   saturation 0
   mode Maximum
@@ -1017,7 +1017,7 @@ set N64f5830 [stack 0]
   xpos 406
   ypos -117
  }
-push $N64f5830
+push $N167f58d0
  Copy {
   inputs 2
   from0 rgba.alpha
@@ -1027,7 +1027,7 @@ push $N64f5830
   ypos -68
   disable {{"\[exists CompanyLogo.rgba.red]" i}}
  }
-push $N64f5830
+push $N167f58d0
  Switch {
   inputs 2
   which {{parent.logoautoalpha i}}
@@ -1036,7 +1036,7 @@ push $N64f5830
   xpos 280
   ypos -63
  }
-set N6513280 [stack 0]
+set N168133c0 [stack 0]
  Dot {
   name Dot7
   xpos 200
@@ -1049,8 +1049,8 @@ set N6513280 [stack 0]
   xpos 166
   ypos -9
  }
-set N653ca90 [stack 0]
-push $N6513280
+set N1683cc50 [stack 0]
+push $N168133c0
  Switch {
   inputs 2
   which {{parent.blackwhite i}}
@@ -1068,12 +1068,12 @@ push $N6513280
   xpos 280
   ypos 99
  }
-clone $C5fffaa0 {
+clone $C15904010 {
   xpos 280
   ypos 135
   selected false
  }
-set N655f4b0 [stack 0]
+set N1685f5e0 [stack 0]
  BlackOutside {
   name BlackOutside1
   xpos 280
@@ -1125,7 +1125,7 @@ set N655f4b0 [stack 0]
   xpos 680
   ypos 99
  }
-clone $C5fffaa0 {
+clone $C15904010 {
   xpos 680
   ypos 135
   selected false
@@ -1164,7 +1164,7 @@ clone $C5fffaa0 {
   xpos -40
   ypos 351
  }
- set C65ce7b0 [stack 0]
+ set C168ce840 [stack 0]
  Constant {
   inputs 0
   channels rgb
@@ -1434,7 +1434,7 @@ clone $C5fffaa0 {
   xpos -920
   ypos 45
  }
- set C66e6e00 [stack 0]
+ set C16a0ef70 [stack 0]
  Reformat {
   type "to box"
   box_width {{root.proxy==0?ColorSamples.format.w:ColorSamples.format.w*root.proxy_scale i}}
@@ -1442,7 +1442,7 @@ clone $C5fffaa0 {
   xpos -920
   ypos 63
  }
-clone $C5fffaa0 {
+clone $C15904010 {
   xpos -920
   ypos 81
   selected false
@@ -1475,14 +1475,14 @@ clone $C5fffaa0 {
   xpos -920
   ypos 207
  }
-push $N5f8e1e0
+push $N12635550
  Shuffle {
   alpha white
   name NewAlphaOnBars
   xpos -120
   ypos -297
  }
- set C6761b40 [stack 0]
+ set C16a64e90 [stack 0]
  Colorspace {
   colorspace_in sRGB
   colorspace_out sRGB
@@ -1499,7 +1499,7 @@ push $N5f8e1e0
   xpos -120
   ypos -189
  }
- set C67859c0 [stack 0]
+ set C16a88c20 [stack 0]
  Position {
   translate {0 {root.proxy==1?BandTesterSize.format.h/(1*root.proxy_scale):BandTesterSize.format.h i}}
   name BarsPosition
@@ -1523,12 +1523,12 @@ push 0
   xpos -280
   ypos -537
  }
-clone $C5f8e1e0 {
+clone $C12635550 {
   xpos -280
   ypos -441
   selected false
  }
-set N67b1960 [stack 0]
+set N16ab4cb0 [stack 0]
  Dot {
   name Dot1
   xpos -406
@@ -1543,7 +1543,7 @@ set N67b1960 [stack 0]
   ypos -411
   postage_stamp true
  }
-clone $C6761b40 {
+clone $C16a64e90 {
   xpos -440
   ypos -297
   selected false
@@ -1561,7 +1561,7 @@ clone $C6761b40 {
   xpos -440
   ypos -225
  }
-clone $C67859c0 {
+clone $C16a88c20 {
   xpos -440
   ypos -189
   selected false
@@ -1576,7 +1576,7 @@ clone $C67859c0 {
   xpos -406
   ypos -78
  }
-push $N5faf580
+push $N13e516d0
  FrameRange {
   first_frame {{"\[exists parent.input]==1?\[value parent.input.first_frame]:0"}}
   last_frame {{"\[exists parent.input]==1?\[value parent.input.last_frame]:0"}}
@@ -1595,7 +1595,7 @@ push $N5faf580
   xpos 2554
   ypos -600
  }
-set N681a720 [stack 0]
+set N16b27d00 [stack 0]
  Reformat {
   type scale
   scale {{parent.thumbnailssize<=4?parent.thumbnailssize:4 i}}
@@ -1609,13 +1609,13 @@ set N681a720 [stack 0]
   xpos 1594
   ypos -924
  }
-set N68380a0 [stack 0]
+set N16b3b4f0 [stack 0]
  Dot {
   name Dot82
   xpos 1594
   ypos -1464
  }
-set N683cb60 [stack 0]
+set N16b3ff00 [stack 0]
  Shuffle {
   alpha white
   name NewAlpha_Thumbnail
@@ -1629,7 +1629,7 @@ set N683cb60 [stack 0]
   xpos 924
   ypos -1449
  }
- set C6850210 [stack 0]
+ set C16b53450 [stack 0]
  Crop {
   box {{input.format.x i} {input.format.y i} {root.proxy==0?input.format.r:input.format.r/root.proxy_scale i} {root.proxy==0?input.format.t:input.format.t/root.proxy_scale i}}
   reformat true
@@ -1646,31 +1646,31 @@ set N683cb60 [stack 0]
   xpos 924
   ypos -1413
  }
-set N6828bf0 [stack 0]
+set N16b66360 [stack 0]
  Dot {
   name Dot19
   xpos 1034
   ypos -1410
  }
-set N6871930 [stack 0]
+set N16b74b50 [stack 0]
  Dot {
   name Dot20
   xpos 1114
   ypos -1410
  }
-set N68762c0 [stack 0]
+set N16b795f0 [stack 0]
  Dot {
   name Dot22
   xpos 1194
   ypos -1410
  }
-set N6870ea0 [stack 0]
+set N16b74120 [stack 0]
  Dot {
   name Dot23
   xpos 1274
   ypos -1410
  }
-set N687f7f0 [stack 0]
+set N16b829e0 [stack 0]
  Dot {
   name Dot24
   xpos 1354
@@ -1699,7 +1699,7 @@ set N687f7f0 [stack 0]
   xpos 874
   ypos -1104
  }
-push $N687f7f0
+push $N16b829e0
  FrameHold {
   first_frame {{FrameRange.nff+(FrameRange.nlf-FrameRange.nff)*0.8 i}}
   name MiddleFrame_Thumbnail_4
@@ -1723,7 +1723,7 @@ push $N687f7f0
   xpos 874
   ypos -1122
  }
-push $N6870ea0
+push $N16b74120
  FrameHold {
   first_frame {{FrameRange.nff+(FrameRange.nlf-FrameRange.nff)*0.6 i}}
   name MiddleFrame_Thumbnail_3
@@ -1747,7 +1747,7 @@ push $N6870ea0
   xpos 874
   ypos -1140
  }
-push $N68762c0
+push $N16b795f0
  FrameHold {
   first_frame {{FrameRange.nff+(FrameRange.nlf-FrameRange.nff)*0.4 i}}
   name MiddleFrame_Thumbnail_2
@@ -1771,7 +1771,7 @@ push $N68762c0
   xpos 874
   ypos -1158
  }
-push $N6871930
+push $N16b74b50
  FrameHold {
   first_frame {{FrameRange.nff+(FrameRange.nlf-FrameRange.nff)*0.2 i}}
   name MiddleFrame_Thumbnail_1
@@ -1796,7 +1796,7 @@ push $N6871930
   ypos -1176
  }
 push 0
-push $N6828bf0
+push $N16b66360
  FrameHold {
   first_frame {{FrameRange.nff i}}
   name FirstFrame_Thumbnail
@@ -1813,7 +1813,7 @@ push $N6828bf0
   xpos 874
   ypos -1194
  }
-push $N653ca90
+push $N1683cc50
  Shuffle {
   alpha black
   name AlphaKill
@@ -1863,7 +1863,7 @@ push $N653ca90
   xpos -166
   ypos -402
  }
-push $N67b1960
+push $N16ab4cb0
  Merge2 {
   inputs 2
   operation screen
@@ -1872,7 +1872,7 @@ push $N67b1960
   xpos -280
   ypos -405
  }
-clone $C6850210 {
+clone $C16b53450 {
   xpos -280
   ypos -369
   selected false
@@ -1887,13 +1887,13 @@ clone $C6850210 {
   xpos 154
   ypos -636
  }
-set N6985ff0 [stack 0]
+set N16c892b0 [stack 0]
  Dot {
   name Dot78
   xpos 154
   ypos -1176
  }
-set N69a7a80 [stack 0]
+set N16caacc0 [stack 0]
  Merge2 {
   inputs 7+1
   mix {{"\[exists parent.input]" i}}
@@ -1909,7 +1909,7 @@ set N69a7a80 [stack 0]
   xpos 680
   ypos -1107
  }
- set C69bbec0 [stack 0]
+ set C16cbf210 [stack 0]
  Dot {
   name Dot79
   xpos 314
@@ -1920,7 +1920,7 @@ set N69a7a80 [stack 0]
   xpos 314
   ypos -366
  }
-push $N683cb60
+push $N16b3ff00
  Dot {
   name Dot83
   xpos 1594
@@ -1932,7 +1932,7 @@ push $N683cb60
   xpos 920
   ypos -2007
  }
-clone $C6850210 {
+clone $C16b53450 {
   xpos 920
   ypos -1989
   selected false
@@ -1953,13 +1953,13 @@ clone $C6850210 {
   xpos 920
   ypos -1953
  }
-set N69f98a0 [stack 0]
+set N16cfcc80 [stack 0]
  Dot {
   name Dot62
   xpos 1034
   ypos -1950
  }
-set N69d70d0 [stack 0]
+set N16cda3a0 [stack 0]
  Dot {
   name Dot63
   xpos 1114
@@ -1988,7 +1988,7 @@ set N69d70d0 [stack 0]
   xpos 874
   ypos -1698
  }
-push $N69d70d0
+push $N16cda3a0
  FrameHold {
   first_frame {{FrameRange.nff+(FrameRange.nlf-FrameRange.nff)*0.5 i}}
   name MiddleFrame_Thumbnail_9
@@ -2013,7 +2013,7 @@ push $N69d70d0
   ypos -1716
  }
 push 0
-push $N69f98a0
+push $N16cfcc80
  FrameHold {
   first_frame {{FrameRange.nff i}}
   name FirstFrame_Thumbnail2
@@ -2030,7 +2030,7 @@ push $N69f98a0
   xpos 874
   ypos -1734
  }
-push $N69a7a80
+push $N16caacc0
  Dot {
   name Dot84
   xpos 154
@@ -2045,7 +2045,7 @@ push $N69a7a80
   ypos -1719
   disable {{!parent.Thumbnails.main i}}
  }
-clone $C69bbec0 {
+clone $C16cbf210 {
   xpos 680
   ypos -1683
   selected false
@@ -2067,14 +2067,14 @@ clone $C69bbec0 {
   xpos 394
   ypos -348
  }
-push $N68380a0
+push $N16b3b4f0
  Shuffle {
   alpha white
   name NewAlpha_Thumbnail1
   xpos 920
   ypos -927
  }
-clone $C6850210 {
+clone $C16b53450 {
   xpos 920
   ypos -909
   selected false
@@ -2107,7 +2107,7 @@ clone $C6850210 {
   xpos 954
   ypos -636
  }
-push $N6985ff0
+push $N16c892b0
  Merge2 {
   inputs 2
   mix {{"\[exists parent.input]" i}}
@@ -2117,7 +2117,7 @@ push $N6985ff0
   ypos -639
   disable {{!parent.Thumbnails.main i}}
  }
-clone $C69bbec0 {
+clone $C16cbf210 {
   xpos 684
   ypos -603
   selected false
@@ -2145,7 +2145,7 @@ clone $C69bbec0 {
   xpos 120
   ypos -333
  }
-clone $C6850210 {
+clone $C16b53450 {
   xpos -280
   ypos -333
   selected false
@@ -2163,8 +2163,8 @@ clone $C6850210 {
   xpos -246
   ypos 156
  }
-set N6b2d1f0 [stack 0]
-clone $C66e6e00 {
+set N16e30570 [stack 0]
+clone $C16a0ef70 {
   xpos -440
   ypos 153
   selected false
@@ -2180,12 +2180,12 @@ clone $C66e6e00 {
   xpos -600
   ypos 207
  }
-clone $C66e6e00 {
+clone $C16a0ef70 {
   xpos -440
   ypos 207
   selected false
  }
-push $N6b2d1f0
+push $N16e30570
  Switch {
   inputs 2
   which {{parent.colorchart i}}
@@ -2199,7 +2199,7 @@ push $N6b2d1f0
   xpos -246
   ypos 408
  }
-clone $C65ce7b0 {
+clone $C168ce840 {
   xpos -200
   ypos 405
   selected false
@@ -2210,7 +2210,7 @@ clone $C65ce7b0 {
   xpos -40
   ypos 405
  }
-clone $C65ce7b0 {
+clone $C168ce840 {
   xpos 120
   ypos 405
   selected false
@@ -2231,7 +2231,7 @@ clone $C65ce7b0 {
   xpos 40
   ypos 651
  }
-clone $C5f8e1e0 {
+clone $C12635550 {
   xpos 40
   ypos 765
   selected false
@@ -2281,7 +2281,7 @@ clone $C5f8e1e0 {
   xpos 4154
   ypos -204
  }
-set N6be4230 [stack 0]
+set N16ee74e0 [stack 0]
  Switch {
   inputs 2
   which {{"\[exists parent.input]==0?0:((\[frame]-FrameRange.first_frame)<parent.handlesIN?1:0)||((\[frame]-FrameRange.first_frame)>((FrameRange.last_frame-FrameRange.first_frame)-parent.handlesOUT)?1:0)" i}}
@@ -2289,7 +2289,7 @@ set N6be4230 [stack 0]
   xpos 4040
   ypos -207
  }
- set C6be8b90 [stack 0]
+ set C16eebfa0 [stack 0]
  Shuffle {
   alpha white
   name Shuffle2
@@ -2354,7 +2354,7 @@ set N6be4230 [stack 0]
   xpos 3514
   ypos -204
  }
-clone $C6be8b90 {
+clone $C16eebfa0 {
   inputs 2
   xpos 3400
   ypos -207
@@ -2366,7 +2366,7 @@ clone $C6be8b90 {
   xpos 3400
   ypos -171
  }
-set N6c56340 [stack 0]
+set N16f59560 [stack 0]
  Dot {
   name Dot76
   xpos 3354
@@ -2403,7 +2403,7 @@ set N6c56340 [stack 0]
   xpos 3354
   ypos 66
  }
-push $N6c56340
+push $N16f59560
  Dot {
   name Dot85
   xpos 3514
@@ -2486,7 +2486,7 @@ push $N6c56340
   xpos 3834
   ypos -204
  }
-clone $C6be8b90 {
+clone $C16eebfa0 {
   inputs 2
   xpos 3720
   ypos -207
@@ -2531,7 +2531,7 @@ clone $C6be8b90 {
   xpos 4040
   ypos 171
  }
-push $N6be4230
+push $N16ee74e0
  Dot {
   name Dot73
   xpos 4234
@@ -2555,7 +2555,7 @@ push $N6be4230
   xpos 4200
   ypos -63
  }
- set C6d65580 [stack 0]
+ set C17068850 [stack 0]
  Merge2 {
   inputs 2
   name Merge6
@@ -2571,7 +2571,7 @@ push $N6be4230
   xpos 4360
   ypos -326
  }
-clone $C6d65580 {
+clone $C17068850 {
   xpos 4360
   ypos -63
   selected false
@@ -2598,7 +2598,7 @@ clone $C6d65580 {
   xpos 4360
   ypos 261
  }
-push $N60342c0
+push $N159382a0
  Dot {
   name Dot47
   xpos 1754
@@ -2621,7 +2621,7 @@ push $N60342c0
   xpos 2920
   ypos -207
  }
-set N6da45e0 [stack 0]
+set N170a78e0 [stack 0]
  Dot {
   name Dot56
   xpos 2876
@@ -2644,7 +2644,7 @@ set N6da45e0 [stack 0]
   xpos 2876
   ypos -96
  }
-push $N6da45e0
+push $N170a78e0
  Dot {
   name Dot55
   xpos 3036
@@ -2674,7 +2674,7 @@ push $N6da45e0
   xpos 2922
   ypos -99
  }
-push $N655f4b0
+push $N1685f5e0
  Dot {
   name Dot60
   xpos 554
@@ -2733,14 +2733,14 @@ push $N655f4b0
   ypos -63
   disable {{Merge10.disable==0?parent.LogoPosition:1 i}}
  }
- set C6e7a8d0 [stack 0]
-push $N681a720
+ set C1717dd10 [stack 0]
+push $N16b27d00
  Dot {
   name Dot38
   xpos 2554
   ypos -186
  }
-set N6e82f50 [stack 0]
+set N17186300 [stack 0]
  Crop {
   box {{"int(clamp((((\[exists parent.input]==1?parent.input.format.w:root.format.w)-(((\[exists parent.input]==1?parent.input.format.h:root.format.h)/(\[exists parent.input]==1?parent.input.format.pixel_aspect:root.format.pixel_aspect))*parent.MaskAspectRatio))/2),0,(\[exists parent.input]==1?parent.input.format.w:root.format.w)))" i} {"int(clamp((((\[exists parent.input]==1?parent.input.format.h:root.format.h)-(((\[exists parent.input]==1?parent.input.format.w:root.format.w)*(\[exists parent.input]==1?parent.input.format.pixel_aspect:root.format.pixel_aspect))/parent.MaskAspectRatio))/2),0,(\[exists parent.input]==1?parent.input.format.h:root.format.h)))" i} {"int(clamp((\[exists parent.input]==1?parent.input.format.w:root.format.w)-(((\[exists parent.input]==1?parent.input.format.w:root.format.w)-(((\[exists parent.input]==1?parent.input.format.h:root.format.h)/(\[exists parent.input]==1?parent.input.format.pixel_aspect:root.format.pixel_aspect))*parent.MaskAspectRatio))/2),0,(\[exists parent.input]==1?parent.input.format.w:root.format.w)))" i} {"int(clamp((\[exists parent.input]==1?parent.input.format.h:root.format.h)-(((\[exists parent.input]==1?parent.input.format.h:root.format.h)-(((\[exists parent.input]==1?parent.input.format.w:root.format.w)*(\[exists parent.input]==1?parent.input.format.pixel_aspect:root.format.pixel_aspect))/parent.MaskAspectRatio))/2),0,\[exists parent.input]==1?parent.input.format.h:root.format.h))" i}}
   name Crop5
@@ -2753,7 +2753,7 @@ set N6e82f50 [stack 0]
   xpos 2520
   ypos -127
  }
-push $N6e82f50
+push $N17186300
  Dot {
   name Dot21
   xpos 2714
@@ -2767,13 +2767,13 @@ push $N6e82f50
   ypos -132
   disable {{!parent.MaskOn.main i}}
  }
-set N6e9b9f0 [stack 0]
+set N1719ed10 [stack 0]
  Dot {
   name Dot37
   xpos 2794
   ypos -124
  }
-clone $C6e7a8d0 {
+clone $C1717dd10 {
   xpos 2760
   ypos -99
   selected false
@@ -2786,7 +2786,7 @@ clone $C6e7a8d0 {
   ypos -63
   disable {{!parent.Logoenable i}}
  }
-clone $C6e7a8d0 {
+clone $C1717dd10 {
   xpos 2760
   ypos -27
   selected false
@@ -2819,7 +2819,7 @@ clone $C6e7a8d0 {
   ypos 45
  }
  Text {
-  message "\[subst \[knob parent.plate_jobname]]  |  \[expr \[value parent.versiononname]==false?\"\[knob TextFields.plate_shotname]\":\"\[knob TextFields.plate_shotname]_v\[knob Text_Version.message]\"] | \[subst  v\[knob Text_Version.message]]"
+  message "\[subst \[knob parent.plate_jobname]]  |  \[expr \[value parent.versiononname]==false?\"\[knob TextFields.plate_shotname]\":\"\[knob TextFields.plate_shotname]_v\[knob Text_Version.message]\"] |  \[subst  \[knob TextFields.plate_task]] | \[subst  v\[knob Text_Version.message]] | \[subst  \[knob TextFields.plate_artist]]"
   font "\[value Arial.font]"
   size {{parent.TypeSize.main}}
   yjustify center
@@ -2835,11 +2835,11 @@ clone $C6e7a8d0 {
  Text {
   message "\[subst \[knob TextFields.CompanyName]]"
   font "\[value ArialBold.font]"
-  size {{parent.TypeSize.main i}}
+  size {{parent.TypeSize.main}}
   xjustify center
   yjustify center
   Transform 1
-  translate {{"(\[exists parent.input]==1?parent.input.format.w:root.format.w)/2" i} {"(\[exists parent.input]==1?parent.input.format.h:root.format.h)-(parent.OffsetOverlays.main.y)" i}}
+  translate {{"(\[exists parent.input]==1?parent.input.format.w:root.format.w)/2"} {"(\[exists parent.input]==1?parent.input.format.h:root.format.h)-(parent.OffsetOverlays.main.y)"}}
   color 0.8
   name Company
   tile_color 0xff0000
@@ -2860,7 +2860,7 @@ clone $C6e7a8d0 {
   xpos 2760
   ypos 99
  }
-push $N6e9b9f0
+push $N1719ed10
  Dot {
   name Dot40
   xpos 2714
@@ -2874,7 +2874,7 @@ push $N6e9b9f0
   ypos 152
   disable {{!parent.BurnIOverlays.main i}}
  }
-set N6f38850 [stack 0]
+set N1723be30 [stack 0]
  Merge2 {
   inputs 2
   bbox B
@@ -2883,7 +2883,7 @@ set N6f38850 [stack 0]
   xpos 2922
   ypos 157
  }
-push $N6f38850
+push $N1723be30
  Dot {
   name Dot42
   xpos 2795
@@ -2908,7 +2908,7 @@ push $N6f38850
   ypos 261
   disable {{!parent.BurnIOverlays||!parent.EnableTimeline i}}
  }
-push $N681a720
+push $N16b27d00
  Dot {
   name Dot41
   xpos 4554
@@ -3075,19 +3075,6 @@ push $N681a720
  Text {
   inputs 0
   message ""
-  size {{parent.FontSize}}
-  yjustify center
-  Transform 1
-  center {914 778}
-  name Text_Proprieties
-  tile_color 0xff0000ff
-  xpos 2360
-  ypos 603
-  hide_input true
- }
- Text {
-  inputs 0
-  message ""
   font "\[expr \[value FontPath.OSChoice]==0?\[value FontPath.linreg]:\"\"]\[expr \[value FontPath.OSChoice]==1?\[value FontPath.winreg]:\"\"]\[expr \[value FontPath.OSChoice]==2?\[value FontPath.macreg]:\"\"]\[expr \[value FontPath.OSChoice]==3?\\\"\[knob FontPath.regfont]\\\":\"\"]"
   yjustify center
   box {512 389 1536 1167}
@@ -3109,19 +3096,6 @@ push $N681a720
   addUserKnob {20 User}
   addUserKnob {12 positionoffset l "Text Position Offset"}
   positionoffset {{parent.TextPositionOffset.main} {parent.TextPositionOffset.main}}
- }
- NoOp {
-  inputs 0
-  name SlateFrame
-  tile_color 0xff0000ff
-  xpos 2360
-  ypos 765
-  hide_input true
-  addUserKnob {20 User}
-  addUserKnob {3 slate_frame l "slate frame"}
-  slate_frame {{first_frame-1}}
-  addUserKnob {3 autoslate}
-  autoslate {{parent.FrameRange.knob.first_frame.main-1}}
  }
  NoOp {
   inputs 0
@@ -3172,6 +3146,32 @@ push $N681a720
   addUserKnob {7 proxyscal}
   proxyscal {{1/root.proxy_scale}}
  }
+ Text {
+  inputs 0
+  message ""
+  size {{parent.FontSize}}
+  yjustify center
+  Transform 1
+  center {914 778}
+  name Text_Proprieties
+  tile_color 0xff0000ff
+  xpos 2360
+  ypos 603
+  hide_input true
+ }
+ NoOp {
+  inputs 0
+  name SlateFrame
+  tile_color 0xff0000ff
+  xpos 2360
+  ypos 765
+  hide_input true
+  addUserKnob {20 User}
+  addUserKnob {3 slate_frame l "slate frame"}
+  slate_frame {{first_frame-1}}
+  addUserKnob {3 autoslate}
+  autoslate {{parent.FrameRange.knob.first_frame.main-1}}
+ }
  NoOp {
   inputs 0
   name TextFields
@@ -3182,10 +3182,11 @@ push $N681a720
   hide_input true
   addUserKnob {20 User}
   addUserKnob {1 plate_shotname l "Shot Name"}
-  plate_shotname REEL3_sh010
+  plate_shotname "\[ python slate.getShotName() ]"
   addUserKnob {1 plate_jobname l "Job Name"}
-  plate_jobname ftrack_test
+  plate_jobname "\[ python slate.getJobName() ]"
   addUserKnob {1 plate_task l Task}
+  plate_task "\[ python slate.getTaskName() ]"
   addUserKnob {4 plate_status l Status M {"IN PROGRESS" COMPLETE Custom... Blank "" "" "" ""}}
   plate_status Blank
   addUserKnob {1 CustomStatus l "     Custom Status" -STARTLINE}
