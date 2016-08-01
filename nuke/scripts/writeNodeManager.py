@@ -137,3 +137,17 @@ def setOutputPath(type):
     elif type == 'mov':
         outFile = os.path.join(outDir, '%s.%s' % (fname, fileType))
     return outFile
+
+
+def checkDailiesTab():
+    # onScriptLoad callback. Checks if Dailies tab exists. If not, adds it to Write_mov node
+    node = nuke.toNode('Write_mov')
+    if node and not 'Dailies' in node.knobs():
+        userTab = nuke.Tab_Knob('Dailies')
+        node.addKnob(userTab)
+        sc = nuke.PyScript_Knob('submit', 'Submit To Dailies',
+                                "node = nuke.thisNode()\nnode.knob('uploadToFtrack').setValue(True)\nnukescripts.render_panel((node,), False)")
+        node.addKnob(sc)
+        chk = nuke.Boolean_Knob('uploadToFtrack', 'uploadToFtrack')
+        node.addKnob(chk)
+        chk.setVisible(False)
