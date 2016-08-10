@@ -6,6 +6,69 @@ import os
 import glob
 from datetime import datetime
 
+
+def getImageSize(filename):
+    # Get size of the image
+    ffprobecmd = 'ffprobe -v error -of flat=s=_ -select_streams v:0 ' \
+                     '-show_entries stream=height,width "{0}"'.format(filename)
+    process = subprocess.Popen(ffprobecmd, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=True)
+    try:
+        output = process.communicate()[0]
+        parts = output.split('\n')
+        width = parts[0].split('=')[-1]
+        height = parts[1].split('=')[-1]
+    except:
+        width = 1920
+        height = 1080
+    size = '{0}x{1}'.format(width, height)
+    return size
+
+
+def makeSlate(size, filename, shotInfo, date):
+    # generate slate
+    slateFolder = os.path.split(filename)[0]
+    slate = os.path.join(slateFolder, 'slate.png')
+    slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold -pointsize 24 ' \
+               '-fill white -gravity NorthWest -annotate +25+25 "{1}" ' \
+               '-gravity NorthEast -annotate +25+25 "{2}" -gravity SouthEast ' \
+               '"{3}"'.format(size, shotInfo, date, slate)
+    process = subprocess.Popen(slateCmd, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    return slate
+
+
+def makeMovie(filename):
+    slateFolder, outfileName = os.path.split(filename)
+    fname,fext = os.path.splitext(outfileName)
+    frameno = fname.split('.')[-1]
+    filePart = os.path.join(slateFolder, fname.split('.')[0])
+    outFile = os.path.join(slateFolder, '{0}.mov'.format(filePart))
+    ffmpegCmd = 'ffmpeg -y -start_number %s -an -i %s.%%0%sd%s -vcodec prores -profile:v 2 -r 24 ' \
+                '-vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:fontsize=24:text=%%{n}: ' \
+                'x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:boxcolor=0x00000099" %s' % (frameno,
+                                                                                            filePart,
+                                                                                            len(frameno),
+                                                                                            fext, outFile)
+    process = subprocess.Popen(ffmpegCmd, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    return outFile
+
+def makeSlateMovie(filename, slate):
+    # overlay slate on movie
+    slateFolder, outfileName = os.path.split(filename)
+    fname,fext = os.path.splitext(outfileName)
+    slateMov = os.path.join(slateFolder, '{0}_slate{1}'.format(fname, fext))
+    ffmpegSlate = 'ffmpeg -y -i "{0}" -i "{1}" -filter_complex "overlay=5:5" "{2}"'.format(filename,
+                                                                                  slate, slateMov)
+    process = subprocess.Popen(ffmpegSlate, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    return slateMov
+
+
 def getShotInfo(inputFolder, imageExt):
     '''
     Returns shot information
