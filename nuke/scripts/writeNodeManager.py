@@ -1,4 +1,5 @@
 import nukescripts
+import json
 import nuke
 import os
 from datetime import datetime
@@ -25,6 +26,8 @@ def getOutputFile():
     if 'writeNodeManager.setOutputPath' in outfile:
         type = outfile.split("writeNodeManager.setOutputPath('")[-1].split("')")[0]
         outfile = setOutputPath(type)
+    elif 'writeNodeManager.setJsonOutputPath' in outfile:
+        outfile = setJsonOutputPath()
     return outfile
 
 
@@ -152,3 +155,16 @@ def checkDailiesTab():
         chk = nuke.Boolean_Knob('uploadToFtrack', 'uploadToFtrack')
         node.addKnob(chk)
         chk.setVisible(False)
+
+
+def setJsonOutputPath():
+    filename = nuke.scriptName()
+    tmpDir = os.path.split(filename)[0]
+    jsonFile = os.path.join(tmpDir, 'shot_info.json')
+    if not os.path.exists(jsonFile):
+        return ''
+    jd = open(jsonFile).read()
+    data = json.loads(jd)
+    outFilename = data['outfile'].split('.')[0]
+    outputFile = os.path.join(data['outdir'], outFilename + '.mov')
+    return outputFile

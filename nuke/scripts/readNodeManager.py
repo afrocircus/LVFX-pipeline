@@ -1,5 +1,6 @@
 import nuke
 import os
+import json
 
 
 def findOutFile(plateDir, fext):
@@ -106,6 +107,40 @@ def getFrames(position):
         proxyDir = os.path.join(shotDir, 'img/plates/proxy')
         if os.path.exists(proxyDir):
             frameList = findFrameByExt(proxyDir, '.jpeg')
+    if len(frameList) > 0:
+        frameList.sort()
+        if position == 'first':
+            return frameList[0]
+        elif position == 'last':
+            return frameList[-1]
+    else:
+        return 1
+
+
+def getJsonFilePath():
+    filename = nuke.scriptName()
+    tmpDir = os.path.split(filename)[0]
+    jsonFile = os.path.join(tmpDir, 'shot_info.json')
+    if not os.path.exists(jsonFile):
+        return ''
+    jd = open(jsonFile).read()
+    data = json.loads(jd)
+    fext = data['outfile'].split('.')[-1]
+    outFile = findOutFile(data['outdir'], '.'+fext)
+    outFilePath = os.path.join(data['outdir'], outFile)
+    return outFilePath
+
+
+def getJsonFrames(position):
+    filename = nuke.scriptName()
+    tmpDir = os.path.split(filename)[0]
+    jsonFile = os.path.join(tmpDir, 'shot_info.json')
+    if not os.path.exists(jsonFile):
+        return 1
+    jd = open(jsonFile).read()
+    data = json.loads(jd)
+    fext = data['outfile'].split('.')[-1]
+    frameList = findFrameByExt(data['outdir'], '.'+fext)
     if len(frameList) > 0:
         frameList.sort()
         if position == 'first':

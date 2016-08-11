@@ -39,7 +39,7 @@ class ShotSubmitUI(QtGui.QWidget):
         self.jobWidget = JobWidget('Nuke')
         self.layout().addWidget(self.jobWidget)
         self.jobWidget.splitmodeDrop.setCurrentIndex(0)
-        self.jobWidget.poolDrop.setCurrentIndex(1)
+        self.jobWidget.poolDrop.setCurrentIndex(0)
         hlayout = QtGui.QHBoxLayout()
         submitButton = QtGui.QPushButton('Submit')
         submitButton.clicked.connect(self.submitRender)

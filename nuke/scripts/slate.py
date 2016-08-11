@@ -1,5 +1,6 @@
 import ftrack_api
 import os
+import json
 import threading
 import nuke
 import time
@@ -139,3 +140,49 @@ def getTaskName():
         return task['name']
     else:
         return 'No task found'
+
+
+def readJson():
+    filename = nuke.scriptName()
+    tmpDir = os.path.split(filename)[0]
+    jsonFile = os.path.join(tmpDir, 'shot_info.json')
+    if not os.path.exists(jsonFile):
+        return None
+    jd = open(jsonFile).read()
+    data = json.loads(jd)
+    return data
+
+
+def getShotNameFromJson():
+    data = readJson()
+    if not data:
+        return ''
+    return data['shotName']
+
+
+def getJobNameFromJson():
+    data = readJson()
+    if not data:
+        return ''
+    return data['projectName']
+
+
+def getVersionFromJson():
+    data = readJson()
+    if not data:
+        return ''
+    return data['version']
+
+
+def getArtistFromJson():
+    data = readJson()
+    if not data:
+        return ''
+    return data['username']
+
+
+def getTaskFromJson():
+    data = readJson()
+    if not data:
+        return ''
+    return data['taskName']

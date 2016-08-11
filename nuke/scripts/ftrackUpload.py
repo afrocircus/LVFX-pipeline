@@ -2,11 +2,13 @@ import ftrack_api
 import os
 import threading
 import nuke
+import json
 import sys
 import time
 import writeNodeManager
 import shutil
 from Utils import ftrack_utils
+from Utils import ftrack_utils2
 
 
 _session = ftrack_api.Session(
@@ -14,6 +16,14 @@ _session = ftrack_api.Session(
     api_user=os.environ['FTRACK_API_USER'],
     api_key=os.environ['FTRACK_API_KEY']
 )
+
+
+def async(fn):
+    """Run *fn* asynchronously."""
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+    return wrapper
 
 
 def isValidTask(projPath):
@@ -213,3 +223,38 @@ def uploadToFtrack():
                                                           metadata, outputFile, nukeFile]).start()
         else:
             print "Error in submitting to ftrack. The project details might be incorrect."
+
+
+@async
+def uploadFromJsonToFtrack():
+    filename = nuke.scriptName()
+    movFile = writeNodeManager.getOutputFile()
+    tmpDir = os.path.split(filename)[0]
+    jsonFile = os.path.join(tmpDir, 'shot_info.json')
+    if os.path.exists(jsonFile):
+        jd = open(jsonFile).read()
+        data = json.loads(jd)
+        if not data['taskid'] == '':
+            taskMeta = {'filename': data['filename']}
+            task = _session.query('Task where id is {0}'.format(data['taskid'])).one()
+            ftrack_utils2.addMetadata(_session, task, taskMeta)
+            ftrack_utils2.copyToApprovals(movFile, task['project'])
+            outfilemp4, outfilewebm, thumbnail, metadata = ftrack_utils2.prepMediaFiles(movFile)
+            ff, lf = ftrack_utils2.getFrameLength(movFile)
+            result = ftrack_utils2.convertFiles(movFile, outfilemp4, outfilewebm, thumbnail)
+            if result:
+                print "File conversion complete. Starting upload."
+                asset = ftrack_utils2.getAsset(_session, task, 'ReviewAsset')
+                status = ftrack_utils2.getStatus(_session, 'In Progress')
+                try:
+                    ftrack_utils2.createAndPublishVersion(_session, task, asset,
+                                                          status,'Upload for Internal Review',
+                                                          thumbnail, filename, outfilemp4,
+                                                          outfilewebm, metadata, ff, lf, 24)
+                    print 'cleaning up temporary files...'
+                    ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
+                    print 'Upload Complete!'
+                except Exception:
+                    print "Error while uploading movie"
+
+
