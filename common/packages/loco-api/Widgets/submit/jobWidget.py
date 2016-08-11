@@ -6,7 +6,7 @@ from PySide.QtCore import Signal
 
 class JobWidget(QtGui.QWidget):
 
-    rendererChanged = Signal()
+    rendererChanged = Signal(int)
 
     def __init__(self, renderer):
         super(JobWidget, self).__init__()
@@ -48,7 +48,7 @@ class JobWidget(QtGui.QWidget):
         jobBoxLayout.addWidget(self.poolDrop, 3, 1)
 
     def emitRendererChangedSignal(self):
-        self.rendererChanged.emit()
+        self.rendererChanged.emit(int(self.rendererBox.currentIndex()))
 
     def setRendererDrop(self, renderer):
         if os.path.exists(os.environ['SHOT_SUBMIT_CONFIG']):

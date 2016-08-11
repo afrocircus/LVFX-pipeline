@@ -1,48 +1,56 @@
 import os
 import PySide.QtGui as QtGui
+import maya.cmds as cmds
 
 
 class VRayStandaloneWidget(QtGui.QWidget):
     def __init__(self):
         super(VRayStandaloneWidget, self).__init__()
-        self.setLayout(QtGui.QGridLayout())
+        self.setLayout(QtGui.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(QtGui.QLabel('Vray Filename:'), 0, 0)
+        fileLayout = QtGui.QHBoxLayout()
+        fileLayout.addWidget(QtGui.QLabel('Vray Filename:'))
         self.fileTextBox = QtGui.QLineEdit()
         self.fileTextBox.setText('')
         browseButton = QtGui.QToolButton()
         browseButton.setText('...')
         browseButton.clicked.connect(self.openFileBrowser)
-        self.layout().addWidget(self.fileTextBox, 0, 1)
-        self.layout().addWidget(browseButton, 0, 2)
-        self.layout().addWidget(QtGui.QLabel('Frame List:'), 1, 0)
+        fileLayout.addWidget(self.fileTextBox)
+        fileLayout.addWidget(browseButton)
+        self.layout().addLayout(fileLayout)
+        widgetLayout = QtGui.QGridLayout()
+        self.layout().addLayout(widgetLayout)
+        widgetLayout.addWidget(QtGui.QLabel('Frame List:'), 0, 0)
         self.frameRangeEdit = QtGui.QLineEdit()
-        self.layout().addWidget(self.frameRangeEdit, 1, 1)
-        self.layout().addWidget(QtGui.QLabel('Frame Step:'), 1, 2)
+        widgetLayout.addWidget(self.frameRangeEdit, 0, 1)
+        widgetLayout.addWidget(QtGui.QLabel('Frame Step:'), 0, 2)
         self.frameStepEdit = QtGui.QLineEdit()
-        self.layout().addWidget(self.frameStepEdit, 1, 3)
-        self.layout().addWidget(QtGui.QLabel('Image Width:'), 2, 0)
+        widgetLayout.addWidget(self.frameStepEdit, 0, 3)
+        widgetLayout.addWidget(QtGui.QLabel('Image Width:'), 1, 0)
         self.imgWidEdit = QtGui.QLineEdit()
-        self.layout().addWidget(self.imgWidEdit, 2, 1)
-        self.layout().addWidget(QtGui.QLabel('Image Height:'), 2, 2)
+        widgetLayout.addWidget(self.imgWidEdit, 1, 1)
+        widgetLayout.addWidget(QtGui.QLabel('Image Height:'), 1, 2)
         self.imgHghEdit = QtGui.QLineEdit()
-        self.layout().addWidget(self.imgHghEdit, 2, 3)
-        self.layout().addWidget(QtGui.QLabel('Verbosity Level:'), 3, 0)
+        widgetLayout.addWidget(self.imgHghEdit, 1, 3)
+        widgetLayout.addWidget(QtGui.QLabel('Verbosity Level:'), 2, 0)
         self.verbosityBox = QtGui.QComboBox()
-        self.layout().addWidget(self.verbosityBox, 3, 1)
+        widgetLayout.addWidget(self.verbosityBox, 2, 1)
         self.populateVerbosityBox()
         self.verbosityBox.setCurrentIndex(4)
-        self.layout().addWidget(QtGui.QLabel('Output File'), 4, 0)
+        widgetLayout.addWidget(QtGui.QLabel('Output File'), 3, 0)
         self.outfileEdit = QtGui.QLineEdit()
-        self.layout().addWidget(self.outfileEdit, 4, 1)
-        self.layout().addWidget(QtGui.QLabel('Output Dir'), 5, 0)
+        widgetLayout.addWidget(self.outfileEdit, 3, 1)
+        widgetLayout.addWidget(QtGui.QLabel('Output Dir'), 4, 0)
         self.outdirEdit = QtGui.QLineEdit()
         self.outdirEdit.setReadOnly(True)
-        self.layout().addWidget(self.outdirEdit, 5, 1)
+        widgetLayout.addWidget(self.outdirEdit, 4, 1)
         dirBrowseButton = QtGui.QToolButton()
         dirBrowseButton.setText('...')
         dirBrowseButton.clicked.connect(self.openDirBrowser)
-        self.layout().addWidget(dirBrowseButton, 5, 2)
+        widgetLayout.addWidget(dirBrowseButton, 4, 2)
+        self.ftrackCheckbox = QtGui.QCheckBox()
+        self.ftrackCheckbox.setText('Ftrack Upload')
+        widgetLayout.addWidget(self.ftrackCheckbox, 4, 3)
 
     def populateVerbosityBox(self):
         self.verbosityBox.addItem('0: No information')
@@ -71,8 +79,7 @@ class VRayStandaloneWidget(QtGui.QWidget):
         fname, fext = os.path.splitext(filename)
         if filename is '' or fext not in ['.vrscene']:
             return '', rendererParams
-        if str(self.frameRangeEdit.text()) is not '':
-            rendererParams = '%s -frames %s' % (rendererParams, str(self.frameRangeEdit.text()))
+        rendererParams = '%s -frames %s' % (rendererParams, self.getFrameRange())
         if str(self.frameStepEdit.text()) is not '':
             rendererParams = '%s -fstep %s' % (rendererParams, str(self.frameStepEdit.text()))
         if str(self.imgWidEdit.text()) is not '':
@@ -85,3 +92,17 @@ class VRayStandaloneWidget(QtGui.QWidget):
         if str(self.outdirEdit.text()) is not '':
             rendererParams = '%s -outdir "%s"' % (rendererParams, str(self.outdirEdit.text()))
         return filename, rendererParams
+
+    def getUploadCheck(self):
+        uploadCheck = self.ftrackCheckbox.isChecked()
+        return uploadCheck
+
+
+    def getFrameRange(self):
+        if str(self.frameRangeEdit.text()) is not '':
+            frameRange = str(self.frameRangeEdit.text())
+        else:
+            minFrame = int(cmds.playbackOptions(q=True, minTime=True))
+            maxFrame = int(cmds.playbackOptions(q=True, maxTime=True))
+            frameRange = '%s-%s' % (minFrame, maxFrame)
+        return frameRange
