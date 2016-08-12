@@ -45,6 +45,10 @@ class VRayExporterWidget(QtGui.QWidget):
         self.cameraEdit.setToolTip('Enter comma seperated cameras')
         self.cameraEdit.mousePressEvent = self.openPopupCamera
         widgetLayout.addWidget(self.cameraEdit, 2, 3)
+        self.vRayCheckbox = QtGui.QCheckBox()
+        self.vRayCheckbox.setText('VRay Restart')
+        widgetLayout.addWidget(self.vRayCheckbox, 2, 4)
+        self.vRayCheckbox.setChecked(True)
         widgetLayout.addWidget(QtGui.QLabel('VRscene Filename:'), 3, 0)
         self.vrsceneLineEdit = QtGui.QLineEdit()
         widgetLayout.addWidget(self.vrsceneLineEdit, 3, 1)
@@ -54,10 +58,10 @@ class VRayExporterWidget(QtGui.QWidget):
         self.renderCheckbox.stateChanged.connect(self.renderStateChanged)
         widgetLayout.addWidget(self.renderCheckbox, 3, 2)
         self.separateCheckbox = QtGui.QCheckBox()
-        self.separateCheckbox.setText('Export Separate')
+        self.separateCheckbox.setText('Separate')
         widgetLayout.addWidget(self.separateCheckbox, 3, 3)
         self.compressedCheckbox = QtGui.QCheckBox()
-        self.compressedCheckbox.setText('Export Compressed')
+        self.compressedCheckbox.setText('Compressed')
         widgetLayout.addWidget(self.compressedCheckbox, 3, 4)
         widgetLayout.addWidget(QtGui.QLabel('Output File'), 4, 0)
         self.outfileEdit = QtGui.QLineEdit()
@@ -144,6 +148,9 @@ class VRayExporterWidget(QtGui.QWidget):
             rendererParams = '%s -separate' % (rendererParams)
         if self.compressedCheckbox.isChecked():
             rendererParams = '%s -compressed' % (rendererParams)
+        if self.vRayCheckbox.isChecked():
+            prerender = 'source vrayPreRender.mel;vrayRestart()'
+            rendererParams = "%s -prerender '%s'" % (rendererParams, prerender)
         rendererParams = '%s -projdir "%s"' % (rendererParams, str(self.projdirEdit.text()))
         return filename, rendererParams
 
