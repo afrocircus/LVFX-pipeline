@@ -27,7 +27,11 @@ class JobWidget(QtGui.QWidget):
         self.priorityBox.setMaximum(10)
         self.priorityBox.setValue(5)
         self.priorityBox.setMaximumWidth(50)
-        jobBoxLayout.addWidget(self.priorityBox)
+        jobBoxLayout.addWidget(self.priorityBox, 1, 1)
+        jobBoxLayout.addWidget(QtGui.QLabel('Dependent Job:'), 1, 2)
+        self.dependJobLineEdit = QtGui.QLineEdit()
+        jobBoxLayout.addWidget(self.dependJobLineEdit, 1, 3)
+        self.dependJobLineEdit.setText('')
         jobBoxLayout.addWidget(QtGui.QLabel('Frame Split Mode:'), 2, 0)
         self.splitmodeDrop = QtGui.QComboBox()
         self.setSplitModeDrop()
@@ -96,3 +100,6 @@ class JobWidget(QtGui.QWidget):
         splitMode = str(self.splitmodeDrop.currentIndex())
         count = str(self.countBox.text())
         return '%s,%s' % (splitMode, count)
+
+    def getDependentJob(self):
+        return str(self.dependJobLineEdit.text())

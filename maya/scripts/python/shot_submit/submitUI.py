@@ -26,13 +26,15 @@ class ShotSubmitUI(QtGui.QWidget):
         renderBoxLayout = QtGui.QGridLayout()
         renderBox.setLayout(renderBoxLayout)
         self.layout().addWidget(renderBox)
-        self.vrayStandalone = VRayStandaloneWidget()
+        data = self.jsonRead('vrayStandaloneSettings.json')
+        self.vrayStandalone = VRayStandaloneWidget(data)
         self.vrayMaya = VRayMayaWidget()
         renderBoxLayout.addWidget(self.vrayStandalone, 0, 0)
         self.vrayMaya.hide()
         self.vrayStandalone.hide()
         renderBoxLayout.addWidget(self.vrayMaya, 0, 0)
-        self.vrayExporter = VRayExporterWidget()
+        data = self.jsonRead('vrayExporterSettings.json')
+        self.vrayExporter = VRayExporterWidget(data)
         renderBoxLayout.addWidget(self.vrayExporter, 0, 0)
         self.jobWidget = JobWidget('Maya')
         self.layout().addWidget(self.jobWidget)
@@ -68,18 +70,26 @@ class ShotSubmitUI(QtGui.QWidget):
         self.repaint()
 
     def submitRender(self):
+        mayaFile = cmds.file(q=True, sn=True)
+        fileDir= os.path.split(mayaFile)[0]
+        tmpDir = os.path.join(fileDir, 'tmp')
         uploadCheck = False
         frameRange = rendererParams = filename = ''
+        dataDict = {}
         if self.vrayExporter.isVisible():
-            filename, rendererParams = self.vrayExporter.getRenderParams()
+            filename, rendererParams, dataDict = self.vrayExporter.getRenderParams()
             uploadCheck = self.vrayExporter.getUploadCheck()
             frameRange = self.vrayExporter.getFrameRange()
+            if mayaFile:
+                self.jsonWrite(os.path.join(tmpDir, 'vrayExporterSettings.json'), dataDict)
         elif self.vrayMaya.isVisible():
             filename, rendererParams = self.vrayMaya.getRenderParams()
         elif self.vrayStandalone.isVisible():
-            filename, rendererParams = self.vrayStandalone.getRenderParams()
+            filename, rendererParams, dataDict = self.vrayStandalone.getRenderParams()
             uploadCheck = self.vrayStandalone.getUploadCheck()
             frameRange = self.vrayStandalone.getFrameRange()
+            if mayaFile:
+                self.jsonWrite(os.path.join(tmpDir, 'vrayStandaloneSettings.json'), dataDict)
         if filename is '':
             QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
             return
@@ -88,15 +98,17 @@ class ShotSubmitUI(QtGui.QWidget):
         renderer = self.jobWidget.getRenderer()
         splitMode = self.jobWidget.getSplitMode()
         pool = self.jobWidget.getClientPools()
+        dependency = self.jobWidget.getDependentJob()
+        if not dependency == '':
+            rendererParams = ' -nj_dependency %s %s' % (dependency, rendererParams)
         result = submitRender(jobName, renderer, pool, splitMode, rendererParams, filename)
         QtGui.QMessageBox.about(self, 'Submission Output', result)
         m = re.search(r'\[(\w+)\=(?P<id>\d+)\]', result)
         groupid = m.group('id')
         if uploadCheck:
-            self.submitNukeJob(groupid, frameRange)
+            self.submitNukeJob(groupid, frameRange, mayaFile)
 
-    def submitNukeJob(self, groupid, frameRange):
-        filename = cmds.file(q=True, sn=True)
+    def submitNukeJob(self, groupid, frameRange, filename):
         fileDir, fname = os.path.split(filename)
         tmpDir = os.path.join(fileDir, 'tmp')
         if not os.path.exists(tmpDir):
@@ -115,6 +127,21 @@ class ShotSubmitUI(QtGui.QWidget):
         nukeParams = ' -nj_dependency %s -frames %s -writenode Write1' % (groupid, frameRange)
         result = submitRender(jobName, renderer, pool, splitMode, nukeParams, newFilePath)
         print result
+
+    def jsonWrite(self, jsonFile, jsonDict):
+        with open(jsonFile, 'w') as jf:
+            json.dump(jsonDict, jf, indent=4)
+
+    def jsonRead(self, filename):
+        mayaFile = cmds.file(q=True, sn=True)
+        if not mayaFile:
+            return {}
+        fileDir= os.path.split(mayaFile)[0]
+        tmpDir = os.path.join(fileDir, 'tmp')
+        jsonFile = os.path.join(tmpDir, filename)
+        jsonFile = open(jsonFile).read()
+        data = json.loads(jsonFile)
+        return data
 
     def writeShotInfoToJson(self, filename, jsonDir):
         jsonFile = os.path.join(jsonDir, 'shot_info.json')
@@ -148,8 +175,7 @@ class ShotSubmitUI(QtGui.QWidget):
             jsonDict['version'] = ftrack_utils2.version_get(filename, 'v')[1]
         except ValueError:
             jsonDict['version'] = '0'
-        with open(jsonFile, 'w') as jf:
-            json.dump(jsonDict, jf, indent=4)
+        self.jsonWrite(jsonFile, jsonDict)
 
 
 '''def main():
