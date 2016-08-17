@@ -21,6 +21,8 @@ class scriptedCommand(OpenMayaMPx.MPxCommand):
         cmds.menuItem(parent=showMyMenuCtrl, label='ShotSubmit', command=cmd)
         animCmd = self.constructAnimBakerCmd()
         cmds.menuItem(parent=showMyMenuCtrl, label='AnimSubmit', command=animCmd)
+        impExpCmd = self.constructImportExportCmd()
+        cmds.menuItem(parent=showMyMenuCtrl, label='Import/Exprot', command=impExpCmd)
 
     def constructAnimBakerCmd(self):
         cmd = 'from anim_submit import animSubmitUI\n'
@@ -31,6 +33,12 @@ class scriptedCommand(OpenMayaMPx.MPxCommand):
     def constructShotSubmitCmd(self):
         cmd = 'from shot_submit import submitUI\n'
         cmd += 'form = submitUI.ShotSubmitUI()\n'
+        cmd += 'form.createDockLayout()'
+        return cmd
+
+    def constructImportExportCmd(self):
+        cmd = 'from import_export import importExportUI\n'
+        cmd += 'form = importExportUI.ImportExportUI()\n'
         cmd += 'form.createDockLayout()'
         return cmd
 
