@@ -94,7 +94,7 @@ class TransferFeedback(object):
             for remoteNote in reversed(remoteNotes):
                 # Don't add note if it's a reply
                 if remoteNote['in_reply_to']:
-                    break
+                    continue
                 # Create a new note
                 note = self.session.create('Note', {
                     'content': remoteNote['content'],
@@ -128,7 +128,8 @@ class TransferFeedback(object):
                         )
                         if os.path.exists(saveFile):
                             os.remove(saveFile)
-                    except Exception:
+                    except Exception, e:
+                        print e
                         print "Note not found at location"
 
             # Update the task status to that of the asset version.
