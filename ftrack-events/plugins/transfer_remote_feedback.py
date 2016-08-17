@@ -95,9 +95,15 @@ class TransferFeedback(object):
                 # Don't add note if it's a reply
                 if remoteNote['in_reply_to']:
                     continue
+                if 'inviteeId' in remoteNote['metadata'].keys():
+                    inviteeId = remoteNote['metadata']['inviteeId']
+                    invitee = remoteSession.get('ReviewSessionInvitee', inviteeId)
+                    remoteNoteContent = '{0} says: {1}'.format(invitee['name'], remoteNote['content'])
+                else:
+                    remoteNoteContent = remoteNote['content']
                 # Create a new note
                 note = self.session.create('Note', {
-                    'content': remoteNote['content'],
+                    'content': remoteNoteContent,
                     'author': user,
                     'category': category
                 })
