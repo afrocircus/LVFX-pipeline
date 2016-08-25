@@ -4,16 +4,18 @@ import xmlrpclib
 import getopt
 import getpass
 import re
+from renderFarm import config
 
 
-hq_server = xmlrpclib.ServerProxy('http://192.168.0.153:5000')
+hq_server = xmlrpclib.ServerProxy('{0}:{1}'.format(config.hq_host, config.hq_port))
 try:
     hq_server.ping()
 except:
     print "HQueue server is down."
+    sys.exit(2)
 
 
-def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, group, priority):
+def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, group, priority, user, review):
     jobList = []
     jobname = 'VRay - '+ os.path.split(filename)[-1]
     imgDir = os.path.split(imgFile)[0]
@@ -46,7 +48,7 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
                 'tags': ['single'],
                 'priority': priority,
                 'triesLeft': 1,
-                'onError': 'python2.7 /data/production/pipeline/linux/scripts/vray_restart_onError.py'
+                'onError': 'python2.7 /data/production/pipeline/linux/scripts/renderFarm/vray_restart_onError.py'
             }
             if group != '':
                 job_spec['conditions'] = [{"type" : "client", "name": "group", "op": "==", "value": group}, ]
@@ -68,7 +70,7 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
                 'tags': ['single'],
                 'priority': priority,
                 'triesLeft': 1,
-                'onError': 'python2.7 /data/production/pipeline/linux/scripts/vray_restart_onError.py'
+                'onError': 'python2.7 /data/production/pipeline/linux/scripts/renderFarm/vray_restart_onError.py'
             }
             if group != '':
                 job_spec['conditions'] = [{"type" : "client", "name": "group", "op": "==", "value": group}, ]
@@ -77,11 +79,23 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
     mainJob = {
         'name': jobname,
         'shell': 'bash',
+        'command': 'export PYTHONPATH=%s ;' % config.python_path,
         'tags' : 'single',
         'priority': priority,
         'submittedBy': submitter,
-        'children': jobList
+        'children': jobList,
+        'onSuccess': 'export PYTHONPATH=%s ;'
+                     'export SLACK_BOT_TOKEN=%s ;'
+                     'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '
+                     'Success "%s" "%s"' % (config.python_path, config.slack_bot_token, user, submitter),
+        'onError': 'export PYTHONPATH=%s ;'
+                   'export SLACK_BOT_TOKEN=%s ;'
+                   'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '
+                   'Fail "%s" "%s"' % (config.python_path, config.slack_bot_token, user, submitter)
     }
+    if review:
+        mainJob['command'] += 'python2.7 /data/production/pipeline/linux/scripts/mov_create_upload.py ' \
+                             '-f %s -d %s' % (filename, imgDir)
 
     jobs_ids = hq_server.newjob(mainJob)
     return jobs_ids
@@ -96,14 +110,17 @@ def main(argv):
     multiple = False
     group = ''
     priority = 0
+    user = '#render-updates'
+    review = False
 
     try:
-        opts, args = getopt.getopt(argv, 'hv:i:f:l:s:c:mg:p:', ['vrscene=', 'imgFile=', 'first=',
-                                                              'last=', 'step=', 'chunk=', 'multiple=',
-                                                              'group=', 'priority='])
+        opts, args = getopt.getopt(argv, 'hv:i:f:l:s:c:mg:p:u:r', ['vrscene=', 'imgFile=', 'first=',
+                                                                   'last=', 'step=', 'chunk=', 'multiple=',
+                                                                   'group=', 'priority=', 'slackuser=',
+                                                                   'review='])
     except getopt.GetoptError:
         print 'vrscene_submit -v <filename> -i <imgFile> -f <startFrame> -e <endFrame> -s <step>' \
-              '-c <chunk> -m -g <group> -p <priority>'
+              '-c <chunk> -m -g <group> -p <priority> -u <username> -r'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
@@ -119,11 +136,19 @@ def main(argv):
                   'chunk = chunk size. Default = 5\n' \
                   'multiple = multiple VR scene files. Default = False\n' \
                   'group = name of group to submit to \n' \
-                  'priority = priority of job. 0 is lowest. Default is 0' \
+                  'priority = priority of job. 0 is lowest. Default is 0\n' \
+                  'slackuser = slack username. Default=#render-updates channel\n' \
+                  'review = Create movie and upload to ftrack. Default = False' \
                   '\n ---Multiple VRScene File Example--- \n' \
-                  'vrscene_submit -v /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/lighting/vrscene/stagBeetleTest_#.vrscene -i /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/lighting/vrscene/renders/stagBeetleTest.#.exr -f 1 -l 15 -s 4 -c 5 -m\n' \
+                  'vrscene_submit -v /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/' \
+                  'lighting/vrscene/stagBeetleTest_#.vrscene -i /data/production/ftrack_test/shots/' \
+                  'REEL3/REEL3_sh010/scene/lighting/vrscene/renders/stagBeetleTest.#.exr -f 1 -l 15 ' \
+                  '-s 4 -c 5 -r -m\n' \
                   '\n ---Single VRScene File Example--- \n' \
-                  'vrscene_submit -v /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/lighting/vrscene/stagBeetleTest.vrscene -i /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/lighting/vrscene/renders/stagBeetleTest.#.exr -f 1 -l 15 -s 1 -c 5'
+                  'vrscene_submit -v /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/' \
+                  'lighting/vrscene/stagBeetleTest.vrscene -i /data/production/ftrack_test/shots/' \
+                  'REEL3/REEL3_sh010/scene/lighting/vrscene/renders/stagBeetleTest.#.exr -f 1 -l 15 ' \
+                  '-s 1 -c 5 -r'
 
             sys.exit()
         elif opt in ('-v', '--vrscene'):
@@ -144,13 +169,17 @@ def main(argv):
             group = arg
         elif opt in ('-p', '--priority'):
             priority = int(arg)
+        elif opt in ('-u', '--slackuser'):
+            user = '@' + arg
+        elif opt in ('-r', '--review'):
+            review = True
     if filename == '':
         print "Please specify a valid vrscene file."
         sys.exit(2)
     elif imgFile == '':
         print "Please specify a valid output file."
         sys.exit(2)
-    jobIds = submitJob(filename, imgFile, start, end, step, chunk, multiple, group, priority)
+    jobIds = submitJob(filename, imgFile, start, end, step, chunk, multiple, group, priority, user, review)
     print 'Job Submit Successful. Job Id = {0}'.format(jobIds)
 
 if __name__ == '__main__':

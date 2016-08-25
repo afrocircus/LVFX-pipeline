@@ -45,12 +45,11 @@ def makeMovie(filename):
     frameno = fname.split('.')[-1]
     filePart = os.path.join(slateFolder, fname.split('.')[0])
     outFile = os.path.join(slateFolder, '{0}.mov'.format(filePart))
-    ffmpegCmd = 'ffmpeg -y -start_number %s -an -i %s.%%0%sd%s -vcodec prores -profile:v 2 -r 24 ' \
-                '-vf "drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:fontsize=24:text=%%{n}: ' \
-                'x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:boxcolor=0x00000099" %s' % (frameno,
-                                                                                            filePart,
-                                                                                            len(frameno),
-                                                                                            fext, outFile)
+    ffmpegCmd = 'ffmpeg -y -start_number %s -an -i %s.%%0%sd%s -vcodec libx264 -pix_fmt yuv420p ' \
+                '-preset slow -crf 18 -r 24 -vf "lutrgb=r=gammaval(0.45454545):g=gammaval(0.45454545):' \
+                'b=gammaval(0.45454545),drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
+                'fontsize=24:text=%%{n}:x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
+                'boxcolor=0x00000099" %s' % (frameno, filePart,len(frameno),fext, outFile)
     process = subprocess.Popen(ffmpegCmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, shell=True)
     process.wait()

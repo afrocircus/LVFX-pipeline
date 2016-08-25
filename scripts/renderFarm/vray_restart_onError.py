@@ -3,12 +3,13 @@ import xmlrpclib
 import re
 import subprocess
 import json
+import config
 
 serverConfig = '/data/production/pipeline/linux/common/config/server.json'
 jsonFile = open(serverConfig).read()
 data = json.loads(jsonFile)
 
-hq_server = xmlrpclib.ServerProxy('http://192.168.0.153:5000')
+hq_server = xmlrpclib.ServerProxy('{0}:{1}'.format(config.hq_host, config.hq_port))
 
 if 'JOBID' in os.environ.keys():
     jobId = int(os.environ['JOBID'])
