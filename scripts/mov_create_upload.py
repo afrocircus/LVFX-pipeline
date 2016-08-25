@@ -1,8 +1,14 @@
+#!/usr/local/bin/python2.7
 import sys
 import os
 import getopt
+from renderFarm import config
 from Utils import ftrack_utils2
 from Utils import prores_utils
+
+os.environ['FTRACK_SERVER'] = config.ftrack_server
+os.environ['FTRACK_API_USER'] = config.ftrack_api_user
+os.environ['FTRACK_API_KEY'] = config.ftrack_api_key
 
 
 def createMov(outdir, filename, taskid):
@@ -28,7 +34,35 @@ def createMov(outdir, filename, taskid):
         os.remove(slate)
     if os.path.exists(movFile):
         os.remove(movFile)
-    return slateMov
+    return slateMov, task
+
+
+def uploadToFtrack(task, movFile):
+    session = ftrack_utils2.startANewSession()
+    print "Encoding Media Files..."
+    ftrack_utils2.copyToApprovals(movFile, task['project'])
+    outfilemp4, outfilewebm, thumbnail, metadata = ftrack_utils2.prepMediaFiles(movFile)
+    print 'Starting file conversion...'
+    ff, lf = ftrack_utils2.getFrameLength(movFile)
+    result = ftrack_utils2.convertFiles(movFile, outfilemp4, outfilewebm, thumbnail)
+    if result:
+        print  'File conversion complete.'
+        print 'Starting file upload...'
+        asset = ftrack_utils2.getAsset(session, task, 'ReviewAsset')
+        status = ftrack_utils2.getStatus(session, 'In Progress')
+        try:
+            ftrack_utils2.createAndPublishVersion(session, task, asset,
+                                                  status,'Upload for Internal Review',
+                                                  thumbnail, movFile, outfilemp4,
+                                                  outfilewebm, metadata, ff, lf, 24)
+            print 'cleaning up temporary files...'
+            ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
+            print 'Upload Complete!'
+        except Exception, e:
+            print 'Upload Failed: Error uploading to ftrack.'
+            print e
+    else:
+        print 'Upload Failed: Error during file conversion.'
 
 
 def main(argv):
@@ -54,8 +88,12 @@ def main(argv):
             taskid = arg
         elif opt in ('-d', '--outdir'):
             outdir = arg
-    movFile = createMov(outdir, filename, taskid)
-    print movFile
+    movFile, task = createMov(outdir, filename, taskid)
+    if task:
+        uploadToFtrack(task, movFile)
+    else:
+        print "No task found. Cannot upload to ftrack."
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
