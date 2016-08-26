@@ -15,7 +15,8 @@ except:
     sys.exit(2)
 
 
-def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, group, priority, user, review):
+def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, group,
+              priority, user, review, dependent):
     jobList = []
     jobname = 'VRay - '+ os.path.split(filename)[-1]
     imgDir = os.path.split(imgFile)[0]
@@ -52,6 +53,8 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
             }
             if group != '':
                 job_spec['conditions'] = [{"type" : "client", "name": "group", "op": "==", "value": group}, ]
+            if dependent != 0:
+                job_spec['childrenIds'] = [dependent]
             jobList.append(job_spec)
     else:
         for x in range(startFrame, endFrame+1, chunk):
@@ -74,6 +77,8 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
             }
             if group != '':
                 job_spec['conditions'] = [{"type" : "client", "name": "group", "op": "==", "value": group}, ]
+            if dependent != 0:
+                job_spec['childrenIds'] = [dependent]
             jobList.append(job_spec)
 
     mainJob = {
@@ -112,15 +117,16 @@ def main(argv):
     priority = 0
     user = '#render-updates'
     review = False
+    dependent = 0
 
     try:
-        opts, args = getopt.getopt(argv, 'hv:i:f:l:s:c:mg:p:u:r', ['vrscene=', 'imgFile=', 'first=',
-                                                                   'last=', 'step=', 'chunk=', 'multiple=',
-                                                                   'group=', 'priority=', 'slackuser=',
-                                                                   'review='])
+        opts, args = getopt.getopt(argv, 'hv:i:f:l:s:c:mg:p:u:rd:', ['vrscene=', 'imgFile=', 'first=',
+                                                                     'last=', 'step=', 'chunk=', 'multiple=',
+                                                                     'group=', 'priority=', 'slackuser=',
+                                                                     'review=', 'dependent='])
     except getopt.GetoptError:
         print 'vrscene_submit -v <filename> -i <imgFile> -f <startFrame> -e <endFrame> -s <step>' \
-              '-c <chunk> -m -g <group> -p <priority> -u <username> -r'
+              '-c <chunk> -m -g <group> -p <priority> -u <username> -r -d <jobID>'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
@@ -138,7 +144,8 @@ def main(argv):
                   'group = name of group to submit to \n' \
                   'priority = priority of job. 0 is lowest. Default is 0\n' \
                   'slackuser = slack username. Default=#render-updates channel\n' \
-                  'review = Create movie and upload to ftrack. Default = False' \
+                  'review = Create movie and upload to ftrack. Default = False\n' \
+                  'dependent = Job ID of the dependent job' \
                   '\n ---Multiple VRScene File Example--- \n' \
                   'vrscene_submit -v /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/' \
                   'lighting/vrscene/stagBeetleTest_#.vrscene -i /data/production/ftrack_test/shots/' \
@@ -173,13 +180,16 @@ def main(argv):
             user = '@' + arg
         elif opt in ('-r', '--review'):
             review = True
+        elif opt in ('-d', '--dependent'):
+            dependent = int(arg)
     if filename == '':
         print "Please specify a valid vrscene file."
         sys.exit(2)
     elif imgFile == '':
         print "Please specify a valid output file."
         sys.exit(2)
-    jobIds = submitJob(filename, imgFile, start, end, step, chunk, multiple, group, priority, user, review)
+    jobIds = submitJob(filename, imgFile, start, end, step, chunk, multiple, group, priority,
+                       user, review, dependent)
     print 'Job Submit Successful. Job Id = {0}'.format(jobIds)
 
 if __name__ == '__main__':
