@@ -1,3 +1,4 @@
+import sys
 import ftrack_api
 import logging
 import datetime
@@ -259,7 +260,7 @@ def getProjectFolder(project):
             rootFolder = disk['windows']
         elif sys.platform == 'linux2':
             rootFolder = disk['unix']
-        projFolder = os.path.join(rootFolder, project.getName())
+        projFolder = os.path.join(rootFolder, project['name'])
     return projFolder
 
 

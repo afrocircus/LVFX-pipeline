@@ -19,9 +19,8 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
               priority, user, review, dependent):
     jobList = []
     jobname = 'VRay - '+ os.path.split(filename)[-1]
-    imgDir = os.path.split(imgFile)[0]
-    if not os.path.exists(imgDir):
-        os.makedirs(imgDir)
+    if not os.path.exists(imgFile):
+        os.makedirs(imgFile)
     if 'LOGNAME' in os.environ.keys():
         submitter = os.environ['LOGNAME']
     else:
@@ -100,7 +99,7 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
     }
     if review:
         mainJob['command'] += 'python2.7 /data/production/pipeline/linux/scripts/mov_create_upload.py ' \
-                             '-f %s -d %s' % (filename, imgDir)
+                             '-f %s -d %s' % (filename, imgFile)
 
     jobs_ids = hq_server.newjob(mainJob)
     return jobs_ids

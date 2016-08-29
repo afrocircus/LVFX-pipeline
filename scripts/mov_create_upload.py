@@ -1,6 +1,7 @@
 #!/usr/local/bin/python2.7
 import sys
 import os
+import glob
 import getopt
 from renderFarm import config
 from Utils import ftrack_utils2
@@ -22,7 +23,7 @@ def createMov(outdir, filename, taskid):
         version = 'v01'
     shotInfo = '{0} | {1} | {2} | {3} | {4}'.format(task['project']['name'], task['parent']['name'],
                                                     task['name'], version, artist)
-    imgSeq = [os.path.join(outdir, f) for f in os.listdir(outdir) if os.path.isfile(os.path.join(outdir, f))]
+    imgSeq = glob.glob(outdir)
     imgSeq.sort()
     if len(imgSeq) == 0:
         return
@@ -80,14 +81,14 @@ def main(argv):
                   'Converts the images in outdir to mov with slate \n' \
                   'f = filename \n' \
                   't = taskid \n' \
-                  'd = outdir path'
+                  'd = output file pattern eg. /data/production/ftrack_test/filename.#.exr'
             sys.exit()
         elif opt in ('-f', '--filename'):
             filename = arg
         elif opt in ('-t', '--taskid'):
             taskid = arg
-        elif opt in ('-d', '--outdir'):
-            outdir = arg
+        elif opt in ('-d', '--outfile'):
+            outdir = arg.replace('#', '[0-9][0-9][0-9][0-9]')
     movFile, task = createMov(outdir, filename, taskid)
     if task:
         uploadToFtrack(task, movFile)
