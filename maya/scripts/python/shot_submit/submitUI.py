@@ -2,19 +2,12 @@ import os
 import PySide.QtGui as QtGui
 import maya.cmds as cmds
 import maya.mel as mm
+import xmlrpclib
 import json
-import re
-import shutil
-from Widgets.submit.jobWidget import JobWidget
-from Utils.submit.submit import *
+from Widgets.submit.hqueueWidget import HQueueWidget
 from vrayStandaloneWidget import VRayStandaloneWidget
 from vrayMayaWidget import VRayMayaWidget
 from vrayExporterWidget import VRayExporterWidget
-from Utils import ftrack_utils2
-
-
-os.environ['SHOT_SUBMIT_CONFIG'] = '/data/production/pipeline/linux/common/config/shot_submit_config.json'
-os.environ['SHOT_SUBMIT_TEMPLATE_DIR'] = '/data/production/pipeline/linux/common/template/'
 
 
 class ShotSubmitUI(QtGui.QWidget):
@@ -33,10 +26,9 @@ class ShotSubmitUI(QtGui.QWidget):
         self.vrayMaya.hide()
         self.vrayStandalone.hide()
         renderBoxLayout.addWidget(self.vrayMaya, 0, 0)
-        data = self.jsonRead('vrayExporterSettings.json')
-        self.vrayExporter = VRayExporterWidget(data)
+        self.vrayExporter = VRayExporterWidget()
         renderBoxLayout.addWidget(self.vrayExporter, 0, 0)
-        self.jobWidget = JobWidget('Maya')
+        self.jobWidget = HQueueWidget('Maya')
         self.layout().addWidget(self.jobWidget)
         self.jobWidget.rendererChanged.connect(self.changeRendererOptions)
         hlayout = QtGui.QHBoxLayout()
@@ -70,65 +62,58 @@ class ShotSubmitUI(QtGui.QWidget):
         self.repaint()
 
     def submitRender(self):
-        mayaFile = cmds.file(q=True, sn=True)
-        fileDir= os.path.split(mayaFile)[0]
-        tmpDir = os.path.join(fileDir, 'tmp')
-        uploadCheck = False
-        frameRange = rendererParams = filename = ''
-        dataDict = {}
-        if self.vrayExporter.isVisible():
-            filename, rendererParams, dataDict = self.vrayExporter.getRenderParams()
-            uploadCheck = self.vrayExporter.getUploadCheck()
-            frameRange = self.vrayExporter.getFrameRange()
-            if mayaFile:
-                self.jsonWrite(os.path.join(tmpDir, 'vrayExporterSettings.json'), dataDict)
-        elif self.vrayMaya.isVisible():
-            filename, rendererParams = self.vrayMaya.getRenderParams()
-        elif self.vrayStandalone.isVisible():
-            filename, rendererParams, dataDict = self.vrayStandalone.getRenderParams()
-            uploadCheck = self.vrayStandalone.getUploadCheck()
-            frameRange = self.vrayStandalone.getFrameRange()
-            if mayaFile:
-                self.jsonWrite(os.path.join(tmpDir, 'vrayStandaloneSettings.json'), dataDict)
-        if filename is '':
-            QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
-            return
-        fileDir, fname = os.path.split(filename)
-        jobName = 'Maya - %s' % fname
-        renderer = self.jobWidget.getRenderer()
-        splitMode = self.jobWidget.getSplitMode()
+        filename = ''
+        renderer = self.jobWidget.getRenderer('Maya')
+        chunk = self.jobWidget.getSplitMode()
         pool = self.jobWidget.getClientPools()
+        if pool == 'Linux Farm':
+            pool = None
         dependency = self.jobWidget.getDependentJob()
-        if not dependency == '':
-            rendererParams = ' -nj_dependency %s %s' % (dependency, rendererParams)
-        result = submitRender(jobName, renderer, pool, splitMode, rendererParams, filename)
-        QtGui.QMessageBox.about(self, 'Submission Output', result)
-        m = re.search(r'\[(\w+)\=(?P<id>\d+)\]', result)
-        groupid = m.group('id')
-        if uploadCheck:
-            self.submitNukeJob(groupid, frameRange, mayaFile)
+        user = self.jobWidget.getSlackUser()
+        priority = self.jobWidget.getPriority()
+        hq_server = self.jobWidget.getHQProxy()
+        if not isinstance(hq_server, xmlrpclib.ServerProxy):
+            QtGui.QMessageBox.critical(self, 'HQueue Server Error', "Unable to connect to HQueue server")
+            return
+        if self.vrayExporter.isVisible():
+            filename, rendererParams = self.vrayExporter.getRenderParams()
+            if filename is '':
+                QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
+                return
+            fileDir, fname = os.path.split(filename)
+            jobname = 'VRay - %s' % fname
+            rendererParams = '%s %s' % (renderer, rendererParams)
+            jobIds = self.jobWidget.submitVRExport(hq_server, jobname, rendererParams, priority,
+                                                   pool, user, dependency)
+            QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+                                                                   "Job Id = {0}".format(jobIds))
+        elif self.vrayStandalone.isVisible():
+            paramDict, rendererParams = self.vrayStandalone.getRenderParams()
+            self.jsonWrite('vrayStandaloneSettings.json', paramDict)
+            if paramDict['filename'] == '':
+                QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
+                return
+            fileDir, fname = os.path.split(paramDict['filename'])
+            jobname = 'VRay - %s' % fname
+            rendererParams = '%s %s' % (renderer, rendererParams)
+            jobIds = self.jobWidget.submitVRStandalone(hq_server, jobname, paramDict['filename'],
+                                                       paramDict['imgFile'], rendererParams,
+                                                       paramDict['startFrame'], paramDict['endFrame'],
+                                                       paramDict['step'], chunk, paramDict['multiple'],
+                                                       pool, priority, paramDict['review'], user, dependency)
+            QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+                                                                   "Job Id = {0}".format(jobIds))
 
-    def submitNukeJob(self, groupid, frameRange, filename):
-        fileDir, fname = os.path.split(filename)
-        tmpDir = os.path.join(fileDir, 'tmp')
-        if not os.path.exists(tmpDir):
-            os.makedirs(tmpDir)
-        print 'write json file to tmp dir'
-        self.writeShotInfoToJson(filename, tmpDir)
-        print 'copy nuke template to tmp dir'
-        templateFile = os.path.join(os.environ['SHOT_SUBMIT_TEMPLATE_DIR'], 'render.nk')
-        newFilePath = os.path.join(tmpDir, 'render.nk')
-        shutil.copy(templateFile, newFilePath)
-        print 'submit nuke job as dependant job'
-        jobName = 'NukeDependant - %s' % fname
-        renderer = 'Nuke/9.0v7'
-        splitMode = '0,5'
-        pool = self.jobWidget.getClientPools()
-        nukeParams = ' -nj_dependency %s -frames %s -writenode Write1' % (groupid, frameRange)
-        result = submitRender(jobName, renderer, pool, splitMode, nukeParams, newFilePath)
-        print result
 
-    def jsonWrite(self, jsonFile, jsonDict):
+
+    def jsonWrite(self, jsonFilename, jsonDict):
+        mayaFile = cmds.file(q=True, sn=True)
+        if not mayaFile:
+            return
+        jsonDir = os.path.join(os.path.dirname(mayaFile), 'tmp')
+        if not os.path.exists(jsonDir):
+            os.makedirs(jsonDir)
+        jsonFile = os.path.join(jsonDir, jsonFilename)
         with open(jsonFile, 'w') as jf:
             json.dump(jsonDict, jf, indent=4)
 
@@ -139,43 +124,12 @@ class ShotSubmitUI(QtGui.QWidget):
         fileDir= os.path.split(mayaFile)[0]
         tmpDir = os.path.join(fileDir, 'tmp')
         jsonFile = os.path.join(tmpDir, filename)
-        jsonFile = open(jsonFile).read()
-        data = json.loads(jsonFile)
+        data = {}
+        if os.path.exists(jsonFile):
+            jsonFile = open(jsonFile).read()
+            data = json.loads(jsonFile)
         return data
 
-    def writeShotInfoToJson(self, filename, jsonDir):
-        jsonFile = os.path.join(jsonDir, 'shot_info.json')
-        jsonDict = {}
-        jsonDict['filename'] = filename
-        if self.vrayExporter.isVisible():
-            jsonDict['outdir'] = str(self.vrayExporter.outdirEdit.text())
-            jsonDict['outfile'] = str(self.vrayExporter.outfileEdit.text())
-        elif self.vrayStandalone.isVisible():
-            jsonDict['outdir'] = str(self.vrayStandalone.outdirEdit.text())
-            jsonDict['outfile'] = str(self.vrayStandalone.outfileEdit.text())
-
-        session = ftrack_utils2.startANewSession()
-        taskid = ''
-        if 'FTRACK_TASKID' in os.environ:
-            taskid = os.environ['FTRACK_TASKID']
-        task = ftrack_utils2.getTask(session, taskid, filename)
-        if task:
-            jsonDict['taskid'] = task['id']
-            jsonDict['projectName'] = task['project']['name']
-            jsonDict['shotName'] = task['parent']['name']
-            jsonDict['taskName'] = task['name']
-            jsonDict['username'] = ftrack_utils2.getUsername(task)
-        else:
-            jsonDict['taskid'] = ''
-            jsonDict['projectName'] = ''
-            jsonDict['shotName'] = ''
-            jsonDict['taskName'] = ''
-            jsonDict['username'] = ''
-        try:
-            jsonDict['version'] = ftrack_utils2.version_get(filename, 'v')[1]
-        except ValueError:
-            jsonDict['version'] = '0'
-        self.jsonWrite(jsonFile, jsonDict)
 
 
 '''def main():
