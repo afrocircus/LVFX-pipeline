@@ -88,6 +88,10 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
         'priority': priority,
         'submittedBy': submitter,
         'children': jobList,
+        'onChildError': 'export PYTHONPATH=%s ;'
+                        'export SLACK_BOT_TOKEN=%s ;'
+                        'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '
+                        'Fail "%s" "%s"' % (config.python_path, config.slack_bot_token, user, submitter),
         'onSuccess': 'export PYTHONPATH=%s ;'
                      'export SLACK_BOT_TOKEN=%s ;'
                      'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '

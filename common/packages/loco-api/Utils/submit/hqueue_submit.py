@@ -111,6 +111,10 @@ def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFram
         'priority': priority,
         'submittedBy': submitter,
         'children': jobList,
+        'onChildError': 'export PYTHONPATH=%s ;'
+                   'export SLACK_BOT_TOKEN=%s ;'
+                   'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '
+                   'Fail "%s" "%s"' % (pythonPath, slackToken, slackUser, submitter),
         'onSuccess': 'export PYTHONPATH=%s ;'
                      'export SLACK_BOT_TOKEN=%s ;'
                      'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '
