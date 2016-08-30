@@ -67,7 +67,7 @@ class ShotSubmitUI(QtGui.QWidget):
         chunk = self.jobWidget.getSplitMode()
         pool = self.jobWidget.getClientPools()
         if pool == 'Linux Farm':
-            pool = None
+            pool = ''
         dependency = self.jobWidget.getDependentJob()
         user = self.jobWidget.getSlackUser()
         priority = self.jobWidget.getPriority()
