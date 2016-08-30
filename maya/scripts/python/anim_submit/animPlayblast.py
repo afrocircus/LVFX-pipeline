@@ -26,7 +26,7 @@ class AnimPlayblast(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        self.session = ftrack_utils2.startSession()
+        self.session = ftrack_utils2.startANewSession()
         self.shotName = self.version = ''
         self.task = None
 
@@ -90,8 +90,10 @@ class AnimPlayblast(QObject):
         if not os.path.exists(playblastDir):
             os.makedirs(playblastDir)
         outFile = os.path.join(playblastDir, '{0}_{1}_playblast.mov'.format(self.shotName, self.version))
+        width = int(cmds.getAttr('defaultResolution.width'))
+        height = int(cmds.getAttr('defaultResolution.height'))
         playblast(fo=True, filename=outFile, format='qt', compression='jpeg', v=True,
-                  quality=qlty, cc=True, widthHeight=(0, 0), p=intPerc)
+                  quality=qlty, cc=True, widthHeight=(width, height), p=intPerc)
 
     def getCurrentVersion(self):
         filename = self.getCurrentMayaFile()
