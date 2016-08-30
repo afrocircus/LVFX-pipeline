@@ -22,6 +22,8 @@ if 'JOBID' in os.environ.keys():
         process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         outputStr = process.stdout.readlines()
         print outputStr
+    else:
+        print 'Error string not found'
 else:
     output = 'Job id not found'
     print output
