@@ -4,6 +4,11 @@ import xmlrpclib
 import logging
 from slackclient import SlackClient
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s:\n%(message)s')
+
 # starterbot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
 hq_server = xmlrpclib.ServerProxy(os.environ['HQ_SERVER'])
@@ -38,7 +43,7 @@ def handle_command(command, channel):
         try:
             response = hq_server.getJobOutput(int(jobId))
         except Exception, e:
-            print e
+            logging.error(e)
             response = "%s job id is not valid. Or could not find it's output log" % jobId
     elif command.startswith(FAILED_COMMAND):
         jobId = command.strip(FAILED_COMMAND).strip()
@@ -54,7 +59,7 @@ def handle_command(command, channel):
                     failedJobs.append(str(child))
             response = 'Failed Child Jobs = *{0}*'.format(', '.join(failedJobs))
         except Exception, e:
-            print e
+            logging.error(e)
             response = "%s job id is not valid. Or could not find it's output log" % jobId
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
@@ -79,11 +84,11 @@ def parse_slack_output(slack_rtm_output):
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
     if slack_client.rtm_connect():
-        print("StarterBot connected and running!")
+        logging.info("StarterBot connected and running!")
         while True:
             command, channel = parse_slack_output(slack_client.rtm_read())
             if command and channel:
                 handle_command(command, channel)
             time.sleep(READ_WEBSOCKET_DELAY)
     else:
-        print("Connection failed. Invalid Slack token or bot ID?")
+        logging.info("Connection failed. Invalid Slack token or bot ID?")
