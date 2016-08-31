@@ -4,6 +4,7 @@ import sys
 import csv
 import xlsxwriter
 import glob
+import logging
 
 
 # setup environment
@@ -16,7 +17,7 @@ try:
     )
     exportDir = config.export_dir
 except Exception, e:
-    print e
+    logging.error(e)
     sys.exit(2)
 
 
@@ -150,7 +151,8 @@ def getTaskTimeDict(seq, shot, d):
     shotName = '%s/Shot' % shot
     if seqName in d:
         shotDict = d[seqName]
-        taskDict = shotDict[shotName]
+        if shotName in shotDict:
+            taskDict = shotDict[shotName]
     else:
         for key in d.keys():
             if 'Episode' in key:
@@ -265,6 +267,7 @@ def formatData(sequence, d):
     taskList = set()
     shotTaskTimeDict = {}
     mainShotDict = {}
+
     for key in shotTimes:
         shotTaskTimeDict[key] = getTaskTimeDict(sequence, key, d)
         for task in shotTaskTimeDict[key].keys():
@@ -275,7 +278,7 @@ def formatData(sequence, d):
         taskTimes = shotTaskTimeDict[key]
         tempDict['total'] = shotTimes[key]
         for task in taskList:
-            if task in taskTimes:
+            if task in taskTimes and 'duration' in taskTimes[task] and 'bid' in taskTimes[task]:
                 tempDict[task] = (taskTimes[task]['duration'], taskTimes[task]['bid'])
             else:
                 tempDict[task] = (0.0, 0.0)

@@ -3,6 +3,12 @@ from TimeTracker import app
 from ftrack import *
 import json
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s:\n%(message)s')
+
 
 @app.route('/')
 def index():
@@ -51,4 +57,5 @@ def exportData():
         exportFile = exportCVSData(project)
         return exportFile
     except Exception, e:
-        print e
+        logging.error(e)
+    return ''
