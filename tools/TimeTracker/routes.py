@@ -6,6 +6,7 @@ import json
 
 @app.route('/')
 def index():
+    print "here"
     projectNames = getProjects()
     return render_template('home.html', project_list=projectNames)
 

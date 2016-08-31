@@ -1,5 +1,6 @@
 import ftrack_api
 import os
+import sys
 import csv
 import xlsxwriter
 import glob
@@ -9,30 +10,34 @@ import glob
 try:
     import config
     session = ftrack_api.Session(
-        server_url=config.server_url,
-        api_key=config.api_key,
-        api_user=config.api_user
+        server_url=os.environ['FTRACK_SERVER'],
+        api_key=os.environ['FTRACK_API_KEY'],
+        api_user=os.environ['FTRACK_API_USER'],
     )
     exportDir = config.export_dir
 except Exception, e:
     print e
+    sys.exit(2)
 
 
 def getProjects():
     projects = session.query('Project').all()
     projectNames = [project['name'] for project in projects]
+    projectNames.sort()
     return projectNames
 
 
 def getSequences(projectName):
     sequences = session.query('Sequence where project.name is %s' % projectName).all()
     sequenceNames = [sequence['name'] for sequence in sequences]
+    sequenceNames.sort()
     return sequenceNames
 
 
 def getShots(projectName, sequenceName):
     shots = session.query('Shot where project.name is %s and parent.name is %s' % (projectName, sequenceName)).all()
     shotNames = [shot['name'] for shot in shots]
+    shotNames.sort()
     return shotNames
 
 
@@ -51,6 +56,7 @@ def getSequenceChart(projectName):
     seqUserList = [["User", "Days"]]
     userDict = {}
     userList = []
+    seqList.sort()
     for seq in seqList:
         shotTimes, userTimes, users = getShotTimeDict(seq, d)
         userList.extend(users)
@@ -72,7 +78,9 @@ def getShotChart(projectName, sequenceName):
     d = getProjectChildren(projectName)
     shotTimes, userTimes, users = getShotTimeDict(sequenceName, d)
     shotDataList = [["Shots", "Actual", "Bid", {'role': 'style'}]]
-    for shot in shotTimes.keys():
+    shots = shotTimes.keys()
+    shots.sort()
+    for shot in shots:
         time, bid = shotTimes[shot]
         shotDataList.append([str(shot), formatTime(time), formatTime(bid), "#dc3912"])
     userDataList = [["User", "Days"]]
@@ -91,7 +99,7 @@ def getTaskChart(projectName, sequenceName, shotName):
     userDict = {}
     userList = []
     for task in taskDict.keys():
-        time = taskDict[task]['duration']
+        time = abs(taskDict[task]['duration'])
         bid = taskDict[task]['bid']
         taskDataList.append([str(taskDict[task]['task']), formatTime(time), formatTime(bid), "#dc3912"])
         user = taskDict[task]['user']
@@ -208,14 +216,14 @@ def getShotTiming(d):
         taskDict = d[key]
         for task in taskDict.keys():
             if len(task.split('/')) == 1:  # Making sure we're dealing with a task.
-                totalTime += float(taskDict[task]['duration'])
+                totalTime += float(abs(taskDict[task]['duration']))
                 bidTime += float(taskDict[task]['bid'])
                 user = taskDict[task]['user']
                 # find who logged most hours
                 if user in userTiming:
-                    userTiming[user] += taskDict[task]['duration']
+                    userTiming[user] += abs(taskDict[task]['duration'])
                 else:
-                    userTiming[user] = taskDict[task]['duration']
+                    userTiming[user] = abs(taskDict[task]['duration'])
                 # find who logged least hours
                 if taskDict[task]['duration'] == 0.0 and taskDict[task]['bid'] > 0.0:
                     users.append(user)
