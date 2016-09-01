@@ -13,7 +13,8 @@ def getHQServerProxy(hq_host, hq_port):
     return hq_server
 
 
-def submitVRExport(hq_server, jobname, vrayCmd, priority, group, pythonPath, slackToken, slackUser, dependent):
+def submitNoChunk(hq_server, jobname, vrayCmd, priority, tries, group, vrayRestart, pythonPath,
+                  slackToken, slackUser, dependent):
     if 'LOGNAME' in os.environ.keys():
         submitter = os.environ['LOGNAME']
     else:
@@ -24,7 +25,7 @@ def submitVRExport(hq_server, jobname, vrayCmd, priority, group, pythonPath, sla
         'command': vrayCmd,
         'tags': 'single',
         'submittedBy': submitter,
-        'triesLeft': 1,
+        'triesLeft': tries,
         'priority': priority,
         'onSuccess': 'export PYTHONPATH=%s ;'
                      'export SLACK_BOT_TOKEN=%s ;'
@@ -32,10 +33,15 @@ def submitVRExport(hq_server, jobname, vrayCmd, priority, group, pythonPath, sla
                      'Success "%s" "%s"' % (pythonPath, slackToken, slackUser, submitter),
         'onError': 'export PYTHONPATH=%s ;'
                    'export SLACK_BOT_TOKEN=%s ;'
-                   'python2.7 /data/production/pipeline/linux/scripts/renderFarm/vray_restart_onError.py ;'
                    'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py '
                    'Fail "%s" "%s"' % (pythonPath, slackToken, slackUser, submitter)
     }
+    if vrayRestart:
+        job_spec['onError'] = 'export PYTHONPATH=%s ;' \
+                              'export SLACK_BOT_TOKEN=%s ;' \
+                              'python2.7 /data/production/pipeline/linux/scripts/renderFarm/vray_restart_onError.py ;' \
+                              'python2.7 /data/production/pipeline/linux/scripts/renderFarm/slack_message.py ' \
+                              'Fail "%s" "%s"' % (pythonPath, slackToken, slackUser, submitter)
     if group:
         job_spec['conditions'] = [{"type" : "client", "name": "group", "op": "==", "value": group}, ]
     if dependent:

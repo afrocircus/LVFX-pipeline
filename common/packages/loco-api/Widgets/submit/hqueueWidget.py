@@ -123,10 +123,11 @@ class HQueueWidget(QtGui.QWidget):
         hq_server = hqueue_submit.getHQServerProxy(config['hq_host'], config['hq_port'])
         return hq_server
 
-    def submitVRExport(self, hq_server, jobname, vrayCmd, priority, group, slackUser, dependent):
-        jobIds = hqueue_submit.submitVRExport(hq_server, jobname, vrayCmd, priority, group,
-                                              config['python_path'], config['slack_bot_token'],
-                                              slackUser, dependent)
+    def submitNoChunk(self, hq_server, jobname, cmd, priority, tries, group, vrayRestart,
+                      slackUser, dependent):
+        jobIds = hqueue_submit.submitNoChunk(hq_server, jobname, cmd, priority, tries, group,
+                                             vrayRestart, config['python_path'], config['slack_bot_token'],
+                                             slackUser, dependent)
         return jobIds
 
     def submitVRStandalone(self, hq_server, jobname, filename, imgFile, vrCmd, startFrame,
