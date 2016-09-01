@@ -66,6 +66,8 @@ class ShotSubmitUI(QtGui.QWidget):
         renderer = self.jobWidget.getRenderer('Maya')
         chunk = self.jobWidget.getSplitMode()
         pool = self.jobWidget.getClientPools()
+        tries = 1
+        restart = True
         if pool == 'Linux Farm':
             pool = ''
         dependency = self.jobWidget.getDependentJob()
@@ -83,8 +85,8 @@ class ShotSubmitUI(QtGui.QWidget):
             fileDir, fname = os.path.split(filename)
             jobname = 'VRay - %s' % fname
             rendererParams = '%s %s' % (renderer, rendererParams)
-            jobIds = self.jobWidget.submitVRExport(hq_server, jobname, rendererParams, priority,
-                                                   pool, user, dependency)
+            jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, rendererParams, priority,
+                                                  tries, pool, restart, user, dependency)
             QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
                                                                    "Job Id = {0}".format(jobIds))
         elif self.vrayStandalone.isVisible():
@@ -96,13 +98,28 @@ class ShotSubmitUI(QtGui.QWidget):
             fileDir, fname = os.path.split(paramDict['filename'])
             jobname = 'VRay - %s' % fname
             rendererParams = '%s %s' % (renderer, rendererParams)
-            jobIds = self.jobWidget.submitVRStandalone(hq_server, jobname, paramDict['filename'],
-                                                       paramDict['imgFile'], rendererParams,
-                                                       paramDict['startFrame'], paramDict['endFrame'],
-                                                       paramDict['step'], chunk, paramDict['multiple'],
-                                                       pool, priority, paramDict['review'], user, dependency)
-            QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
-                                                                   "Job Id = {0}".format(jobIds))
+            if chunk > 0:
+                jobIds = self.jobWidget.submitVRStandalone(hq_server, jobname, paramDict['filename'],
+                                                           paramDict['imgFile'], rendererParams,
+                                                           paramDict['startFrame'], paramDict['endFrame'],
+                                                           paramDict['step'], chunk, paramDict['multiple'],
+                                                           pool, priority, paramDict['review'], user,
+                                                           dependency)
+                QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+                                                                       "Job Id = {0}".format(jobIds))
+            elif chunk==0 and not paramDict['multiple']:
+                vrayCmd = '{0} -sceneFile={1} -frames={2}-{3},{4}'.format(rendererParams,
+                                                                          paramDict['filename'],
+                                                                          paramDict['startFrame'],
+                                                                          paramDict['endFrame'],
+                                                                          paramDict['step'])
+                jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, vrayCmd, priority,
+                                                      tries, pool, restart, user, dependency)
+                QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+                                                                       "Job Id = {0}".format(jobIds))
+            else:
+                QtGui.QMessageBox.critical(self, 'Job Submit Failed', "Could not submit the job to HQueue."
+                                                                      "Please re-check render parameters.")
 
 
 
