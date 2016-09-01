@@ -50,14 +50,15 @@ def submitNoChunk(hq_server, jobname, vrayCmd, priority, tries, group, vrayResta
     return job_ids
 
 
-def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFrame, endFrame, step, chunk,
-                         multiple, group, priority, review, pythonPath, slackToken, slackUser, dependent):
+def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFrame, endFrame,
+                         step, chunk, multiple, group, priority, review, pythonPath, slackToken,
+                         slackUser, dependent, progressive):
     jobList = []
     if 'LOGNAME' in os.environ.keys():
         submitter = os.environ['LOGNAME']
     else:
         submitter = getpass.getuser()
-    if step > 1 or multiple:
+    if step > 1 or multiple or progressive > 0:
         vrayCmdList = []
         for x in range(startFrame, endFrame+1, step):
             frameStart = x
@@ -67,6 +68,15 @@ def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFram
                 newFilename = filename
             vrayCmd = '{0} -sceneFile={1} -frames={2}-{2}'.format(vrCmd, newFilename, frameStart)
             vrayCmdList.append(vrayCmd)
+
+        if progressive > 0:
+            # reorder list for progressive rendering.
+            tmpList = []
+            for i in range(0, progressive):
+                for j in range(i, len(vrayCmdList), progressive):
+                    tmpList.append(vrayCmdList[j])
+            vrayCmdList = tmpList
+
         for y in range(0, len(vrayCmdList), chunk):
             command = ' ; '.join(vrayCmdList[y:y+chunk])
             frameFinder = re.findall('frames=(\d+)-(\d+)', command)
@@ -134,6 +144,5 @@ def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFram
         mainJob['command'] += 'python2.7 /data/production/pipeline/linux/scripts/mov_create_upload.py ' \
                               '-f %s -d %s' % (filename, imgFile)
 
-    print mainJob
     jobs_ids = hq_server.newjob(mainJob)
     return jobs_ids

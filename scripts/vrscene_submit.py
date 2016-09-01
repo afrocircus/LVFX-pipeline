@@ -16,7 +16,7 @@ except:
 
 
 def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, group,
-              priority, user, review, dependent):
+              priority, user, review, dependent, progressive):
     jobList = []
     jobname = 'VRay - '+ os.path.split(filename)[-1]
     if not os.path.exists(imgFile):
@@ -25,7 +25,7 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
         submitter = os.environ['LOGNAME']
     else:
         submitter = getpass.getuser()
-    if step > 1 or multiple:
+    if step > 1 or multiple or progressive > 0:
         vrayCmdList = []
         for x in range(startFrame, endFrame+1, step):
             frameStart = x
@@ -37,6 +37,12 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
                       '-verboseLevel=3 -sceneFile={0} -imgFile={1} ' \
                       '-frames={2}-{2}'.format(newFilename, imgFile, frameStart)
             vrayCmdList.append(vrayCmd)
+        if progressive > 0:
+            tmpList = []
+            for i in range(0, progressive):
+                for j in range(i, len(vrayCmdList), progressive):
+                    tmpList.append(vrayCmdList[j])
+            vrayCmdList = tmpList
         for y in range(0, len(vrayCmdList), chunk):
             command = ' ; '.join(vrayCmdList[y:y+chunk])
             frameFinder = re.findall('frames=(\d+)-(\d+)', command)
@@ -121,20 +127,21 @@ def main(argv):
     user = '#render-updates'
     review = False
     dependent = 0
+    progressive = 0
 
     try:
-        opts, args = getopt.getopt(argv, 'hv:i:f:l:s:c:mg:p:u:rd:', ['vrscene=', 'imgFile=', 'first=',
+        opts, args = getopt.getopt(argv, 'hv:i:f:l:s:c:mg:p:u:rd:o:', ['vrscene=', 'imgFile=', 'first=',
                                                                      'last=', 'step=', 'chunk=', 'multiple=',
                                                                      'group=', 'priority=', 'slackuser=',
-                                                                     'review=', 'dependent='])
+                                                                     'review=', 'dependent=', 'progressive='])
     except getopt.GetoptError:
         print 'vrscene_submit -v <filename> -i <imgFile> -f <startFrame> -e <endFrame> -s <step>' \
-              '-c <chunk> -m -g <group> -p <priority> -u <username> -r -d <jobID>'
+              '-c <chunk> -m -g <group> -p <priority> -u <username> -r -d <jobID> -o <prog>'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
             print '\nUsage: vrscene_submit -v <vrscene> -i <imgFile> -f <firstFrame> -l <lastFrame> -s <step> ' \
-                  '-c <chunk> -m\n' \
+                  '-c <chunk> -m -g <group> -p <priority> -u <username> -r -d <jobID> -o <prog>\n' \
                   'Submits vrscene file for render to hqueue \n' \
                   'vrscene = Full filepath. When submitting multiple vrscene files, replace frame with # \n' \
                   'eg. /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/lighting/test.#.vrscene \n' \
@@ -148,7 +155,8 @@ def main(argv):
                   'priority = priority of job. 0 is lowest. Default is 0\n' \
                   'slackuser = slack username. Default=#render-updates channel\n' \
                   'review = Create movie and upload to ftrack. Default = False\n' \
-                  'dependent = Job ID of the dependent job' \
+                  'dependent = Job ID of the dependent job\n' \
+                  'progressive = Progressive Step' \
                   '\n ---Multiple VRScene File Example--- \n' \
                   'vrscene_submit -v /data/production/ftrack_test/shots/REEL3/REEL3_sh010/scene/' \
                   'lighting/vrscene/stagBeetleTest_#.vrscene -i /data/production/ftrack_test/shots/' \
@@ -185,6 +193,8 @@ def main(argv):
             review = True
         elif opt in ('-d', '--dependent'):
             dependent = int(arg)
+        elif opt in ('-o', '--progressive'):
+            progressive = int(arg)
     if filename == '':
         print "Please specify a valid vrscene file."
         sys.exit(2)
@@ -192,7 +202,7 @@ def main(argv):
         print "Please specify a valid output file."
         sys.exit(2)
     jobIds = submitJob(filename, imgFile, start, end, step, chunk, multiple, group, priority,
-                       user, review, dependent)
+                       user, review, dependent, progressive)
     print 'Job Submit Successful. Job Id = {0}'.format(jobIds)
 
 if __name__ == '__main__':

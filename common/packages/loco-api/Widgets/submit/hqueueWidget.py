@@ -29,6 +29,10 @@ class HQueueWidget(QtGui.QWidget):
         self.setRendererDrop(renderer)
         self.rendererBox.currentIndexChanged.connect(self.emitRendererChangedSignal)
         jobBoxLayout.addWidget(self.rendererBox, 0, 1)
+        jobBoxLayout.addWidget(QtGui.QLabel('Progressive Step:'), 0, 2)
+        self.progLineEdit = QtGui.QLineEdit()
+        self.progLineEdit.setValidator(QtGui.QIntValidator())
+        jobBoxLayout.addWidget(self.progLineEdit, 0, 3)
         jobBoxLayout.addWidget(QtGui.QLabel('Priority:'), 1, 0)
         self.priorityBox = QtGui.QSpinBox()
         self.priorityBox.setMinimum(1)
@@ -49,6 +53,7 @@ class HQueueWidget(QtGui.QWidget):
         self.countBox = QtGui.QSpinBox()
         self.countBox.setValue(0)
         self.countBox.setEnabled(False)
+        self.progLineEdit.setEnabled(False)
         jobBoxLayout.addWidget(self.countBox, 2, 3)
         jobBoxLayout.addWidget(QtGui.QLabel('Client Pool:'), 3, 0)
         self.poolDrop = QtGui.QComboBox()
@@ -65,10 +70,12 @@ class HQueueWidget(QtGui.QWidget):
             self.splitmodeDrop.setCurrentIndex(0)
             self.countBox.setValue(0)
             self.countBox.setEnabled(False)
+            self.progLineEdit.setEnabled(False)
         else:
             self.splitmodeDrop.setCurrentIndex(1)
             self.countBox.setValue(5)
             self.countBox.setEnabled(True)
+            self.progLineEdit.setEnabled(True)
         self.rendererChanged.emit(rendererIndex)
 
 
@@ -123,6 +130,9 @@ class HQueueWidget(QtGui.QWidget):
         hq_server = hqueue_submit.getHQServerProxy(config['hq_host'], config['hq_port'])
         return hq_server
 
+    def getProgressiveStep(self):
+        return int(self.progLineEdit.text())
+
     def submitNoChunk(self, hq_server, jobname, cmd, priority, tries, group, vrayRestart,
                       slackUser, dependent):
         jobIds = hqueue_submit.submitNoChunk(hq_server, jobname, cmd, priority, tries, group,
@@ -131,9 +141,11 @@ class HQueueWidget(QtGui.QWidget):
         return jobIds
 
     def submitVRStandalone(self, hq_server, jobname, filename, imgFile, vrCmd, startFrame,
-                           endFrame, step, chunk, multiple, group, priority, review, slackUser, dependent):
+                           endFrame, step, chunk, multiple, group, priority, review,
+                           slackUser, dependent, prog):
         jobsIds = hqueue_submit.submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd,
                                                      startFrame, endFrame, step, chunk, multiple,
                                                      group, priority, review, config['python_path'],
-                                                     config['slack_bot_token'], slackUser, dependent)
+                                                     config['slack_bot_token'], slackUser,
+                                                     dependent, prog)
         return jobsIds
