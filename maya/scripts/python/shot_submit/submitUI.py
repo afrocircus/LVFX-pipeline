@@ -74,6 +74,7 @@ class ShotSubmitUI(QtGui.QWidget):
         user = self.jobWidget.getSlackUser()
         priority = self.jobWidget.getPriority()
         hq_server = self.jobWidget.getHQProxy()
+        prog = self.jobWidget.getProgressiveStep()
         if not isinstance(hq_server, xmlrpclib.ServerProxy):
             QtGui.QMessageBox.critical(self, 'HQueue Server Error', "Unable to connect to HQueue server")
             return
@@ -104,7 +105,7 @@ class ShotSubmitUI(QtGui.QWidget):
                                                            paramDict['startFrame'], paramDict['endFrame'],
                                                            paramDict['step'], chunk, paramDict['multiple'],
                                                            pool, priority, paramDict['review'], user,
-                                                           dependency)
+                                                           dependency, prog)
                 QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
                                                                        "Job Id = {0}".format(jobIds))
             elif chunk==0 and not paramDict['multiple']:
