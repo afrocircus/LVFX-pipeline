@@ -117,7 +117,10 @@ def getNode(session, nodePath):
 def getTask(session, projPath):
     parent = getNode(session, projPath)
     taskName = projPath.split(' / ')[-1]
-    task = session.query('Task where parent.id is %s and name is %s' % (parent['parent']['id'], taskName)).one()
+    projName = projPath.split(' / ')[0]
+    task = session.query('Task where parent.id is %s and name is %s '
+                         'and project.name is %s' % (parent['parent']['id'],
+                                                     taskName, projName)).one()
     return task
 
 
@@ -209,8 +212,7 @@ def createThumbnail(inputFile, outputFile):
     return result
 
 
-def getList(session, listName, listCategory, projName, user):
-    project = getProject(session, projName)
+def getList(session, listName, listCategory, project, user):
     try:
         listCategoryObj = session.query('ListCategory where name is %s' % listCategory).one()
     except Exception:
@@ -230,13 +232,12 @@ def getList(session, listName, listCategory, projName, user):
 
 def addToList(session, taskPath, date, version):
     task = getTask(session, taskPath)
-    projName = getProjectName(session, taskPath)
     if len(task['appointments']) > 0:
         user = task['appointments'][0]['resource']
     else:
         user = session.query('User where username is %s' % os.environ['LOGNAME']).one()
     listname = 'Dailies_%s' % date
-    listObj = getList(session, listname, 'Reviews', projName, user)
+    listObj = getList(session, listname, 'Reviews', task['project'], user)
     listObj['items'].append(version)
     session.commit()
 

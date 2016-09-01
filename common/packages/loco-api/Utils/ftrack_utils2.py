@@ -245,7 +245,10 @@ def copyToApprovals(outputFile, project):
     appFolder = os.path.join(approvals, date)
     if not os.path.exists(appFolder):
         os.makedirs(appFolder)
-    os.chmod(appFolder, 0777)
+    try:
+        os.chmod(appFolder, 0777)
+    except OSError:
+        print "Operation not permitted. Unable to change directory permissions."
     dstFile = os.path.join(appFolder, filename)
     shutil.copyfile(outputFile, dstFile)
     return dstFile

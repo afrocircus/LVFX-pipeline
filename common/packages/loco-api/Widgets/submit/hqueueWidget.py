@@ -32,6 +32,7 @@ class HQueueWidget(QtGui.QWidget):
         jobBoxLayout.addWidget(QtGui.QLabel('Progressive Step:'), 0, 2)
         self.progLineEdit = QtGui.QLineEdit()
         self.progLineEdit.setValidator(QtGui.QIntValidator())
+        self.progLineEdit.setText('0')
         jobBoxLayout.addWidget(self.progLineEdit, 0, 3)
         jobBoxLayout.addWidget(QtGui.QLabel('Priority:'), 1, 0)
         self.priorityBox = QtGui.QSpinBox()

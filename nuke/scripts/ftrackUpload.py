@@ -154,7 +154,7 @@ def ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
         taskMeta = {'filename': nukeFile}
         ftrack_utils.addTaskMetadata(session, taskPath, taskMeta)
         print "file upload successful"
-        ftrack_utils.addToList(session, projPath, getDate(), version)
+        #ftrack_utils.addToList(session, projPath, getDate(), version)
     deleteFiles(outfilemp4, outfilewebm, thumnbail)
 
 
