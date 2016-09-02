@@ -15,28 +15,28 @@ Now a UI will pop up on your screen.
 
 Type in the project name, select the workflow schema and click on 'Create'.
 
-.. note:: 1. Make sure there are no spaces in your project name. Ideally, your project name should be all
-          lower case. Use an underscore ('_') to add a space between words.
-          2. Please select "VFX Scheme" as the workflow schema.
+.. note:: * ``Make sure there are no spaces in your project name. Ideally, your project name should be all
+          lower case. Use an underscore ('_') to add a space between words.``
+          * ``Please select "VFX Scheme" as the workflow schema.``
 
 When a project is created on ftrack, the corresponding folder structure in automatically created on disk.
 
 The template folder structure is:
 
-``Project Drive: /data/production/<project_name>``
-``<project_drive>/assets``
-``<project_drive>/assets/3d``
-``<project_drive>/assets/artwork``
-``<project_drive>/assets/hdri``
-``<project_drive>/production``
-``<project_drive>/production/approvals``
-``<project_drive>/production/editorial``
-``<project_drive>/production/io``
-``<project_drive>/production/meetings``
-``<project_drive>/production/schedule``
-``<project_drive>/reference``
-``<project_drive>/shots``
-``<project_drive>/template_files``
+    Project Drive: /data/production/<project_name>
+    <project_drive>/assets
+    <project_drive>/assets/3d
+    <project_drive>/assets/artwork
+    <project_drive>/assets/hdri
+    <project_drive>/production
+    <project_drive>/production/approvals
+    <project_drive>/production/editorial
+    <project_drive>/production/io
+    <project_drive>/production/meetings
+    <project_drive>/production/schedule
+    <project_drive>/reference
+    <project_drive>/shots
+    <project_drive>/template_files
 
 
 Hiero Workflow
