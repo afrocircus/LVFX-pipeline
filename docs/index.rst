@@ -11,6 +11,7 @@ Loco VFX Pipeline Documentation
    :caption: User Documentation
 
    ftrack-connect
+   shot-ingestion
    internal-review
    client-review
    comp-pipeline
