@@ -3,11 +3,8 @@ import os
 import threading
 import nuke
 import json
-import sys
-import time
 import writeNodeManager
 import shutil
-from Utils import ftrack_utils
 from Utils import ftrack_utils2
 
 
@@ -26,32 +23,6 @@ def async(fn):
     return wrapper
 
 
-def isValidTask(projPath):
-    task = None
-    try:
-        task = ftrack_utils.getTask(_session, projPath)
-    except Exception:
-        return False, None
-    return True, task
-
-
-def getProjectDetails(outputFile):
-    pathItems = outputFile.split('/')
-    projectName = pathItems[3]
-    seqName = pathItems[5]
-    shotName = pathItems[6]
-    projPath = '%s / %s / %s / compositing' % (projectName, seqName, shotName)
-    result, task = isValidTask(projPath)
-    if not result:
-        projPath = '%s / %s / %s / Compositing' % (projectName, seqName, shotName)
-        result, task = isValidTask(projPath)
-        if not result:
-            print '%s is not a valid ftrack task' % projPath
-            task = None
-            projPath = ''
-    return task, projPath
-
-
 def prepMediaFiles(outputFile):
     outfilemp4 = os.path.splitext(outputFile)[0] + '.mp4'
     outfilewebm = os.path.splitext(outputFile)[0] + '.webm'
@@ -62,23 +33,6 @@ def prepMediaFiles(outputFile):
     return outfilemp4, outfilewebm, thumbnail, metadata
 
 
-def convertFiles(inputFile, outfilemp4, outfilewebm):
-    mp4Result = ftrack_utils.convertMp4Files(inputFile, outfilemp4)
-    webmResult = ftrack_utils.convertWebmFiles(inputFile, outfilewebm)
-    if mp4Result == 0 and webmResult == 0:
-        return True
-    else:
-        return False
-
-
-def getUploadDetails(session, projPath):
-    taskPath = projPath
-    assetName = 'Quicktime Movie'
-    asset = ftrack_utils.getAsset(session, taskPath, assetName)
-    comment = 'Upload for internal review'
-    return taskPath, asset, comment
-
-
 def deleteFiles(outfilemp4, outfilewebm, thumbnail):
     if os.path.exists(outfilemp4):
         os.remove(outfilemp4)
@@ -86,37 +40,6 @@ def deleteFiles(outfilemp4, outfilewebm, thumbnail):
         os.remove(outfilewebm)
     if os.path.exists(thumbnail):
         os.remove(thumbnail)
-
-
-def addToList(session, taskPath, outputFile, version):
-    task = ftrack_utils.getTask(session, taskPath)
-    projName = outputFile.split('/')[1]
-    user = task['appointments'][0]['resource']
-    date = getDate()
-    listname = 'Dailies_%s' % date
-    listObj = ftrack_utils.getList(session, listname, 'Reviews', projName, user)
-    listObj['items'].append(version)
-    session.commit()
-
-
-def newThreadUpload(session, projPath, inputFile, outfilemp4, outfilewebm, thumnbail,
-                    metadata, outputFile, nukeFile):
-
-    firstFrame = int(nuke.tcl('frames first'))
-    lastFrame = int(nuke.tcl('frames last'))
-    frameCount = lastFrame-firstFrame
-    if frameCount > 400:
-        time.sleep(80)
-    else:
-        time.sleep(30)
-    if os.path.exists(outputFile):
-        ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
-                           thumnbail, metadata, outputFile, nukeFile)
-    else:
-        print "File %s does not exist on disk. Waiting another 30 sec."
-        time.sleep(30)
-        ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
-                           thumnbail, metadata, outputFile, nukeFile)
 
 
 def createRVComponent(session, version, outputFile):
@@ -129,33 +52,6 @@ def createRVComponent(session, version, outputFile):
         location=server_location
     )
     component.session.commit()
-
-
-def ftrackUploadThread(session, projPath, inputFile, outfilemp4, outfilewebm,
-                       thumnbail, metadata, outputFile, nukeFile):
-    try:
-        approvedFile = copyToApprovals(outputFile)
-    except:
-        print "file permissions issue. Could not copy file to approvals folder."
-    firstFrame = int(nuke.tcl('frames first'))
-    lastFrame = int(nuke.tcl('frames last'))
-    result = convertFiles(inputFile, outfilemp4, outfilewebm)
-    if result:
-        thumbresult = ftrack_utils.createThumbnail(outfilemp4, thumnbail)
-        print "File conversion successful"
-        taskPath, asset, comment = getUploadDetails(session, projPath)
-        version = ftrack_utils.createAndPublishVersion(session, taskPath, comment, asset,
-                                                       outfilemp4, outfilewebm, thumnbail,
-                                                       firstFrame, lastFrame, 24)
-        createRVComponent(session, version, outputFile)
-
-        ftrack_utils.setTaskStatus(session, taskPath, version, 'Pending Internal Review')
-        ftrack_utils.addMetadata(session, version, metadata)
-        taskMeta = {'filename': nukeFile}
-        ftrack_utils.addTaskMetadata(session, taskPath, taskMeta)
-        print "file upload successful"
-        #ftrack_utils.addToList(session, projPath, getDate(), version)
-    deleteFiles(outfilemp4, outfilewebm, thumnbail)
 
 
 def getOutputFile():
@@ -190,20 +86,7 @@ def getDate():
     return date
 
 
-def getTaskDetails(outputFile):
-    task = None
-    projPath = ''
-    if 'FTRACK_TASKID' in os.environ:
-        task = _session.query('Task where id is %s' % os.environ['FTRACK_TASKID']).one()
-        shot = task['parent']
-        sequence = shot['parent']
-        project = task['project']['name']
-        projPath = '%s / %s / %s / %s' % (project, sequence['name'], shot['name'], task['name'])
-    else:
-        task, projPath = getProjectDetails(outputFile)
-    return task, projPath
-
-
+@async
 def uploadToFtrack():
     node = None
     for node in nuke.allNodes('Write'):
@@ -213,48 +96,34 @@ def uploadToFtrack():
         print "Submitting to Dailies"
         outputFile = writeNodeManager.getOutputFile()
         nukeFile = nuke.scriptName()
-        task, projPath = getTaskDetails(outputFile)
-        node.knob('uploadToFtrack').setValue(False)
-        if projPath is not '':
-            outfilemp4, outfilewebm, thumbnail, metadata = prepMediaFiles(outputFile)
-            print "Starting conversion..."
-            threading.Thread(None, newThreadUpload, args=[_session, projPath, outputFile,
-                                                          outfilemp4, outfilewebm, thumbnail,
-                                                          metadata, outputFile, nukeFile]).start()
+        if 'FTRACK_TASKID' in os.environ:
+            taskid = os.environ['FTRACK_TASKID']
         else:
-            print "Error in submitting to ftrack. The project details might be incorrect."
-
-
-@async
-def uploadFromJsonToFtrack():
-    filename = nuke.scriptName()
-    movFile = writeNodeManager.getOutputFile()
-    tmpDir = os.path.split(filename)[0]
-    jsonFile = os.path.join(tmpDir, 'shot_info.json')
-    if os.path.exists(jsonFile):
-        jd = open(jsonFile).read()
-        data = json.loads(jd)
-        if not data['taskid'] == '':
-            taskMeta = {'filename': data['filename']}
-            task = _session.query('Task where id is {0}'.format(data['taskid'])).one()
+            taskid = None
+        task = ftrack_utils2.getTask(_session, taskid, nukeFile)
+        node.knob('uploadToFtrack').setValue(False)
+        if task:
+            taskMeta = {'filename': nukeFile}
             ftrack_utils2.addMetadata(_session, task, taskMeta)
-            ftrack_utils2.copyToApprovals(movFile, task['project'])
-            outfilemp4, outfilewebm, thumbnail, metadata = ftrack_utils2.prepMediaFiles(movFile)
-            ff, lf = ftrack_utils2.getFrameLength(movFile)
-            result = ftrack_utils2.convertFiles(movFile, outfilemp4, outfilewebm, thumbnail)
+            ftrack_utils2.copyToApprovals(outputFile, task['project'])
+            outfilemp4, outfilewebm, thumbnail, metadata = ftrack_utils2.prepMediaFiles(outputFile)
+            print "Starting conversion..."
+            result = ftrack_utils2.convertFiles(outputFile, outfilemp4, outfilewebm, thumbnail)
             if result:
                 print "File conversion complete. Starting upload."
                 asset = ftrack_utils2.getAsset(_session, task, 'ReviewAsset')
-                status = ftrack_utils2.getStatus(_session, 'In Progress')
+                status = ftrack_utils2.getStatus(_session, 'Pending Internal Review')
+                ff = int(nuke.tcl('frames first'))
+                lf = int(nuke.tcl('frames last'))
                 try:
                     ftrack_utils2.createAndPublishVersion(_session, task, asset,
                                                           status,'Upload for Internal Review',
-                                                          thumbnail, filename, outfilemp4,
+                                                          thumbnail, nukeFile, outfilemp4,
                                                           outfilewebm, metadata, ff, lf, 24)
                     print 'cleaning up temporary files...'
                     ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
                     print 'Upload Complete!'
                 except Exception:
                     print "Error while uploading movie"
-
-
+        else:
+            print "Error in submitting to ftrack. The project details might be incorrect."
