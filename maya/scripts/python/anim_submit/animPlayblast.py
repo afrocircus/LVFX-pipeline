@@ -26,7 +26,7 @@ class AnimPlayblast(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        self.session = ftrack_utils2.startANewSession()
+        self.session = ftrack_utils2.startSession()
         self.shotName = self.version = ''
         self.task = None
 
@@ -109,19 +109,18 @@ class AnimPlayblast(QObject):
     @async
     def playMovie(self, outFile):
         mov_player = '/usr/bin/djv_view'
-        if not os.path.exists(mov_player):
+        try:
+            cmd = '{0} "{1}"'.format(mov_player, outFile)
+            args = shlex.split(cmd)
+            subprocess.call(args)
+        except Exception:
             mov_player = '/usr/bin/vlc'
-            if not os.path.exists(mov_player):
-                mov_player = ''
-        if mov_player != '':
             try:
                 cmd = '{0} "{1}"'.format(mov_player, outFile)
                 args = shlex.split(cmd)
                 subprocess.call(args)
             except Exception:
                 self.moviePlayFail.emit()
-        else:
-            self.moviePlayFail.emit()
 
     @async
     def uploadToFtrack(self, filename, mayaFile):
