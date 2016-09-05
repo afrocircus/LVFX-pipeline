@@ -47,10 +47,37 @@ Shot ingestion through hiero is a 2 step process.
 
 First, use the ftrack plugin in hiero to create shots in Ftrack.
 
+.. image:: /img/ftrack-shots.png
+
+.. image:: /img/create_shots_hiero.png
+
 Second, use heiro to export dpx images and a nuke script to disk.
+
+Right click on the shot in the timeline and select export.
+
+.. image:: /img/hiero-export.png
+
+.. image:: /img/export-shot.png
+
+When the export window pops up on the screen, select the appropriate preset.
+
+The "export to" path should be ``<project_dir>/<project_name>/shots``
+eg. ``/data/production/ef_coiled/shots``
+
+The preset structure should be
+
+.. image:: /img/export-struct.png
 
 .. note:: Don't worry about creating task folders in heiro. Creating a task in ftrack, will automatically
           create a task folder for that shot on disk.
+
+Make sure to select the 'Loco Nuke Project' in the 'Content' column for the '.nk' file.
+
+.. image:: /img/export-nuke.png
+
+Select the appropriate read and write nodes that should be included in the nuke file.
+
+Now click on export. This will export the dpx images as well as the nuke file.
 
 Ftrack workflow
 ~~~~~~~~~~~~~~~
