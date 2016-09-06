@@ -2,6 +2,7 @@ import os
 import PySide.QtGui as QtGui
 import maya.cmds as cmds
 import maya.mel as mm
+import re
 import xmlrpclib
 import json
 from Widgets.submit.hqueueWidget import HQueueWidget
@@ -96,6 +97,14 @@ class ShotSubmitUI(QtGui.QWidget):
             if paramDict['filename'] == '':
                 QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
                 return
+            p = re.compile('[\w]+.#.[a-z][a-z][a-z]')
+            m = p.match(paramDict['outfile'])
+            if not m:
+                QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid output file to render!\n'
+                                                          'It should follow the format <filename>.#.<ext>')
+                return
+            if not os.path.exists(paramDict['outdir']):
+                os.makedirs(paramDict['outdir'])
             fileDir, fname = os.path.split(paramDict['filename'])
             jobname = 'VRay - %s' % fname
             rendererParams = '%s %s' % (renderer, rendererParams)

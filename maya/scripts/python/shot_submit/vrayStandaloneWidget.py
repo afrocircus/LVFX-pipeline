@@ -23,7 +23,7 @@ class VRayStandaloneWidget(QtGui.QWidget):
         self.multipleCheckBox = QtGui.QCheckBox()
         self.multipleCheckBox.setText('Multiple VRScene Files')
         if 'multiple' in dataDict.keys():
-            self.multipleCheckBox.setChecked(True)
+            self.multipleCheckBox.setChecked(dataDict['multiple'])
         else:
             self.multipleCheckBox.setChecked(False)
         self.layout().addWidget(self.multipleCheckBox)
