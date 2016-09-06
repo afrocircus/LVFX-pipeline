@@ -6,6 +6,7 @@ import threading
 import ftrack
 import subprocess
 import json
+import uuid
 
 
 def async(fn):
@@ -185,7 +186,7 @@ class UploadMedia(ftrack.Action):
         size = '{0}x{1}'.format(width, height)
 
         # generate slate
-        slate = os.path.join(slateFolder, 'slate.png')
+        slate = os.path.join(slateFolder, str(uuid.uuid4())+'.png')
         slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold -pointsize 32 ' \
                    '-fill white -gravity NorthWest -annotate +25+25 "{1}" ' \
                    '-gravity NorthEast -annotate +25+25 "{2}" -gravity SouthEast ' \
@@ -258,9 +259,10 @@ class UploadMedia(ftrack.Action):
             try:
                 self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, 24, metadata)
                 self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, 24, metadata)
-            except:
-                job.setDescription('Failed to Upload Media')
+            except Exception, e:
+                job.setDescription('Failed to Upload Media for shot {0}'.format(shot.getName()))
                 job.setStatus('failed')
+                logging.error(e)
                 return
             version.createComponent(name='movie', path=filename)
             version.publish()
@@ -270,10 +272,11 @@ class UploadMedia(ftrack.Action):
                     attachment = version.createThumbnail(thumbnail)
                     task = ftrack.Task(taskid)
                     task.setThumbnail(attachment)
-                except:
-                    job.setDescription('Failed to Upload Thumbnail')
+                except Exception, e:
+                    job.setDescription('Failed to Upload Thumbnail for shot {0}'.format(shot.getName()))
                     job.setStatus('failed')
                     self.deleteFiles(outfilemp4, outfilewebm, thumbnail)
+                    logging.error(e)
                     return
         self.deleteFiles(outfilemp4, outfilewebm, thumbnail)
         job.setDescription('Upload complete for shot {0}'.format(shot.getName()))
