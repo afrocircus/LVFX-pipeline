@@ -7,7 +7,7 @@ import time
 import writeNodeManager
 import shutil
 import datetime
-from Utils import ftrack_utils
+from Utils import ftrack_utils2
 
 
 _session = ftrack_api.Session(
@@ -16,38 +16,23 @@ _session = ftrack_api.Session(
         api_key=os.environ['FTRACK_API_KEY']
     )
 
-def isValidTask(projPath):
-    task = None
-    try:
-        task = ftrack_utils.getTask(_session, projPath)
-    except Exception:
-        return False, None
-    return True, task
 
 
-def getProjectDetails():
-    node = nuke.toNode('TextFields')  # The name of the node inside the slate gizmo
-    filename = nuke.scriptName()
-    parentDir = os.path.dirname(filename)
-    taskName = os.path.split(parentDir)[-1]
-    projectName = node.knob('plate_jobname').value()
-    shotName = node.knob('plate_shotname').value()
-    seqName = filename.split('/%s/' % shotName)[0].split('/')[-1]
-    projPath = '%s / %s / %s / %s' % (projectName, seqName, shotName, taskName)
-    result, task = isValidTask(projPath)
-    if not result:
-        projPath = '%s / %s / %s / %s' % (projectName, seqName, shotName, taskName.capitalize())
-        result, task = isValidTask(projPath)
-        if not result:
-            print '%s is not a valid ftrack task' % projPath
-            task = None
-    return task, projPath
+def getTask():
+    nukeFile = nuke.scriptName()
+
+    if 'FTRACK_TASKID' in os.environ:
+        taskid = os.environ['FTRACK_TASKID']
+    else:
+        taskid = None
+    task = ftrack_utils2.getTask(_session, taskid, nukeFile)
+    return task
 
 
 def getArtist():
-    task, projPath = getProjectDetails()
     username = ''
-    if task is not None:
+    task = getTask()
+    if task:
         try:
             username = task['appointments'][0]['resource']['username']
         except:
@@ -56,9 +41,9 @@ def getArtist():
 
 
 def getLatestNote():
-    task, projPath = getProjectDetails()
     latestNote = ''
-    if task is not None:
+    task = getTask()
+    if task:
         notesDict = {}
         for note in task['notes']:
             notesDict[note['date']] = note['content']
@@ -101,45 +86,36 @@ def getDate():
 
 
 def getVersion():
-    filename = nuke.scriptName()
-    nkDir, nkFile = os.path.split(filename)
-    nkName, nkExt = os.path.splitext(nkFile)
-    parts = nkName.split('_v')
-    if len(parts) <= 1:
+    nukeFile = nuke.scriptName()
+    try:
+        version = int(ftrack_utils2.version_get(nukeFile, 'v')[1])
+    except ValueError:
         version = 0
-    else:
-        version = int(parts[1])
     return version
 
 
 def getShotName():
-    filename = nuke.scriptName()
-    filepath, file = os.path.split(filename)
-    fname, fext = os.path.splitext(file)
-    shotName = fname.split('_v')[0]
+    shotName = ''
+    task = getTask()
+    if task:
+        shotName = task['parent']['name']
     return shotName
 
 
 def getJobName():
-    filename = nuke.scriptName()
-    jobDir = filename.split('shots')[0]
-    jobName = jobDir.split('/')[-2]
+    jobName = ''
+    task = getTask()
+    if task:
+        jobName = task['project']['name']
     return jobName
 
 
 def getTaskName():
-    task = None
-    if 'FTRACK_TASKID' in os.environ.keys():
-        try:
-            task = _session.query('Task where id is {0}'.format(os.environ['FTRACK_TASKID'])).one()
-        except:
-            print 'No task found'
-    if not task:
-        task, projPath = getProjectDetails()
+    taskName = ''
+    task = getTask()
     if task:
-        return task['name']
-    else:
-        return 'No task found'
+        taskName = task['name']
+    return taskName
 
 
 def readJson():
