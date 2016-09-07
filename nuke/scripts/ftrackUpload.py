@@ -118,7 +118,7 @@ def uploadToFtrack():
                 try:
                     ftrack_utils2.createAndPublishVersion(_session, task, asset,
                                                           status,'Upload for Internal Review',
-                                                          thumbnail, nukeFile, outfilemp4,
+                                                          thumbnail, outputFile, outfilemp4,
                                                           outfilewebm, metadata, ff, lf, 24)
                     print 'cleaning up temporary files...'
                     ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
