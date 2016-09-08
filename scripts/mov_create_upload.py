@@ -15,6 +15,8 @@ os.environ['FTRACK_API_KEY'] = config.ftrack_api_key
 def createMov(outdir, filename, taskid):
     session = ftrack_utils2.startANewSession()
     task = ftrack_utils2.getTask(session, taskid, filename)
+    if not task:
+        return '',  task
     artist = ftrack_utils2.getUsername(task)
     date = ftrack_utils2.getDate()
     try:
