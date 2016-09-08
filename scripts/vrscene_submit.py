@@ -19,8 +19,9 @@ def submitJob(filename, imgFile, startFrame, endFrame, step, chunk, multiple, gr
               priority, user, review, dependent, progressive):
     jobList = []
     jobname = 'VRay - '+ os.path.split(filename)[-1]
-    if not os.path.exists(imgFile):
-        os.makedirs(imgFile)
+    imgdir = os.path.dirname(imgFile)
+    if not os.path.exists(imgdir):
+        os.makedirs(imgdir)
     if 'LOGNAME' in os.environ.keys():
         submitter = os.environ['LOGNAME']
     else:
