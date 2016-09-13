@@ -84,8 +84,9 @@ class ShotSubmitUI(QtGui.QWidget):
             if filename is '':
                 QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
                 return
+            renderLayer = str(self.vrayExporter.renderLayerEdit.text())
             fileDir, fname = os.path.split(filename)
-            jobname = 'VRay - %s' % fname
+            jobname = 'VRayExport - %s_%s' % (os.path.splitext(fname)[0], renderLayer)
             rendererParams = '%s %s' % (renderer, rendererParams)
             jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, rendererParams, priority,
                                                   tries, pool, restart, user, dependency)
