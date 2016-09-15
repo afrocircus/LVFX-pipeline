@@ -1,4 +1,5 @@
 import sys
+import os
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 from cStringIO import StringIO
@@ -70,6 +71,11 @@ class Main(QtGui.QMainWindow):
         self.saveAction.setShortcut('Ctrl+S')
         self.saveAction.triggered.connect(self.save)
 
+        self.exportAction = QtGui.QAction(QtGui.QIcon('icons/csv-export.png'), 'Export', self)
+        self.exportAction.setStatusTip('Export CSV for tag-ed data.')
+        self.exportAction.setShortcut('Ctrl+E')
+        self.exportAction.triggered.connect(self.export)
+
         self.printAction = QtGui.QAction(QtGui.QIcon('icons/print.png'), 'Print', self)
         self.printAction.setStatusTip('Print document.')
         self.printAction.setShortcut('Ctrl+P')
@@ -124,6 +130,7 @@ class Main(QtGui.QMainWindow):
         self.toolbar.addAction(self.newAction)
         self.toolbar.addAction(self.openAction)
         self.toolbar.addAction(self.saveAction)
+        self.toolbar.addAction(self.exportAction)
         self.toolbar.addAction(self.printAction)
         self.toolbar.addAction(self.previewAction)
         self.toolbar.addSeparator()
@@ -246,6 +253,7 @@ class Main(QtGui.QMainWindow):
         file.addAction(self.newAction)
         file.addAction(self.openAction)
         file.addAction(self.saveAction)
+        file.addAction(self.exportAction)
         file.addAction(self.printAction)
         file.addAction(self.previewAction)
 
@@ -272,11 +280,20 @@ class Main(QtGui.QMainWindow):
 
     def open(self):
         # Get filename and show only .pdf files
-        self.filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Open File', '.')
+        self.filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Open File', os.path.expanduser('~'))
         # Insert function here to read pdf file and display text.
         if self.filename:
             text = self.convertPDF(self.filename, [1,2,3])
             self.text.setText(text.decode("utf-8", "replace"))
+
+    def export(self):
+        # Export csv document
+        filename, t = QtGui.QFileDialog.getSaveFileName(self, 'Export File',
+                                                        os.path.expanduser('~'), '(*.csv)')
+        tagDict = self.tagMenu.getTagDict()
+        if not filename.endswith('.csv'):
+            filename += ".csv"
+        exportObj = export.Export(tagDict, filename)
 
     def save(self):
         # Only open dialog if there is no filename yet
@@ -284,7 +301,8 @@ class Main(QtGui.QMainWindow):
             self.filename, t = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
         # Append extension if not there yet
         if not self.filename.endswith('.txt'):
-            self.filename += ".txt"
+            fname = os.path.splitext(self.filename)[0]
+            self.filename = fname + ".txt"
 
         # We just store the contents of the text file along with the
         # format in html, which Qt does in a very nice way for us

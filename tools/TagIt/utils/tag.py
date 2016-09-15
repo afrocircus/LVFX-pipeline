@@ -3,6 +3,11 @@ import PySide.QtGui as QtGui
 from collections import defaultdict
 
 
+TASK_TYPES = ['Texturing', 'Generic', 'Animation', 'Modeling', 'Previz',
+             'Lookdev', 'FX', 'Lighting', 'Compositing', 'Tracking', 'Rigging',
+             'Matte Painting', 'Layout', 'Rotoscoping', 'VFX Supervision']
+
+
 class Tag(QtGui.QMenu):
     def __init__(self, parent=None, tagDict=None):
         # Initalize context menu
@@ -26,18 +31,23 @@ class Tag(QtGui.QMenu):
         shotMenu.setTitle('New Shot in')
         for scene in sorted(self.tagDict.keys()):
             shotAction = QtGui.QAction(scene, self)
-            shotAction.triggered.connect(lambda arg=(shotAction,currentPage):self.onShotTriggered((arg)))
+            shotAction.triggered.connect(lambda arg=(shotAction, currentPage): self.onShotTriggered(arg))
             shotMenu.addAction(shotAction)
         self.addMenu(shotMenu)
 
-        '''shotSceneList = self.getRelevantShots(currentPage)
-        descMenu = QtGui.QMenu()
-        descMenu.setTitle('Description for')
-        for scene in sorted(shotSceneList):
-            descAction = QtGui.QAction(scene, self)
-            descAction.triggered.connect(lambda arg=descAction: self.onDescTriggered(arg))
-            descMenu.addAction(descAction)
-        self.addMenu(descMenu)'''
+        shotSceneList = self.getRelevantShots(currentPage)
+        taskMenu = QtGui.QMenu()
+        taskMenu.setTitle('Task Type')
+        for taskType in TASK_TYPES:
+            taskTypeMenu = QtGui.QMenu()
+            taskTypeMenu.setTitle(taskType)
+            for scene in sorted(shotSceneList):
+                taskAction = QtGui.QAction(scene, self)
+                taskAction.triggered.connect(lambda arg=(taskAction, taskTypeMenu.title()):
+                                             self.onTaskTriggered(arg))
+                taskTypeMenu.addAction(taskAction)
+            taskMenu.addMenu(taskTypeMenu)
+        self.addMenu(taskMenu)
 
     def onSceneTriggered(self, currentPage):
         """
@@ -53,7 +63,9 @@ class Tag(QtGui.QMenu):
         d = self.tagDict[newScene]
         d['page'] = currentPage
         d['shots'] = defaultdict(dict)
-        d['description'] = self.parent.textCursor().selectedText()
+        d['description'] = self.parent.textCursor().selectedText().encode("utf-8")
+        color = QtGui.QColor(255, 170, 0)
+        self.parent.setTextBackgroundColor(color)
 
     def onShotTriggered(self, (action, currentPage)):
         """
@@ -73,10 +85,23 @@ class Tag(QtGui.QMenu):
         shotName = '%s_%s' % (scene, newShot)
         d = shotsDict[shotName]
         d['page'] = currentPage
-        d['description'] = self.parent.textCursor().selectedText()
+        d['description'] = self.parent.textCursor().selectedText().encode("utf-8")
+        d['task'] = []
+        color = QtGui.QColor(255, 170, 127)
+        self.parent.setTextBackgroundColor(color)
 
-    def onDescTriggered(self, action):
-        print action.text()
+    def onTaskTriggered(self, (action, taskName)):
+        """
+        Slot activated when task action signal triggered.
+        Updates shot information in tagDict
+        :return: None
+        """
+        shotName = action.text()
+        scene = shotName.split('_')[0]
+        shotDict = self.tagDict[scene]['shots'][shotName]
+        shotDict['task'].append(taskName)
+        color = QtGui.QColor(170, 170, 0)
+        self.parent.setTextBackgroundColor(color)
 
     def findPage(self):
         """
@@ -113,13 +138,16 @@ class Tag(QtGui.QMenu):
 
     def getRelevantShots(self, currentPage):
         # Scenes that are relevant to the current page
-        relevantList = [item[0] for item in self.tagDict.iteritems() if item[1]['page'] <= currentPage]
-
+        #relevantList = [item[0] for item in self.tagDict.iteritems() if item[1]['page'] <= currentPage]
+        relevantList = []
         # Shots that are relevant to the current page
         shotDicts = [item['shots'] for item in self.tagDict.itervalues()]
         for shotDict in shotDicts:
             shotList = [item[0] for item in shotDict.iteritems() if item[1]['page'] <= currentPage]
             relevantList.extend(shotList)
         return relevantList
+
+    def getTagDict(self):
+        return self.tagDict
 
 
