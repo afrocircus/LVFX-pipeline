@@ -183,7 +183,7 @@ If the job has failed, you can use slack to retrieve the failed jobs as well as 
 This is especially useful if you are at home and do not have access to the Hqueue page.
 
 To query failed jobs, send a direct message to @renderbot on slack.
-The slack account is: locovfx.slack.com
+The slack account is: https://locovfx.slack.com
 
 Type in the following command::
 
