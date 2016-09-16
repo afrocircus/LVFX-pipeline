@@ -1,8 +1,7 @@
 import os
 import nuke
 import PySide.QtGui as QtGui
-from Utils.submit.submit import *
-from Widgets.submit.jobWidget import JobWidget
+from Widgets.submit.hqueueWidget import HQueueWidget
 
 
 class ShotSubmitUI(QtGui.QWidget):
@@ -36,10 +35,12 @@ class ShotSubmitUI(QtGui.QWidget):
         self.writeNodeBox = QtGui.QComboBox()
         self.populateWriteNodes()
         renderBoxLayout.addWidget(self.writeNodeBox, 3, 1)
-        self.jobWidget = JobWidget('Nuke')
+        self.jobWidget = HQueueWidget('Nuke')
         self.layout().addWidget(self.jobWidget)
         self.jobWidget.splitmodeDrop.setCurrentIndex(0)
-        self.jobWidget.poolDrop.setCurrentIndex(0)
+        self.jobWidget.splitmodeDrop.setEnabled(False)
+        self.jobWidget.poolDrop.setCurrentIndex(1)
+        self.jobWidget.progLineEdit.setEnabled(False)
         hlayout = QtGui.QHBoxLayout()
         submitButton = QtGui.QPushButton('Submit')
         submitButton.clicked.connect(self.submitRender)
@@ -63,12 +64,15 @@ class ShotSubmitUI(QtGui.QWidget):
     def getRendererParams(self):
         renderParams = ''
         if str(self.frameBox.text()) is not '':
-            renderParams = '%s -frames %s' % (renderParams, str(self.frameBox.text()))
+            frames = str(self.frameBox.text()).replace('-', ',').strip()
+            # remove any whitespaces in the string and replace '-' with ','
+            frames = ''.join(frames.replace('-',',').split())
         else:
-            renderParams = '%s -frames %s-%s' % (renderParams, nuke.tcl('frames first'), nuke.tcl('frames last'))
+            frames = '%s,%s' % (nuke.tcl('frames first'), nuke.tcl('frames last'))
         if str(self.frameStepBox.text()) is not '':
-            renderParams = '%s -fstep %s' % (renderParams, str(self.frameStepBox.text()))
-        renderParams = '%s -writenode %s' % (renderParams, str(self.writeNodeBox.currentText()))
+            frames = '%sx%s' % (frames, str(self.frameStepBox.text()))
+        renderParams = '-F %s' % frames
+        renderParams = '%s -X %s' % (renderParams, str(self.writeNodeBox.currentText()))
         return renderParams
 
     def submitRender(self):
@@ -78,9 +82,17 @@ class ShotSubmitUI(QtGui.QWidget):
             return
         fileDir, fname = os.path.split(filename)
         jobName = 'Nuke - %s' % fname
-        renderer = self.jobWidget.getRenderer()
+        renderer = self.jobWidget.getRenderer('Nuke')
         splitMode = self.jobWidget.getSplitMode()
         pool = self.jobWidget.getClientPools()
+        if pool == 'Linux Farm':
+            pool = ''
+        slackUser = self.jobWidget.getSlackUser()
         rendererParams = self.getRendererParams()
-        result = submitRender(jobName, renderer, pool, splitMode, rendererParams, filename)
-        nuke.message(result)
+        priority = self.jobWidget.getPriority()
+        dependent = self.jobWidget.getDependentJob()
+        cmd = '%s %s %s' % (renderer, rendererParams, filename)
+        hq_server = self.jobWidget.getHQProxy()
+        jobIds = self.jobWidget.submitNoChunk(hq_server, jobName, cmd, priority, 0,
+                                              pool, False, slackUser, dependent)
+        nuke.message('Job Submission Successful. Job Ids = {0}'.format(jobIds))
