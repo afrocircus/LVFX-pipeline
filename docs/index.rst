@@ -16,3 +16,4 @@ Loco VFX Pipeline Documentation
    client-review
    comp-pipeline
    roto-pipeline
+   render-submission
