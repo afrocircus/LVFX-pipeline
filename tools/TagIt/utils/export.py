@@ -13,43 +13,20 @@ class Export(object):
         :return: dataList: CSV readable data
         """
 
-        titles = ['Sequence Name', 'Sequence Description', 'Sequence Page No',
-                  'Shot Name', 'Shot Description', 'Shot Page No', 'Task Type',
-                  'Task Name', 'Assignee', 'Bid']
+        titles = ['Sequence No', 'Sequence Description', 'Sequence Page No', 'Task Type']
         dataList = [titles]
+        print tagDict
         for seq in sorted(tagDict.iterkeys()):
             descriptionAdded = False
-            shots = tagDict[seq]['shots']
-            if len(shots) > 0:
-                for shot in sorted(shots.iterkeys()):
-                    shotDescription = False
-                    tasks = shots[shot]['task']
-                    if len(tasks) > 0:
-                        for task in tasks:
-                            row, descriptionAdded = self.formatSeqShot(seq, tagDict, descriptionAdded)
-                            shotRow, shotDescription = self.formatSeqShot(shot, shots, shotDescription)
-                            row.extend(shotRow)
-                            row.append(task)
-                            dataList.append(row)
-                    else:
-                        row, descriptionAdded = self.formatSeqShot(seq, tagDict, descriptionAdded)
-                        shotRow, shotDescription = self.formatSeqShot(shot, shots, shotDescription)
-                        row.extend(shotRow)
-                        dataList.append(row)
-            else:
-                row, descriptionAdded = self.formatSeqShot(seq, tagDict, descriptionAdded)
+            for task in tagDict[seq]['tasks']:
+                if not descriptionAdded:
+                    row = [seq, tagDict[seq]['desc'], tagDict[seq]['page']]
+                    descriptionAdded = True
+                else:
+                    row = ['', '', '']
+                row.append(task)
                 dataList.append(row)
         return dataList
-
-    def formatSeqShot(self, key, tagDict, descriptionFlag):
-        row = [key]
-        if not descriptionFlag:
-            row.append(tagDict[key]['description'])
-            descriptionFlag = True
-        else:
-            row.append('')
-        row.append(tagDict[key]['page'])
-        return row, descriptionFlag
 
     def writeCSVFile(self, exportFile, dataList):
         """

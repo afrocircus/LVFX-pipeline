@@ -22,13 +22,16 @@ class Main(QtGui.QMainWindow):
     def initUI(self):
 
         # x and y coordinates on the screen, width, height
-        self.setGeometry(100, 100, 1030, 800)
+        self.setGeometry(100, 100, 800, 1000)
         self.setWindowTitle('Shot Editor')
         self.setWindowIcon(QtGui.QIcon('icons/icon.png'))
 
         self.statusbar = self.statusBar()
         self.text = QtGui.QTextEdit(self)
         self.text.setTabStopWidth(33)
+        self.text.setViewportMargins(60, 0, 60, 0)
+        self.text.setMaximumWidth(270*3)
+        self.text.setMaximumHeight(357*3)
         self.text.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.text.selectionChanged.connect(self.textSelectionChanged)
         self.text.customContextMenuRequested.connect(self.on_context_menu)
@@ -165,10 +168,10 @@ class Main(QtGui.QMainWindow):
         fontSize.activated.connect(self.fontSize)
 
         # Typical font sizes
-        fontSizes = ['6','7','8','9','10','11','12','13','14',
-                     '15','16','18','20','22','24','26','28',
-                     '32','36','40','44','48','54','60','66',
-                     '72','80','88','96']
+        fontSizes = ['6', '7', '8', '9', '10', '11', '12', '13', '14',
+                     '15', '16', '18', '20', '22', '24', '26', '28',
+                     '32', '36', '40', '44', '48', '54', '60', '66',
+                     '72', '80', '88', '96']
 
         fontSize.addItems(fontSizes)
 
@@ -242,7 +245,6 @@ class Main(QtGui.QMainWindow):
         self.formatbar.addAction(indentAction)
         self.formatbar.addAction(dedentAction)
 
-
     def initMenubar(self):
 
         menubar = self.menuBar()
@@ -282,18 +284,26 @@ class Main(QtGui.QMainWindow):
         # Get filename and show only .pdf files
         self.filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Open File', os.path.expanduser('~'))
         # Insert function here to read pdf file and display text.
-        if self.filename:
-            text = self.convertPDF(self.filename, [1,2,3])
+        if self.filename.endswith('.pdf'):
+            text = self.convertPDF(self.filename, [1, 2, 3, 4, 5, 6, 7, 8])
             self.text.setText(text.decode("utf-8", "replace"))
+        elif self.filename.endswith('.fdx'):
+            lines = importFile.importFDX(self.filename)
+            text = ''
+            pages = importFile.paginate(lines)
+            for index in xrange(len(lines)):
+                if index in pages:
+                    text += '\nPage %d\n' % (pages.index(index) + 1)
+                text += lines[index].getLine() + '\n'
+            self.text.setText(text)
 
     def export(self):
         # Export csv document
         filename, t = QtGui.QFileDialog.getSaveFileName(self, 'Export File',
                                                         os.path.expanduser('~'), '(*.csv)')
-        tagDict = self.tagMenu.getTagDict()
         if not filename.endswith('.csv'):
             filename += ".csv"
-        exportObj = export.Export(tagDict, filename)
+        exportObj = export.Export(self.tagMenu.tagDict, filename)
 
     def save(self):
         # Only open dialog if there is no filename yet
@@ -306,7 +316,7 @@ class Main(QtGui.QMainWindow):
 
         # We just store the contents of the text file along with the
         # format in html, which Qt does in a very nice way for us
-        with open(self.filename,"wt") as file:
+        with open(self.filename, "wt") as file:
             text = self.text.toPlainText().encode("utf-8")
             file.write(text)
 
@@ -491,7 +501,6 @@ class Main(QtGui.QMainWindow):
                 cursor.movePosition(QtGui.QTextCursor.Up)
         else:
             self.handleDedent(cursor)
-
 
     def handleDedent(self, cursor):
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
