@@ -310,6 +310,7 @@ class Main(QtGui.QMainWindow):
         if filename:
             importObj = importFile.ImportFile(filename)
             self.tagDict = importObj.readCSV()
+            self.highlightTags()
 
     def export(self):
         # Export csv document
@@ -320,7 +321,25 @@ class Main(QtGui.QMainWindow):
         exportObj = export.Export(self.tagMenu.tagDict, filename)
 
     def highlightTags(self):
-        print 'highlight tags'
+        document = self.text.document()
+        cursor = self.text.textCursor()
+        for key in self.tagDict.iterkeys():
+            self.changeColorAtLine(key, 'seq', document, cursor)
+            for task, lineno in self.tagDict[key]['tasks']:
+                self.changeColorAtLine(lineno, 'task', document, cursor)
+
+    def changeColorAtLine(self, line, type, document, cursor):
+        textBlock = document.findBlockByLineNumber(line-1)
+        cursor.setPosition(textBlock.position(), QtGui.QTextCursor.MoveAnchor)
+        cursor.movePosition(QtGui.QTextCursor.EndOfBlock, QtGui.QTextCursor.KeepAnchor)
+        self.text.setTextCursor(cursor)
+        # Change the color
+        if type == 'seq':
+            color = QtGui.QColor(168, 231, 154)
+        else:
+            color = QtGui.QColor(204, 217, 201)
+        self.text.setTextBackgroundColor(color)
+
 
     def save(self):
         # Only open dialog if there is no filename yet
