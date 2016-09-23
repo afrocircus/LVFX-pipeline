@@ -16,14 +16,20 @@ class Tag(QtGui.QMenu):
         self.parent = parent
         self.tagDict = tagDict
 
-    def initMenu(self):
+    def initMenu(self, tagDict):
         """
         Dynamically build context menu based on tagDict
         :return: None
         """
+        self.tagDict = tagDict
         self.clear()
+        selectionLine = self.parent.textCursor().blockNumber()+1
         for taskType in TASK_TYPES:
             taskAction = QtGui.QAction(taskType, self, checkable=True)
+            if self.taskFound(selectionLine, taskType):
+                taskAction.setChecked(True)
+            else:
+                taskAction.setChecked(False)
             taskAction.triggered.connect(lambda arg=taskAction: self.onTaskTriggered(arg))
             self.addAction(taskAction)
 
@@ -37,6 +43,24 @@ class Tag(QtGui.QMenu):
                     return True
         return QtGui.QMenu.eventFilter(self, obj, event)
 
+    def taskFound(self, selectionLineNo, taskType):
+        """
+        Find if the selected text has a task associated with it already.
+        :param selectionLineNo: Selection line number
+        :param taskType: task name
+        :return: True or False based on if task is found
+        """
+        if self.tagDict:
+            # Find the scene number closest to the selected line number
+            sceneNumber = [item for item in sorted(self.tagDict.iterkeys())
+                           if item <= selectionLineNo][-1]
+            # Check if the scene dict has the associated task
+            if 'tasks' in self.tagDict[sceneNumber]:
+                for task, taskLine in self.tagDict[sceneNumber]['tasks']:
+                    if task == taskType and taskLine == selectionLineNo:
+                        return True
+        return False
+
     def onTaskTriggered(self, action):
         """
         Slot activated when task action signal triggered.
@@ -45,21 +69,43 @@ class Tag(QtGui.QMenu):
         :return: None
         """
         taskName = action.text()
-        color = QtGui.QColor(170, 170, 0)
+        cursor = self.parent.textCursor()
+        taskNo = cursor.blockNumber() + 1
+
+        # Get current selection
+        selectionStart = cursor.selectionStart()
+        selectionEnd = cursor.selectionEnd()
+
+        if self.allActionsUnchecked():
+            color = QtGui.QColor(255, 255, 255)
+        else:
+            color = QtGui.QColor(204, 217, 201)
         self.parent.setTextBackgroundColor(color)
-        sceneNo, sceneDesc = self.findScene()
+        sceneNo, sceneDesc = self.findScene(selectionStart, selectionEnd)
         pageNo = self.findPage()
         d = self.tagDict[sceneNo]
         d['page'] = pageNo
         d['desc'] = sceneDesc
-        if 'tasks' in d:
-            d['tasks'].append(taskName)
-        else:
-            d['tasks'] = [taskName]
+        if action.isChecked():
+            if 'tasks' in d:
+                d['tasks'].append((taskName, taskNo))
+            else:
+                d['tasks'] = [(taskName, taskNo)]
+        elif (taskName, taskNo) in d['tasks']:
+            d['tasks'].remove((taskName, taskNo))
 
-    def findScene(self):
-        """
+    def allActionsUnchecked(self):
+        unchecked = True
+        for action in self.actions():
+            if action.isChecked():
+                unchecked = False
+        return unchecked
+
+    def findScene(self, selectionStart, selectionEnd):
+        """#CCD9C9 #9EBFE2 #92A8D2 #486A5D #A8E79A
         Find the scene based on current selection.
+        :param selectionStart: Starting position of current selection
+        :param selectionEnd: Ending position of current selection
         :return: scenePos: Scene Line Number
                  sceneDesc: Scene Description
         """
@@ -83,12 +129,16 @@ class Tag(QtGui.QMenu):
         self.parent.setTextCursor(cursor)
 
         # Change the color
-        color = QtGui.QColor(0, 140, 40)
+        color = QtGui.QColor(168, 231, 154)
         self.parent.setTextBackgroundColor(color)
 
         sceneDesc = self.parent.textCursor().selectedText().encode("utf-8")
         # Get line number of the scene
         scenePos = self.parent.textCursor().blockNumber() + 1
+        cursor.setPosition(selectionStart, QtGui.QTextCursor.MoveAnchor)
+        cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor,
+                            selectionEnd-selectionStart)
+        self.parent.setTextCursor(cursor)
         return scenePos, sceneDesc
 
     def findPage(self):

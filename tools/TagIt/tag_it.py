@@ -56,7 +56,7 @@ class Main(QtGui.QMainWindow):
         # Update menu on text selection change.
         cursor = self.text.textCursor()
         if cursor.hasSelection():
-            self.tagMenu.initMenu()
+            self.tagMenu.initMenu(self.tagDict)
 
     def initToolBar(self):
         self.newAction = QtGui.QAction(QtGui.QIcon('icons/new.png'), 'New', self)
@@ -73,6 +73,11 @@ class Main(QtGui.QMainWindow):
         self.saveAction.setStatusTip('Save document.')
         self.saveAction.setShortcut('Ctrl+S')
         self.saveAction.triggered.connect(self.save)
+
+        self.importAction = QtGui.QAction(QtGui.QIcon('icons/csv-import.png'), 'Import', self)
+        self.importAction.setStatusTip('Import CSV data.')
+        self.importAction.setShortcut('Ctrl+I')
+        self.importAction.triggered.connect(self.importCSV)
 
         self.exportAction = QtGui.QAction(QtGui.QIcon('icons/csv-export.png'), 'Export', self)
         self.exportAction.setStatusTip('Export CSV for tag-ed data.')
@@ -133,6 +138,7 @@ class Main(QtGui.QMainWindow):
         self.toolbar.addAction(self.newAction)
         self.toolbar.addAction(self.openAction)
         self.toolbar.addAction(self.saveAction)
+        self.toolbar.addAction(self.importAction)
         self.toolbar.addAction(self.exportAction)
         self.toolbar.addAction(self.printAction)
         self.toolbar.addAction(self.previewAction)
@@ -255,6 +261,7 @@ class Main(QtGui.QMainWindow):
         file.addAction(self.newAction)
         file.addAction(self.openAction)
         file.addAction(self.saveAction)
+        file.addAction(self.importAction)
         file.addAction(self.exportAction)
         file.addAction(self.printAction)
         file.addAction(self.previewAction)
@@ -288,14 +295,21 @@ class Main(QtGui.QMainWindow):
             text = self.convertPDF(self.filename, [1, 2, 3, 4, 5, 6, 7, 8])
             self.text.setText(text.decode("utf-8", "replace"))
         elif self.filename.endswith('.fdx'):
-            lines = importFile.importFDX(self.filename)
+            lines = openFile.importFDX(self.filename)
             text = ''
-            pages = importFile.paginate(lines)
+            pages = openFile.paginate(lines)
             for index in xrange(len(lines)):
                 if index in pages:
                     text += '\nPage %d\n' % (pages.index(index) + 1)
                 text += lines[index].getLine() + '\n'
             self.text.setText(text)
+
+    def importCSV(self):
+        filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Import CSV File',
+                                                        os.path.expanduser('~'), '(*.csv)')
+        if filename:
+            importObj = importFile.ImportFile(filename)
+            self.tagDict = importObj.readCSV()
 
     def export(self):
         # Export csv document
@@ -304,6 +318,9 @@ class Main(QtGui.QMainWindow):
         if not filename.endswith('.csv'):
             filename += ".csv"
         exportObj = export.Export(self.tagMenu.tagDict, filename)
+
+    def highlightTags(self):
+        print 'highlight tags'
 
     def save(self):
         # Only open dialog if there is no filename yet

@@ -1,1 +1,1 @@
-__all__ = ["find", "tag", "export", "importFile"]
+__all__ = ["find", "tag", "export", "importFile", "openFile"]
