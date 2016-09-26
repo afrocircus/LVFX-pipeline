@@ -4,6 +4,11 @@
 
 import sys
 from lxml import etree
+from cStringIO import StringIO
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfpage import PDFPage
+from pdfminer.converter import HTMLConverter
+from pdfminer.layout import LAParams
 
 
 # linebreak types
@@ -111,6 +116,36 @@ def cleanInput(s):
 
 def toInputStr(s):
     return s.translate(_input_tbl, "\f")
+
+
+def convertPDF(fname, pages=None):
+    if not pages:
+        pagenos = set()
+    else:
+        pagenos = set(pages)
+    caching = True
+    outfp = StringIO()
+    layoutmode = 'normal'
+    laparams = LAParams()
+    rotation = 0
+
+    rsrcmgr = PDFResourceManager(caching=caching)
+    device = HTMLConverter(rsrcmgr, outfp, codec='utf-8', scale=1,
+                           layoutmode=layoutmode, laparams=laparams,
+                           imagewriter=None)
+    fp = file(fname, 'rb')
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    for page in PDFPage.get_pages(fp, pagenos,
+                                  maxpages=0, password='',
+                                  caching=caching, check_extractable=True):
+        page.rotate = (page.rotate+rotation) % 360
+        interpreter.process_page(page)
+    fp.close()
+    device.close()
+
+    text = outfp.getvalue()
+    outfp.close()
+    return text
 
 
 def importFDX(fileName):

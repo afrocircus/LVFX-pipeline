@@ -2,11 +2,7 @@ import sys
 import os
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-from cStringIO import StringIO
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.pdfpage import PDFPage
-from pdfminer.converter import HTMLConverter
-from pdfminer.layout import LAParams
+import json
 from collections import defaultdict
 from utils import *
 
@@ -15,7 +11,7 @@ class Main(QtGui.QMainWindow):
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
-        self.filename = ''
+        self.filename = self.csvFilename = ''
 
         self.initUI()
 
@@ -289,10 +285,28 @@ class Main(QtGui.QMainWindow):
 
     def open(self):
         # Get filename and show only .pdf files
-        self.filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Open File', os.path.expanduser('~'))
+        self.filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Open File', os.path.expanduser('~'),
+                                                             '*.tagIt *.pdf *.fdx')
         # Insert function here to read pdf file and display text.
+
+        if self.filename.endswith('.tagIt'):
+            with open(self.filename, 'r') as inFile:
+                data = json.load(inFile)
+            if 'filename' in data:
+                self.filename = data['filename']
+            if 'csvFilename' in data:
+                self.csvFilename = data['csvFilename']
+            self.openFile()
+            if self.csvFilename:
+                importObj = importFile.ImportFile(self.csvFilename)
+                self.tagDict = importObj.readCSV()
+                self.highlightTags()
+        else:
+            self.openFile()
+
+    def openFile(self):
         if self.filename.endswith('.pdf'):
-            text = self.convertPDF(self.filename, [1, 2, 3, 4, 5, 6, 7, 8])
+            text = openFile.convertPDF(self.filename)
             self.text.setText(text.decode("utf-8", "replace"))
         elif self.filename.endswith('.fdx'):
             lines = openFile.importFDX(self.filename)
@@ -305,20 +319,20 @@ class Main(QtGui.QMainWindow):
             self.text.setText(text)
 
     def importCSV(self):
-        filename, t = QtGui.QFileDialog.getOpenFileName(self, 'Import CSV File',
+        self.csvFilename, t = QtGui.QFileDialog.getOpenFileName(self, 'Import CSV File',
                                                         os.path.expanduser('~'), '(*.csv)')
-        if filename:
-            importObj = importFile.ImportFile(filename)
+        if self.csvFilename:
+            importObj = importFile.ImportFile(self.csvFilename)
             self.tagDict = importObj.readCSV()
             self.highlightTags()
 
     def export(self):
         # Export csv document
-        filename, t = QtGui.QFileDialog.getSaveFileName(self, 'Export File',
+        self.csvFilename, t = QtGui.QFileDialog.getSaveFileName(self, 'Export File',
                                                         os.path.expanduser('~'), '(*.csv)')
-        if not filename.endswith('.csv'):
-            filename += ".csv"
-        exportObj = export.Export(self.tagMenu.tagDict, filename)
+        if not self.csvFilename.endswith('.csv'):
+            self.csvFilename += ".csv"
+        exportObj = export.Export(self.tagMenu.tagDict, self.csvFilename)
 
     def highlightTags(self):
         document = self.text.document()
@@ -340,21 +354,22 @@ class Main(QtGui.QMainWindow):
             color = QtGui.QColor(204, 217, 201)
         self.text.setTextBackgroundColor(color)
 
-
     def save(self):
         # Only open dialog if there is no filename yet
-        if not self.filename:
-            self.filename, t = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
+        saveFilename, t = QtGui.QFileDialog.getSaveFileName(self, 'Save File')
         # Append extension if not there yet
-        if not self.filename.endswith('.txt'):
-            fname = os.path.splitext(self.filename)[0]
-            self.filename = fname + ".txt"
+        if not saveFilename.endswith('.tagIt'):
+            fname = os.path.splitext(saveFilename)[0]
+            saveFilename = fname + ".tagIt"
 
-        # We just store the contents of the text file along with the
-        # format in html, which Qt does in a very nice way for us
-        with open(self.filename, "wt") as file:
-            text = self.text.toPlainText().encode("utf-8")
-            file.write(text)
+        # Save as a json file where filename is the pdf/fdx and
+        # csv is the exported csv filename.
+        saveDict = {
+            'filename': self.filename,
+            'csvFilename': self.csvFilename
+        }
+        with open(saveFilename, "w") as outFile:
+            json.dump(saveDict, outFile)
 
     def printDoc(self):
         # Open printing dialog
@@ -381,35 +396,6 @@ class Main(QtGui.QMainWindow):
         # Insert list with numbers
 
         cursor.insertList(QtGui.QTextListFormat.ListDecimal)
-
-    def convertPDF(self, fname, pages=None):
-        if not pages:
-            pagenos = set()
-        else:
-            pagenos = set(pages)
-        caching = True
-        outfp = StringIO()
-        layoutmode = 'normal'
-        laparams = LAParams()
-        rotation = 0
-
-        rsrcmgr = PDFResourceManager(caching=caching)
-        device = HTMLConverter(rsrcmgr, outfp, codec='utf-8', scale=1,
-                               layoutmode=layoutmode, laparams=laparams,
-                               imagewriter=None)
-        fp = file(fname, 'rb')
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        for page in PDFPage.get_pages(fp, pagenos,
-                                      maxpages=0, password='',
-                                      caching=caching, check_extractable=True):
-            page.rotate = (page.rotate+rotation) % 360
-            interpreter.process_page(page)
-        fp.close()
-        device.close()
-
-        text = outfp.getvalue()
-        outfp.close()
-        return text
 
     def fontFamily(self, font):
         self.text.setCurrentFont(font)
