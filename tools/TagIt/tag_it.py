@@ -4,7 +4,7 @@ import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 import json
 from collections import defaultdict
-from utils import *
+from utils import tag, find, importFile, openFile, export
 
 
 class Main(QtGui.QMainWindow):
