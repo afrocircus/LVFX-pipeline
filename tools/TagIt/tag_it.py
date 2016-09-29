@@ -4,7 +4,7 @@ import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 import json
 from collections import defaultdict
-from utils import tag, find, importFile, openFile, export
+from utils import icons_rc, tag, find, importFile, openFile, export
 
 
 class Main(QtGui.QMainWindow):
@@ -20,7 +20,7 @@ class Main(QtGui.QMainWindow):
         # x and y coordinates on the screen, width, height
         self.setGeometry(100, 100, 800, 1000)
         self.setWindowTitle('Shot Editor')
-        self.setWindowIcon(QtGui.QIcon('icons/icon.png'))
+        self.setWindowIcon(QtGui.QIcon(':/icons/icon.png'))
 
         self.statusbar = self.statusBar()
         self.text = QtGui.QTextEdit(self)
@@ -55,77 +55,77 @@ class Main(QtGui.QMainWindow):
             self.tagMenu.initMenu(self.tagDict)
 
     def initToolBar(self):
-        self.newAction = QtGui.QAction(QtGui.QIcon('icons/new.png'), 'New', self)
+        self.newAction = QtGui.QAction(QtGui.QIcon(':/icons/new.png'), 'New', self)
         self.newAction.setStatusTip('Create a new document.')
         self.newAction.setShortcut('Ctrl+N')
         self.newAction.triggered.connect(self.new)
 
-        self.openAction = QtGui.QAction(QtGui.QIcon('icons/open.png'), 'Open', self)
+        self.openAction = QtGui.QAction(QtGui.QIcon(':/icons/open.png'), 'Open', self)
         self.openAction.setStatusTip('Create existing document.')
         self.openAction.setShortcut('Ctrl+O')
         self.openAction.triggered.connect(self.open)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon('icons/save.png'), 'Save', self)
+        self.saveAction = QtGui.QAction(QtGui.QIcon(':/icons/save.png'), 'Save', self)
         self.saveAction.setStatusTip('Save document.')
         self.saveAction.setShortcut('Ctrl+S')
         self.saveAction.triggered.connect(self.save)
 
-        self.importAction = QtGui.QAction(QtGui.QIcon('icons/csv-import.png'), 'Import', self)
+        self.importAction = QtGui.QAction(QtGui.QIcon(':/icons/csv-import.png'), 'Import', self)
         self.importAction.setStatusTip('Import CSV data.')
         self.importAction.setShortcut('Ctrl+I')
         self.importAction.triggered.connect(self.importCSV)
 
-        self.exportAction = QtGui.QAction(QtGui.QIcon('icons/csv-export.png'), 'Export', self)
+        self.exportAction = QtGui.QAction(QtGui.QIcon(':/icons/csv-export.png'), 'Export', self)
         self.exportAction.setStatusTip('Export CSV for tag-ed data.')
         self.exportAction.setShortcut('Ctrl+E')
         self.exportAction.triggered.connect(self.export)
 
-        self.printAction = QtGui.QAction(QtGui.QIcon('icons/print.png'), 'Print', self)
+        self.printAction = QtGui.QAction(QtGui.QIcon(':/icons/print.png'), 'Print', self)
         self.printAction.setStatusTip('Print document.')
         self.printAction.setShortcut('Ctrl+P')
         self.printAction.triggered.connect(self.printDoc)
 
-        self.previewAction = QtGui.QAction(QtGui.QIcon("icons/preview.png"), "Page view", self)
+        self.previewAction = QtGui.QAction(QtGui.QIcon(":/icons/preview.png"), "Page view", self)
         self.previewAction.setStatusTip("Preview page before printing")
         self.previewAction.setShortcut("Ctrl+Shift+P")
         self.previewAction.triggered.connect(self.preview)
 
-        self.cutAction = QtGui.QAction(QtGui.QIcon("icons/cut.png"), "Cut to clipboard", self)
+        self.cutAction = QtGui.QAction(QtGui.QIcon(":/icons/cut.png"), "Cut to clipboard", self)
         self.cutAction.setStatusTip("Delete and copy text to clipboard")
         self.cutAction.setShortcut("Ctrl+X")
         self.cutAction.triggered.connect(self.text.cut)
 
-        self.copyAction = QtGui.QAction(QtGui.QIcon("icons/copy.png"), "Copy to clipboard", self)
+        self.copyAction = QtGui.QAction(QtGui.QIcon(":/icons/copy.png"), "Copy to clipboard", self)
         self.copyAction.setStatusTip("Copy text to clipboard")
         self.copyAction.setShortcut("Ctrl+C")
         self.copyAction.triggered.connect(self.text.copy)
 
-        self.pasteAction = QtGui.QAction(QtGui.QIcon("icons/paste.png"), "Paste from clipboard", self)
+        self.pasteAction = QtGui.QAction(QtGui.QIcon(":/icons/paste.png"), "Paste from clipboard", self)
         self.pasteAction.setStatusTip("Paste text from clipboard")
         self.pasteAction.setShortcut("Ctrl+V")
         self.pasteAction.triggered.connect(self.text.paste)
 
-        self.undoAction = QtGui.QAction(QtGui.QIcon("icons/undo.png"), "Undo last action", self)
+        self.undoAction = QtGui.QAction(QtGui.QIcon(":/icons/undo.png"), "Undo last action", self)
         self.undoAction.setStatusTip("Undo last action")
         self.undoAction.setShortcut("Ctrl+Z")
         self.undoAction.triggered.connect(self.text.undo)
 
-        self.redoAction = QtGui.QAction(QtGui.QIcon("icons/redo.png"), "Redo last undone thing", self)
+        self.redoAction = QtGui.QAction(QtGui.QIcon(":/icons/redo.png"), "Redo last undone thing", self)
         self.redoAction.setStatusTip("Redo last undone thing")
         self.redoAction.setShortcut("Ctrl+Y")
         self.redoAction.triggered.connect(self.text.redo)
 
-        bulletAction = QtGui.QAction(QtGui.QIcon("icons/bullet.png"), "Insert bullet List", self)
+        bulletAction = QtGui.QAction(QtGui.QIcon(":/icons/bullet.png"), "Insert bullet List", self)
         bulletAction.setStatusTip("Insert bullet list")
         bulletAction.setShortcut("Ctrl+Shift+B")
         bulletAction.triggered.connect(self.bulletList)
 
-        numberedAction = QtGui.QAction(QtGui.QIcon("icons/number.png"), "Insert numbered List", self)
+        numberedAction = QtGui.QAction(QtGui.QIcon(":/icons/number.png"), "Insert numbered List", self)
         numberedAction.setStatusTip("Insert numbered list")
         numberedAction.setShortcut("Ctrl+Shift+L")
         numberedAction.triggered.connect(self.numberList)
 
-        self.findAction = QtGui.QAction(QtGui.QIcon('icons/find.png'), 'Find and replace', self)
+        self.findAction = QtGui.QAction(QtGui.QIcon(':/icons/find.png'), 'Find and replace', self)
         self.findAction.setStatusTip('Find and replace words in your document')
         self.findAction.setShortcut("Ctrl+F")
         self.findAction.triggered.connect(find.Find(self).show)
@@ -177,47 +177,47 @@ class Main(QtGui.QMainWindow):
 
         fontSize.addItems(fontSizes)
 
-        fontColor = QtGui.QAction(QtGui.QIcon("icons/font-color.png"), "Change font color", self)
+        fontColor = QtGui.QAction(QtGui.QIcon(":/icons/font-color.png"), "Change font color", self)
         fontColor.triggered.connect(self.fontColor)
 
-        backColor = QtGui.QAction(QtGui.QIcon("icons/highlight.png"), "Change background color", self)
+        backColor = QtGui.QAction(QtGui.QIcon(":/icons/highlight.png"), "Change background color", self)
         backColor.triggered.connect(self.highlight)
 
-        boldAction = QtGui.QAction(QtGui.QIcon("icons/bold.png"), "Bold", self)
+        boldAction = QtGui.QAction(QtGui.QIcon(":/icons/bold.png"), "Bold", self)
         boldAction.triggered.connect(self.bold)
 
-        italicAction = QtGui.QAction(QtGui.QIcon("icons/italic.png"), "Italic", self)
+        italicAction = QtGui.QAction(QtGui.QIcon(":/icons/italic.png"), "Italic", self)
         italicAction.triggered.connect(self.italic)
 
-        underlAction = QtGui.QAction(QtGui.QIcon("icons/underline.png"), "Underline", self)
+        underlAction = QtGui.QAction(QtGui.QIcon(":/icons/underline.png"), "Underline", self)
         underlAction.triggered.connect(self.underline)
 
-        strikeAction = QtGui.QAction(QtGui.QIcon("icons/strike.png"), "Strike-out", self)
+        strikeAction = QtGui.QAction(QtGui.QIcon(":/icons/strike.png"), "Strike-out", self)
         strikeAction.triggered.connect(self.strike)
 
-        superAction = QtGui.QAction(QtGui.QIcon("icons/superscript.png"), "Superscript", self)
+        superAction = QtGui.QAction(QtGui.QIcon(":/icons/superscript.png"), "Superscript", self)
         superAction.triggered.connect(self.superScript)
 
-        subAction = QtGui.QAction(QtGui.QIcon("icons/subscript.png"), "Subscript", self)
+        subAction = QtGui.QAction(QtGui.QIcon(":/icons/subscript.png"), "Subscript", self)
         subAction.triggered.connect(self.subScript)
 
-        alignLeft = QtGui.QAction(QtGui.QIcon("icons/align-left.png"), "Align left", self)
+        alignLeft = QtGui.QAction(QtGui.QIcon(":/icons/align-left.png"), "Align left", self)
         alignLeft.triggered.connect(self.alignLeft)
 
-        alignCenter = QtGui.QAction(QtGui.QIcon("icons/align-center.png"), "Align center", self)
+        alignCenter = QtGui.QAction(QtGui.QIcon(":/icons/align-center.png"), "Align center", self)
         alignCenter.triggered.connect(self.alignCenter)
 
-        alignRight = QtGui.QAction(QtGui.QIcon("icons/align-right.png"), "Align right", self)
+        alignRight = QtGui.QAction(QtGui.QIcon(":/icons/align-right.png"), "Align right", self)
         alignRight.triggered.connect(self.alignRight)
 
-        alignJustify = QtGui.QAction(QtGui.QIcon("icons/align-justify.png"), "Align justify", self)
+        alignJustify = QtGui.QAction(QtGui.QIcon(":/icons/align-justify.png"), "Align justify", self)
         alignJustify.triggered.connect(self.alignJustify)
 
-        indentAction = QtGui.QAction(QtGui.QIcon("icons/indent.png"), "Indent Area", self)
+        indentAction = QtGui.QAction(QtGui.QIcon(":/icons/indent.png"), "Indent Area", self)
         indentAction.setShortcut("Ctrl+Tab")
         indentAction.triggered.connect(self.indent)
 
-        dedentAction = QtGui.QAction(QtGui.QIcon("icons/dedent.png"), "Dedent Area", self)
+        dedentAction = QtGui.QAction(QtGui.QIcon(":/icons/dedent.png"), "Dedent Area", self)
         dedentAction.setShortcut("Shift+Tab")
         dedentAction.triggered.connect(self.dedent)
 
