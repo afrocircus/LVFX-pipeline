@@ -4,13 +4,14 @@ import subprocess
 import sys
 import shutil
 
-def getSequence(task):
-    sq = ''
-    for parent in task.getParents():
+def getShotFolder(task):
+    shotFolder = ''
+    parents = task.getParents()
+    parents.reverse()
+    for parent in parents:
         if 'objecttypename' in parent.keys():
-            if parent.get('objecttypename') == 'Sequence':
-                sq = parent.getName()
-    return sq
+            shotFolder = os.path.join(shotFolder, parent.getName())
+    return shotFolder
 
 
 def getProjectFolder(project):
@@ -27,7 +28,7 @@ def getProjectFolder(project):
 
 
 def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
-    taskName = task.getName().lower()
+    taskName = task.getType().getName().lower()
     for file in os.listdir(templateFolder):
         filepath = os.path.join(templateFolder, file)
         if os.path.isfile(filepath):
@@ -73,19 +74,16 @@ def callback(event):
             if task.getObjectType() == 'Task':
                 project = task.getProject()
                 projFolder = getProjectFolder(project)
+                shotName = task.getParent().getName()
                 if task.getParent().get('objecttypename') == 'Asset Build':
                     taskFolder = createAssetFolders(task, projFolder)
-                    shotName = task.getParent().getName()
                     shotName = '{0}_{1}'.format(shotName, taskName)
                 else:
-                    sq = getSequence(task)
-                    shotName = task.getParent().getName()
-                    if sq == '':
-                        return
                     shotsFolder = os.path.join(projFolder, 'shots')
-                    sqFolder = os.path.join(shotsFolder, sq)
-                    shotFolder = os.path.join(sqFolder, shotName)
-                    sceneFolder = os.path.join(shotFolder, 'scene')
+                    shotFolder = getShotFolder(task)
+                    if shotFolder == '':
+                        return
+                    sceneFolder = os.path.join(shotsFolder, shotFolder, 'scene')
                     taskFolder = os.path.join(sceneFolder, taskName)
                     if not os.path.exists(taskFolder):
                         os.makedirs(taskFolder)
