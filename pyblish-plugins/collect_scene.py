@@ -1,31 +1,64 @@
 import os
 import pyblish.api
 from Utils import pyblish_utils
+from maya import cmds
 
 
-class CollectSceneVersion(pyblish.api.ContextPlugin):
-    """Finds version in the filename or passes the one found in the context
-        Arguments:
-        version (int, optional): version number of the publish
+@pyblish.api.log
+class CollectScene(pyblish.api.ContextPlugin):
+    """
+    Finds values for scene variables.
+    Gets version number, Ftrack Task ID
     """
     order = pyblish.api.CollectorOrder - 0.5
-    label = "Collect Version"
+    label = "Collect Scene Details"
 
     hosts = ['maya']
     version = (0, 1, 0)
 
     def process(self, context):
 
-        filename = os.path.basename(context.data('currentFile'))
+        currentFile = context.data('currentFile')
+        filename = os.path.basename(currentFile)
+        currentDir = os.path.dirname(currentFile)
+        publishDir = os.path.join(currentDir, 'publish')
+
+        instance = context.create_instance(name=filename)
+        instance.set_data('family', value='scene')
+        instance.set_data('workPath', value=currentFile)
+        instance.set_data('publishDir', value=publishDir)
+
+        # Get Shot Asset Dir
+        fileParts = currentFile.split('scene')
+        if len(fileParts) == 1:
+            shotAssetDir = os.path.join(currentDir, 'shotAssets')
+        else:
+            shotAssetDir = os.path.join(fileParts[0], 'shotAssets')
+
+        instance.set_data('shotAssetPath', value=shotAssetDir)
 
         # version data
         try:
             (prefix, version) = pyblish_utils.version_get(filename, 'v')
+            instance.set_data('version', value=version)
+            instance.set_data('vprefix', value=prefix)
         except:
             self.log.warning('Cannot publish workfile which is not versioned.')
-            return
 
-        context.set_data('version', value=version)
-        context.set_data('vprefix', value=prefix)
+        # Get scene frame range
+        startFrame = cmds.playbackOptions(q=True, minTime=True)
+        endFrame = cmds.playbackOptions(q=True, maxTime=True)
 
-        self.log.info('Scene Version: %s' % context.data('version'))
+        instance.set_data('startFrame', value=startFrame)
+        instance.set_data('endFrame', value=endFrame)
+
+        #self.log.info('Scene Version: %s' % context.data('version'))
+
+        # Setting the metadata dictionary
+        metadata = {'filename': context.data('currentFile')}
+        instance.set_data('metadata', value=metadata)
+
+        # Get Ftrack Task ID
+        if 'FTRACK_TASKID' in os.environ:
+            context.set_data('taskid', value=os.environ['FTRACK_TASKID'])
+            self.log.info('Task ID: %s' % context.data('taskid'))

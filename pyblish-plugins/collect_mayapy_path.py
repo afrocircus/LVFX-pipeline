@@ -3,6 +3,7 @@ import sys
 from maya import cmds
 
 
+@pyblish.api.log
 class CollectMayapyPath(pyblish.api.ContextPlugin):
     """Inject the current working file into context"""
 

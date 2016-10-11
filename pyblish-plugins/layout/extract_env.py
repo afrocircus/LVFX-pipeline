@@ -4,21 +4,22 @@ import maya.cmds as cmds
 
 
 @pyblish.api.log
-class ExtractEnv(pyblish.api.ContextPlugin):
+class ExtractEnv(pyblish.api.InstancePlugin):
 
     order = pyblish.api.ExtractorOrder
     hosts = ['maya']
     label = 'Extract Environment File'
+    families = ['scene']
 
-    def process(self, context):
+    def process(self, instance):
         try:
             cmds.select('env_*:*')
         except ValueError:
             self.log.warning('No environment elements to extract.')
             return
 
-        versionDir = context.data['vprefix'] + context.data['version']
-        publishDir = os.path.join(context.data['layoutPublishDir'], versionDir)
+        versionDir = instance.data['vprefix'] + instance.data['version']
+        publishDir = os.path.join(instance.data['publishDir'], versionDir)
         if not os.path.exists(publishDir):
             os.makedirs(publishDir)
 
@@ -27,4 +28,4 @@ class ExtractEnv(pyblish.api.ContextPlugin):
         try:
             cmds.file(exportFile, pr=True, es=True, force=True, type='mayaBinary')
         except RuntimeError:
-            pyblish.api.ExtractionError
+            raise pyblish.api.ExtractionError

@@ -4,16 +4,17 @@ import maya.cmds as cmds
 
 
 @pyblish.api.log
-class ExtractCamera(pyblish.api.ContextPlugin):
+class ExtractCamera(pyblish.api.InstancePlugin):
 
     order = pyblish.api.ExtractorOrder
     hosts = ['maya']
     label = 'Export Camera Abc'
+    families = ['scene']
 
-    def process(self, context):
-        shotAssetsDir = context.data['shotAssetPath']
+    def process(self, instance):
+        shotAssetsDir = instance.data['shotAssetPath']
 
-        versionDir = context.data['vprefix'] + context.data['version']
+        versionDir = instance.data['vprefix'] + instance.data['version']
 
         cameraDir = os.path.join(shotAssetsDir, 'camera', versionDir)
         cameraFile = os.path.join(cameraDir, 'renderCam.abc')
@@ -22,7 +23,7 @@ class ExtractCamera(pyblish.api.ContextPlugin):
             os.makedirs(cameraDir)
 
         camera = cmds.ls('renderCam')[0]
-        frameRange = '-fr {0} {1}'.format(context.data['startFrame'], context.data['endFrame'])
+        frameRange = '-fr {0} {1}'.format(instance.data['startFrame'], instance.data['endFrame'])
         cameraNode = '-root {0}'.format(camera)
         filename = '-file {0}'.format(cameraFile)
 

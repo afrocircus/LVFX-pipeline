@@ -4,13 +4,13 @@ from maya import cmds
 
 
 @pyblish.api.log
-class ValidateCamera(pyblish.api.ContextPlugin):
+class ValidateCamera(pyblish.api.InstancePlugin):
 
     order = pyblish.api.ValidatorOrder
     hosts = ['maya']
     label = 'Validate Render Camera'
 
-    def process(self, context):
+    def process(self, instance):
         cameraNode = cmds.ls('renderCam')
         if len(cameraNode) == 0:
             self.log.error('Valid renderCam not found.')
