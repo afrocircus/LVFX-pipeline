@@ -9,6 +9,7 @@ class ExtractChar(pyblish.api.InstancePlugin):
     order = pyblish.api.ExtractorOrder
     hosts = ['maya']
     label = 'Extract Character File'
+    families = ['scene']
 
     def process(self, instance):
         try:

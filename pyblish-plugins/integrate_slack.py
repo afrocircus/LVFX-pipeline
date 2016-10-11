@@ -13,6 +13,7 @@ class IntegrateSlack(pyblish.api.ContextPlugin):
 
     hosts = ['maya']
     version = (0, 1, 0)
+    active = False
 
     def process(self, context):
 

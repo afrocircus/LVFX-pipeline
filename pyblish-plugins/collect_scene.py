@@ -21,44 +21,47 @@ class CollectScene(pyblish.api.ContextPlugin):
         currentFile = context.data('currentFile')
         filename = os.path.basename(currentFile)
         currentDir = os.path.dirname(currentFile)
-        publishDir = os.path.join(currentDir, 'publish')
 
-        instance = context.create_instance(name=filename)
-        instance.set_data('family', value='scene')
-        instance.set_data('workPath', value=currentFile)
-        instance.set_data('publishDir', value=publishDir)
+        for family in ['publish', 'playblast']:
+            familyDir = os.path.join(currentDir, family)
+            instance = context.create_instance(name=filename)
+            if family == 'publish':
+                family = 'scene'
+            instance.set_data('family', value=family)
+            instance.set_data('workPath', value=currentFile)
+            instance.set_data('publishDir', value=familyDir)
 
-        # Get Shot Asset Dir
-        fileParts = currentFile.split('scene')
-        if len(fileParts) == 1:
-            shotAssetDir = os.path.join(currentDir, 'shotAssets')
-        else:
-            shotAssetDir = os.path.join(fileParts[0], 'shotAssets')
+            # Get Shot Asset Dir
+            fileParts = currentFile.split('scene')
+            if len(fileParts) == 1:
+                shotAssetDir = os.path.join(currentDir, 'shotAssets')
+            else:
+                shotAssetDir = os.path.join(fileParts[0], 'shotAssets')
 
-        instance.set_data('shotAssetPath', value=shotAssetDir)
+            instance.set_data('shotAssetPath', value=shotAssetDir)
 
-        # version data
-        try:
-            (prefix, version) = pyblish_utils.version_get(filename, 'v')
-            instance.set_data('version', value=version)
-            instance.set_data('vprefix', value=prefix)
-        except:
-            self.log.warning('Cannot publish workfile which is not versioned.')
+            # version data
+            try:
+                (prefix, version) = pyblish_utils.version_get(filename, 'v')
+                instance.set_data('version', value=version)
+                instance.set_data('vprefix', value=prefix)
+            except:
+                self.log.warning('Cannot publish workfile which is not versioned.')
 
-        # Get scene frame range
-        startFrame = cmds.playbackOptions(q=True, minTime=True)
-        endFrame = cmds.playbackOptions(q=True, maxTime=True)
+            # Get scene frame range
+            startFrame = cmds.playbackOptions(q=True, minTime=True)
+            endFrame = cmds.playbackOptions(q=True, maxTime=True)
 
-        instance.set_data('startFrame', value=startFrame)
-        instance.set_data('endFrame', value=endFrame)
+            instance.set_data('startFrame', value=startFrame)
+            instance.set_data('endFrame', value=endFrame)
 
-        #self.log.info('Scene Version: %s' % context.data('version'))
+            #self.log.info('Scene Version: %s' % context.data('version'))
 
-        # Setting the metadata dictionary
-        metadata = {'filename': context.data('currentFile')}
-        instance.set_data('metadata', value=metadata)
+            # Setting the metadata dictionary
+            metadata = {'filename': context.data('currentFile')}
+            instance.set_data('metadata', value=metadata)
 
-        # Get Ftrack Task ID
-        if 'FTRACK_TASKID' in os.environ:
-            context.set_data('taskid', value=os.environ['FTRACK_TASKID'])
-            self.log.info('Task ID: %s' % context.data('taskid'))
+            # Get Ftrack Task ID
+            if 'FTRACK_TASKID' in os.environ:
+                context.set_data('taskid', value=os.environ['FTRACK_TASKID'])
+                self.log.info('Task ID: %s' % context.data('taskid'))

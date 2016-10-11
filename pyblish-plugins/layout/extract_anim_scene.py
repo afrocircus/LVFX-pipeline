@@ -10,6 +10,7 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
     order = pyblish.api.ExtractorOrder
     hosts = ['maya']
     label = 'Publish Animation Scene'
+    families = 'scene'
 
     def process(self, instance):
         shotAssetsDir = instance.data['shotAssetPath']
