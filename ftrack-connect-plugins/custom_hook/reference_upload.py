@@ -136,16 +136,15 @@ class RefClipUploader(ftrack.Action):
         if os.path.exists(thumbnail):
             os.remove(thumbnail)
 
-
-    def upload(self, ff, lf, inputFile, outfilemp4, outfilewebm, thumnbail, metadata, shot):
+    def upload(self, ff, lf, inputFile, outfilemp4, outfilewebm, thumnbail, metadata, shot, fps):
 
         result = self.convertFiles(inputFile, outfilemp4, outfilewebm)
         if result:
             self.createThumbnail(outfilemp4, thumnbail)
             asset = self.getAsset(shot, 'reference')
             version = asset.createVersion('Reference Clip Upload')
-            self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, 24, metadata)
-            self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, 24, metadata)
+            self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, fps, metadata)
+            self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, fps, metadata)
             version.createComponent(name='movie', path=inputFile)
             version.publish()
             if os.path.exists(thumnbail):
@@ -156,6 +155,7 @@ class RefClipUploader(ftrack.Action):
 
     def uploadToFtrack(self, movieFile, firstFrame, lastFrame, shot):
         show = self.getProject(shot.get('showid'))
+        fps = int(show.get('fps'))
         project = show.getName()
         sqName = shot.getParent().getName()
         shotName = shot.getName()
@@ -167,7 +167,7 @@ class RefClipUploader(ftrack.Action):
 
         outfilemp4, outfilewebm, thumbnail, metadata = self.prepMediaFiles(movieFile)
         self.upload(firstFrame, lastFrame, movieFile,
-               outfilemp4, outfilewebm, thumbnail, metadata, shot)
+               outfilemp4, outfilewebm, thumbnail, metadata, shot, fps)
 
 
     @async

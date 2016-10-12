@@ -41,6 +41,15 @@ class UpdateCompMetadata(ftrack.Action):
             raise ValueError(msg)
         return (matches[-1:][0][1], re.search("\d+", matches[-1:][0]).group())
 
+    def getParentFolders(self, task):
+        shotFolder = ''
+        parents = task.getParents()
+        parents.reverse()
+        for parent in parents:
+            if 'objecttypename' in parent.keys():
+                shotFolder = os.path.join(shotFolder, parent.getName())
+        return shotFolder
+
     def getLatestCompScript(self, task):
         filename = ''
         project = ftrack.Project(task.get('showid'))
@@ -51,9 +60,8 @@ class UpdateCompMetadata(ftrack.Action):
             assetName = parent.getName()
             sceneFolder = os.path.join(projectFolder, 'assets', assetType, assetName)
         elif parent.get('objecttypename') == 'Shot':
-            sequence = parent.getParent()
-            sceneFolder = os.path.join(projectFolder, 'shots', sequence.getName(),
-                                       parent.getName(), 'scene')
+            shotFolder = self.getParentFolders(task)
+            sceneFolder = os.path.join(projectFolder, 'shots', shotFolder, 'scene')
         else:
             sceneFolder = projectFolder
         taskFolder = os.path.join(sceneFolder, task.getName().lower())
