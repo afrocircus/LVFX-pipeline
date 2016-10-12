@@ -1,11 +1,7 @@
 {
     "assets":[
-        "3d",
         "artwork",
-        "characters",
-        "hdri",
-        "props",
-        "sets"
+        "hdri"
       ],
       "production":[
         "approvals",
