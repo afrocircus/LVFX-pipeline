@@ -178,6 +178,7 @@ class RefClipUploader(ftrack.Action):
             'queued', user)
         job.setStatus('running')
         platesFolder = self.getShotPlatesFolder(shot)
+        fps = int(shot.getProject().get('fps'))
         if not os.path.exists(platesFolder):
             job.setStatus('failed')
             job.setDescription('No plates found')
@@ -201,8 +202,8 @@ class RefClipUploader(ftrack.Action):
             fullFile = os.path.join(platesFolder, filename)
             outputFile = os.path.join(platesFolder, '%s.mov' % plateName)
             tmpFile = os.path.join(platesFolder, 'output.mov')
-            cmd = 'ffmpeg -y -start_number %s -an -i "%s" -vcodec prores -profile:v 2 -r 24 "%s"' % (
-                    firstFrame, fullFile, tmpFile)
+            cmd = 'ffmpeg -y -start_number %s -an -i "%s" -vcodec prores -profile:v 2 -r %s "%s"' % (
+                    firstFrame, fullFile, fps, tmpFile)
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
             process.wait()
