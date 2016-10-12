@@ -231,6 +231,7 @@ class UploadMedia(ftrack.Action):
             'Uploading media for shot {0}'.format(shot.getName()),
             'queued', user)
         job.setStatus('running')
+        fps = int(shot.getParent().get('fps'))
         filename = '/' + filename.strip('file:/')
         fname, fext = os.path.splitext(filename)
 
@@ -257,8 +258,8 @@ class UploadMedia(ftrack.Action):
             asset = self.getAsset(shot, 'ReviewAsset')
             version = asset.createVersion('Upload for Internal Review', taskid)
             try:
-                self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, 24, metadata)
-                self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, 24, metadata)
+                self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, fps, metadata)
+                self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, fps, metadata)
             except Exception, e:
                 job.setDescription('Failed to Upload Media for shot {0}'.format(shot.getName()))
                 job.setStatus('failed')
