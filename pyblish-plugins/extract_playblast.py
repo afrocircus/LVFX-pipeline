@@ -39,5 +39,8 @@ class ExtractPlayblast(pyblish.api.InstancePlugin):
         preset = load_preset(presetPath)
         preset['camera'] = 'renderCam'
 
-        capture.capture(filename=outFile, overwrite=True, **preset)
+        capture.capture(filename=outFile,
+                        overwrite=True,
+                        quality=70,
+                        **preset)
         self.log.info('extract playblast')

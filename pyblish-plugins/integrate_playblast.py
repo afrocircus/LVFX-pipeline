@@ -9,6 +9,7 @@ def async(fn):
         thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
         thread.start()
     return wrapper
+    plugin.log.error('Upload Failure')
 
 
 @pyblish.api.log
@@ -19,7 +20,6 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
     order = pyblish.api.IntegratorOrder
     label = "Playblast Upload"
     families = ['playblast']
-
     hosts = ['maya']
     version = (0, 1, 0)
 
@@ -32,11 +32,10 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
         startFrame = instance.data['startFrame']
         endFrame = instance.data['endFrame']
         self.uploadToFtrack(taskid, playblast, currentFile, metadata,
-                            startFrame, endFrame)
+                            startFrame, endFrame, instance)
 
-    @async
     def uploadToFtrack(self, taskid, playblast, currentFile, metadata,
-                       startFrame, endFrame):
+                       startFrame, endFrame, instance):
 
         session = ftrack_utils2.startSession()
         task = ftrack_utils2.getTask(session, taskid, currentFile)
@@ -56,8 +55,8 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
                                                       outfilewebm, metadata, startFrame,
                                                       endFrame, 24)
                 ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
-                pyblish.api.emit("published")
+                self.log.info("Movie Upload Successful")
             except Exception:
-                pyblish.api.emit("pluginFailed")
+                self.log.error("Error during movie upload")
         else:
-            pyblish.api.emit("pluginFailed")
+            self.log.error("Error during movie conversion")
