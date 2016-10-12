@@ -39,7 +39,7 @@ class ShotSubmitUI(QtGui.QWidget):
         self.layout().addWidget(self.jobWidget)
         self.jobWidget.splitmodeDrop.setCurrentIndex(0)
         self.jobWidget.splitmodeDrop.setEnabled(False)
-        self.jobWidget.poolDrop.setCurrentIndex(1)
+        self.jobWidget.poolDrop.setCurrentIndex(2)
         self.jobWidget.progLineEdit.setEnabled(False)
         hlayout = QtGui.QHBoxLayout()
         submitButton = QtGui.QPushButton('Submit')

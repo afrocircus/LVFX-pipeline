@@ -49,11 +49,24 @@ def parentIsShot(session, filename, task):
         projectPart = filePathSplit[0].strip('/')
         sqShotPart = filePathSplit[1].strip('/')
         project = projectPart.split('/')[-1]
-        seq = sqShotPart.split('/')[0]
-        shot = sqShotPart.split('/')[1]
-        taskName = sqShotPart.split('/')[3]
-        task = session.query('Task where name is "{0}" and project.name is "{1}" '
-                             'and parent.name is "{2}"'.format(taskName, project, shot)).one()
+        sqPartSplit = sqShotPart.split('/')
+        if len(sqPartSplit) == 5:
+            seq = sqPartSplit[0]
+            shot = sqPartSplit[1]
+            taskName = sqPartSplit[3]
+            task = session.query('Task where name is "{0}" and project.name is "{1}" '
+                                 'and parent.name is "{2}" and parent.parent.name is {3}'
+                                 'and parent.parent.parent.name is {4}'.format(taskName, project, shot,
+                                                                               seq, project)).one()
+        elif len(sqPartSplit) == 6:
+            ep = sqPartSplit[0]
+            seq = sqPartSplit[1]
+            shot = sqPartSplit[2]
+            taskName = sqPartSplit[4]
+            task = session.query('Task where name is "{0}" and project.name is "{1}" '
+                                 'and parent.name is "{2}" and parent.parent.name is {3}'
+                                 'and parent.parent.parent.name is {4}'.format(taskName, project, shot,
+                                                                               seq, ep)).one()
     except Exception, e:
         logging.error(e)
     return task

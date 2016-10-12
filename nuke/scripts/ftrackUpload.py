@@ -104,6 +104,7 @@ def uploadToFtrack():
         node.knob('uploadToFtrack').setValue(False)
         if task:
             taskMeta = {'filename': nukeFile}
+            fps = int(task['project']['custom_attributes']['fps'])
             ftrack_utils2.addMetadata(_session, task, taskMeta)
             ftrack_utils2.copyToApprovals(outputFile, task['project'])
             outfilemp4, outfilewebm, thumbnail, metadata = ftrack_utils2.prepMediaFiles(outputFile)
@@ -119,7 +120,7 @@ def uploadToFtrack():
                     ftrack_utils2.createAndPublishVersion(_session, task, asset,
                                                           status,'Upload for Internal Review',
                                                           thumbnail, outputFile, outfilemp4,
-                                                          outfilewebm, metadata, ff, lf, 24)
+                                                          outfilewebm, metadata, ff, lf, fps)
                     print 'cleaning up temporary files...'
                     ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
                     print 'Upload Complete!'
