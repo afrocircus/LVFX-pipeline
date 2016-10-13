@@ -7,9 +7,9 @@ from distutils.dir_util import copy_tree
 
 FOLDER_STRUCT = os.path.join(os.environ['FTRACK_EVENT_SERVER_PLUGINS'], 'folder_structure.json')
 if sys.platform == 'win32':
-    TEMPLATE_FILES = 'S:\\template_files'
+    TEMPLATE_FILES = 'P:\\pipeline\\linux\\common\\template'
 elif sys.platform == 'linux2':
-    TEMPLATE_FILES = '/data/share01/template_files'
+    TEMPLATE_FILES = '/data/production/pipeline/linux/common/template'
 
 
 def callback(event):
