@@ -8,11 +8,12 @@ class IntegrateSlack(pyblish.api.ContextPlugin):
     """
     Integrate metadata with ftrack
     """
-    order = pyblish.api.IntegratorOrder + 3.0
+    order = pyblish.api.IntegratorOrder
     label = "Send Slack Message"
-
+    families = ['scene']
     hosts = ['maya']
     version = (0, 1, 0)
+    active = False
 
     def process(self, context):
 

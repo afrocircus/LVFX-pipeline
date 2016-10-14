@@ -1,4 +1,5 @@
 import threading
+import ftrack
 import pyblish.api
 from Utils import ftrack_utils2
 
@@ -19,14 +20,21 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
     """
     order = pyblish.api.IntegratorOrder
     label = "Playblast Upload"
-    families = ['playblast']
+    families = ['scene']
     hosts = ['maya']
     version = (0, 1, 0)
 
     def process(self, instance):
 
-        metadata = instance.data['metadata']
         taskid = instance.context.data['taskid']
+        task = ftrack.Task(taskid)
+        taskName = task.getType().getName().lower()
+        if taskName not in ['animation', 'layout']:
+            self.log.info('Skipping playblast for %s' % taskName)
+            return
+
+        metadata = instance.data['metadata']
+
         playblast = instance.data['playblastFile']
         currentFile = instance.context.data['currentFile']
         startFrame = instance.data['startFrame']
