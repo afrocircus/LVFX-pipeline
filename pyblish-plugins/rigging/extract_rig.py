@@ -13,7 +13,6 @@ class ExtractRig(pyblish.api.InstancePlugin):
     hosts = ['maya']
     order = pyblish.api.ExtractorOrder
 
-
     def process(self, instance):
 
         node = instance.data['rig']

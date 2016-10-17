@@ -33,9 +33,13 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
             self.log.info('Skipping playblast for %s' % taskName)
             return
 
-        metadata = instance.data['metadata']
+        if not 'playblastFile' in instance.data:
+            return
 
         playblast = instance.data['playblastFile']
+
+        metadata = instance.data['metadata']
+
         currentFile = instance.context.data['currentFile']
         startFrame = instance.data['startFrame']
         endFrame = instance.data['endFrame']
