@@ -65,6 +65,8 @@ class UpdateCompMetadata(ftrack.Action):
         else:
             sceneFolder = projectFolder
         taskFolder = os.path.join(sceneFolder, task.getName().lower())
+        if task.getType().getName().lower() == 'modeling':
+            taskFolder = os.path.join(taskFolder, 'maya')
         if os.path.exists(taskFolder):
             files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))]
             maxVersion = 1

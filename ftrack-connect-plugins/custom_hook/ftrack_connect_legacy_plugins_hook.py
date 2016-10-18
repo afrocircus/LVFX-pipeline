@@ -335,7 +335,8 @@ class LegacyApplicationLauncher(
 
                 if filename:
                     environment['MAYA_FILE'] = filename
-                    environment['PROJECT_DIR'] = os.path.dirname(os.path.dirname(filename))
+                    environment['PROJECT_DIR'] = os.path.dirname(filename)
+                    #environment['PROJECT_DIR'] = os.path.dirname(os.path.dirname(filename))
 
                 environment = ftrack_connect.application.appendPath(
                     mayaPluginPath, 'MAYA_PLUG_IN_PATH', environment
@@ -346,6 +347,18 @@ class LegacyApplicationLauncher(
                 environment = ftrack_connect.application.appendPath(
                     mayaPluginPath, 'PYTHONPATH', environment
                 )
+
+                # Attach pyblish plugin path based on task type
+                pyblishTaskEnv = 'PYBLISH_%s_PATH' % task.getType().getName().upper()
+                if pyblishTaskEnv in os.environ:
+                    environment = ftrack_connect.application.appendPath(
+                        os.environ[pyblishTaskEnv],
+                        'PYBLISHPLUGINPATH', environment
+                    )
+
+                # Hack to get around MAYA Pyside conflicts
+                environment['PYTHONPATH'] = os.environ['MAYA_PYTHON_PATH'] + ':' \
+                                            + environment['PYTHONPATH']
 
             # Add the foundry asset manager packages if application is
             # Nuke, NukeStudio or Hiero.
