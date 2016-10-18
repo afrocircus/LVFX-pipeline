@@ -1,8 +1,10 @@
 import ftrack
 import os
 import subprocess
+import re
 import sys
 import shutil
+
 
 def getShotFolder(task):
     shotFolder = ''
@@ -48,6 +50,97 @@ def copyTemplateFiles(templateFolder, task, taskFolder, shotName):
                 }
                 task.setMeta(metadata)
 
+
+def version_get(string, prefix, suffix=None):
+    """Extract version information from filenames.  Code from Foundry's nukescripts.version_get()"""
+
+    if string is None:
+        raise ValueError, "Empty version string - no match"
+
+    regex = "[/_.]" + prefix + "\d+"
+    matches = re.findall(regex, string, re.IGNORECASE)
+    if not len(matches):
+        msg = "No \"_" + prefix + "#\" found in \"" + string + "\""
+        raise ValueError, msg
+    return matches[-1:][0][1], re.search("\d+", matches[-1:][0]).group()
+
+
+def copyFromLayoutPublish(taskFolder):
+    layoutDir = os.path.join(taskFolder.split('previz')[0], 'layout', 'publish')
+    publishFile = ''
+    # If the layout publish dir exists
+    if os.path.exists(layoutDir):
+        versions = []
+        # get the latest published version
+        for each in os.listdir(layoutDir):
+            versionDir = os.path.join(layoutDir, each)
+            if os.path.isdir(versionDir):
+                try:
+                    versions.append(version_get(versionDir, 'v')[1])
+                except ValueError:
+                    continue
+        versions.sort()
+        latestVersion = os.path.join(layoutDir, 'v' + versions[-1])
+        publishFile = os.path.join(latestVersion, 'animation_publish.mb')
+    return publishFile
+
+
+def createTemplateFiles(templateFolder, task, taskFolder, shotName):
+    # Create template files based on task type
+    taskType = task.getType().getName().lower()
+    if taskType == 'modeling':
+        filepath = os.path.join(templateFolder, taskType + '.mb')
+        if os.path.exists(filepath):
+            taskFolder = os.path.join(taskFolder, 'maya')
+            if not os.path.exists(taskFolder):
+                os.makedirs(taskFolder)
+            newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
+            if not os.path.exists(newFilePath):
+                shutil.copy(filepath, newFilePath)
+            os.chmod(newFilePath, 0666)
+            metadata = {'filename': newFilePath}
+            task.setMeta(metadata)
+    elif taskType == 'previz':
+        # Copying from latest layout publish
+        publishFile = copyFromLayoutPublish(taskFolder)
+        newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
+        # if an animation_publish file exists in the latest layout publish, copy it over.
+        if os.path.exists(publishFile) and not os.path.exists(newFilePath):
+            shutil.copy(publishFile, newFilePath)
+        os.chmod(newFilePath, 0666)
+        metadata = {'filename': newFilePath}
+        task.setMeta(metadata)
+    elif taskType == 'animation':
+        # First check if a previz version exists
+        previzDir = os.path.join(taskFolder.split('animation')[0], 'previz')
+        previzFiles = [f for f in os.listdir(previzDir) if os.path.isfile(os.path.join(previzDir, f))]
+        # get latest previz file
+        if previzFiles:
+            maxVersion = 1
+            for f in previzFiles:
+                try:
+                    version = int(version_get(f, 'v')[1])
+                except ValueError:
+                    continue
+                if version >= maxVersion:
+                    publishFile = f
+                    maxVersion = version
+            publishFile = os.path.join(previzDir, publishFile)
+        # Else get latest layout publish file
+        else:
+            publishFile = copyFromLayoutPublish(taskFolder)
+        newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
+
+        # Copy over the latest publish file.
+        if os.path.exists(publishFile) and not os.path.exists(newFilePath):
+            shutil.copy(publishFile, newFilePath)
+        os.chmod(newFilePath, 0666)
+        metadata = {'filename': newFilePath}
+        task.setMeta(metadata)
+    else:
+        copyTemplateFiles(templateFolder, task, taskFolder, shotName)
+
+
 def createAssetFolders(task, projectFolder):
     taskName = task.getName().lower()
     asset = task.getParent()
@@ -92,7 +185,7 @@ def callback(event):
                         except:
                             print "could not change directory permission for %s" % taskFolder
                 templateFolder = os.path.join(projFolder, 'template_files')
-                copyTemplateFiles(templateFolder, task, taskFolder, shotName)
+                createTemplateFiles(templateFolder, task, taskFolder, shotName)
 
 
 # Subscribe to events with the update topic.
