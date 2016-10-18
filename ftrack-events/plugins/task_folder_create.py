@@ -65,8 +65,8 @@ def version_get(string, prefix, suffix=None):
     return matches[-1:][0][1], re.search("\d+", matches[-1:][0]).group()
 
 
-def copyFromLayoutPublish(taskFolder):
-    layoutDir = os.path.join(taskFolder.split('previz')[0], 'layout', 'publish')
+def copyFromLayoutPublish(taskFolder, taskName):
+    layoutDir = os.path.join(taskFolder.split(taskName)[0], 'layout', 'publish')
     publishFile = ''
     # If the layout publish dir exists
     if os.path.exists(layoutDir):
@@ -102,7 +102,7 @@ def createTemplateFiles(templateFolder, task, taskFolder, shotName):
             task.setMeta(metadata)
     elif taskType == 'previz':
         # Copying from latest layout publish
-        publishFile = copyFromLayoutPublish(taskFolder)
+        publishFile = copyFromLayoutPublish(taskFolder, 'previz')
         newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
         # if an animation_publish file exists in the latest layout publish, copy it over.
         if os.path.exists(publishFile) and not os.path.exists(newFilePath):
@@ -128,7 +128,7 @@ def createTemplateFiles(templateFolder, task, taskFolder, shotName):
             publishFile = os.path.join(previzDir, publishFile)
         # Else get latest layout publish file
         else:
-            publishFile = copyFromLayoutPublish(taskFolder)
+            publishFile = copyFromLayoutPublish(taskFolder, 'animation')
         newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
 
         # Copy over the latest publish file.
