@@ -4,6 +4,7 @@ import subprocess
 import re
 import sys
 import shutil
+import glob
 
 
 def getShotFolder(task):
@@ -113,7 +114,7 @@ def createTemplateFiles(templateFolder, task, taskFolder, shotName):
     elif taskType == 'animation':
         # First check if a previz version exists
         previzDir = os.path.join(taskFolder.split('animation')[0], 'previz')
-        previzFiles = [f for f in os.listdir(previzDir) if os.path.isfile(os.path.join(previzDir, f))]
+        previzFiles = [f for f in glob.glob(os.path.join(previzDir, '*_v[0-9]*.mb'))]
         # get latest previz file
         if previzFiles:
             maxVersion = 1
