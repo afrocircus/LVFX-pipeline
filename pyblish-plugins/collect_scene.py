@@ -22,6 +22,10 @@ class CollectScene(pyblish.api.ContextPlugin):
         filename = os.path.basename(currentFile)
         currentDir = os.path.dirname(currentFile)
 
+        # Check if the current dir is modeling/maya
+        if os.path.split(currentDir)[1] == 'maya':
+            currentDir = os.path.dirname(currentDir)
+
         publishDir = os.path.join(currentDir, 'publish')
         instance = context.create_instance(name=filename)
 
