@@ -23,7 +23,7 @@ def submitNoChunk(hq_server, jobname, vrayCmd, priority, tries, group, vrayResta
         'name': jobname,
         'shell': 'bash',
         'command': vrayCmd,
-        'tags': 'single',
+        'tags': ['single'],
         'submittedBy': submitter,
         'triesLeft': tries,
         'priority': priority,
