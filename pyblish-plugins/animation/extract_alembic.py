@@ -21,6 +21,7 @@ class ExtractAlembic(pyblish.api.InstancePlugin):
         failed = False
 
         for each in animGroups:
+            charRefFile = cmds.referenceQuery(each, filename=True)
             charName = each.split(':')[0].split('char_')[1]
             charDir = os.path.join(shotAssetsDir, charName, versionDir)
             charFile = os.path.join(charDir, charName + '.abc')
@@ -45,6 +46,7 @@ class ExtractAlembic(pyblish.api.InstancePlugin):
             metadata = instance.data['metadata']
             metadata['version'] = versionDir
             metadata['publish_%s' % charName] = charFile
+            metadata['ref_%s' % charName] = charRefFile
 
         if failed:
             raise pyblish.api.ExtractionError
