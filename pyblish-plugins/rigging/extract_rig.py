@@ -28,7 +28,8 @@ class ExtractRig(pyblish.api.InstancePlugin):
         assetName = task.getParent().getName().lower()
 
         assetFile = os.path.join(publishDir, '%s_rig.mb' % assetName)
-        metadata['publish_rig'] = assetFile
+        refFile = os.path.join(instance.data['publishDir'], '%s_rig.mb' % assetName)
+        metadata['publish_rig'] = refFile
 
         with maintained_selection():
             cmds.select(node, noExpand=True)
@@ -38,4 +39,8 @@ class ExtractRig(pyblish.api.InstancePlugin):
                       exportSelected=True,
                       preserveReferences=False,
                       constructionHistory=True)
+
+        if os.path.exists(refFile):
+            os.remove(refFile)
+        os.symlink(assetFile, refFile)
         self.log.info('Extraction completed successfully')

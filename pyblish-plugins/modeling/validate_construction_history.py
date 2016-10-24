@@ -29,4 +29,5 @@ class ValidateConstructionHistory(pyblish.api.InstancePlugin):
                             self.log.error(msg)
                             check = False
 
-        assert check, 'Nodes in the scene has construction history.'
+        if not check:
+            self.log.warning('Nodes in the scene has construction history.')

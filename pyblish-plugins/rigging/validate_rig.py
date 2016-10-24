@@ -26,7 +26,7 @@ class ValidateRig(pyblish.api.InstancePlugin):
         rigMembers = cmds.listRelatives(rigInstances[0], children=True)
         rigs = []
         for each in rigMembers:
-            if any(ext in each for ext in ['geo', 'rig']):
+            if any(ext in each.lower() for ext in ['geo', 'rig']):
                 rigs.append(each)
 
         if len(rigs) != 2:

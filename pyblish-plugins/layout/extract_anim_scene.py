@@ -17,20 +17,25 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
 
         versionDir = instance.data['vprefix'] + instance.data['version']
 
-        cameraDir = os.path.join(shotAssetsDir, 'camera', versionDir)
-        cameraFile = os.path.join(cameraDir, 'renderCam.abc')
+        cameraFile = os.path.join(shotAssetsDir, 'camera', 'renderCam.abc')
 
         publishDir = os.path.join(instance.data['publishDir'], versionDir)
 
-        envFile = os.path.join(publishDir, 'env.mb')
+        envFile = os.path.join(instance.data['publishDir'], 'env.mb')
         charFile = os.path.join(publishDir, 'char.mb')
         animFile = os.path.join(publishDir, 'animation_publish.mb')
 
         metadata = instance.data['metadata']
         metadata['version'] = versionDir
         metadata['renderCam'] = cameraFile
-        metadata['publish_env_file'] = envFile
-        metadata['publish_char_file'] = charFile
+        if os.path.exists(envFile):
+            metadata['publish_env_file'] = envFile
+        else:
+            metadata['publish_env_file'] = ''
+        if os.path.exists(charFile):
+            metadata['publish_char_file'] = charFile
+        else:
+            metadata['publish_char_file'] = ''
         metadata['publish_anim_file'] = animFile
         instance.set_data('metadata', value=metadata)
 

@@ -29,7 +29,7 @@ class ValidateAnimation(pyblish.api.InstancePlugin):
                 geoMembers = []
                 for member in members:
                     # Get all children that have 'geo' in the name
-                    if 'geo' in member:
+                    if 'geo' in member.lower():
                         geoMembers.append(member)
                 # Invalid if there are more than 1 'geo' groups
                 if len(geoMembers) == 1:

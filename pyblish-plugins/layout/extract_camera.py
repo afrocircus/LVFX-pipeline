@@ -18,6 +18,7 @@ class ExtractCamera(pyblish.api.InstancePlugin):
 
         cameraDir = os.path.join(shotAssetsDir, 'camera', versionDir)
         cameraFile = os.path.join(cameraDir, 'renderCam.abc')
+        cameraSymLink = os.path.join(shotAssetsDir, 'camera', 'renderCam.abc')
 
         if not os.path.exists(cameraDir):
             os.makedirs(cameraDir)
@@ -34,3 +35,8 @@ class ExtractCamera(pyblish.api.InstancePlugin):
         except Exception:
             self.log.error('Error during camera extraction')
             raise pyblish.api.ExtractionError
+
+        # Create a symlink to the latest camera publish
+        if os.path.exists(cameraSymLink):
+            os.remove(cameraSymLink)
+        os.symlink(cameraFile, cameraSymLink)
