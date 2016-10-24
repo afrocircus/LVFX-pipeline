@@ -6,6 +6,16 @@ import getpass
 import re
 import glob
 import shutil
+import subprocess
+import threading
+
+
+def async(fn):
+    """Run *fn* asynchronously."""
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+    return wrapper
 
 
 class GetLatestPublish(ftrack.Action):
@@ -77,6 +87,21 @@ class GetLatestPublish(ftrack.Action):
         taskFolder = os.path.join(sceneFolder, taskName)
         return taskFolder
 
+    @async
+    def buildLightingScene(self, mayapy, task, folder, user, filename, shotName):
+        job = ftrack.createJob('Building Lighting scene file for shot '
+                               '{0}'.format(shotName), 'queued', user)
+        job.setStatus('running')
+        cmd = '%s /home/natasha/dev/LVFX-pipeline/scripts/lt_build_scene.py ' \
+              '-taskid %s -taskDir %s' % (mayapy, task, folder)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
+        print cmd
+        process.wait()
+        if os.path.exists(filename):
+            job.setStatus('done')
+        else:
+            job.setStatus('failed')
+
     def register(self):
         '''Register discover actions on logged in user.'''
         ftrack.EVENT_HUB.subscribe(
@@ -107,7 +132,7 @@ class GetLatestPublish(ftrack.Action):
             task = ftrack.Task(selection[0]['entityId'])
             if task.get('objecttypename') == 'Task':
                 taskType = task.getType().getName().lower()
-                if taskType == 'animation' or taskType == 'previz':
+                if taskType == 'animation' or taskType == 'previz' or taskType == 'lighting':
                     taskFolder = self.getTaskFolder(task)
                     shotName = task.getParent().getName()
                     newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
@@ -128,6 +153,7 @@ class GetLatestPublish(ftrack.Action):
         """
         selection = event['data'].get('selection', [])
         task = ftrack.Task(selection[0]['entityId'])
+        user = ftrack.User(id=event['source']['user']['id'])
         taskType = task.getType().getName().lower()
 
         taskFolder = self.getTaskFolder(task)
@@ -136,9 +162,13 @@ class GetLatestPublish(ftrack.Action):
 
         shotName = task.getParent().getName()
         publishFile = ''
+        newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
 
         if taskType == 'previz':
             publishFile = self.copyFromLayoutPublish(taskFolder, 'previz')
+            if os.path.exists(publishFile) and not os.path.exists(newFilePath):
+                shutil.copy(publishFile, newFilePath)
+            os.chmod(newFilePath, 0666)
         elif taskType == 'animation':
             previzDir = os.path.join(taskFolder.split('animation')[0], 'previz')
             previzFiles = [f for f in glob.glob(os.path.join(previzDir, '*_v[0-9]*.mb'))]
@@ -157,13 +187,15 @@ class GetLatestPublish(ftrack.Action):
             # Else get latest layout publish file
             else:
                 publishFile = self.copyFromLayoutPublish(taskFolder, 'animation')
+            # Copy over the latest publish file.
+            if os.path.exists(publishFile) and not os.path.exists(newFilePath):
+                shutil.copy(publishFile, newFilePath)
+            os.chmod(newFilePath, 0666)
+        elif taskType == 'lighting':
+            mayapy = '/usr/autodesk/maya2016/bin/mayapy'
+            if os.path.exists(mayapy):
+                self.buildLightingScene(mayapy, task.getId(), taskFolder, user, newFilePath, shotName)
 
-        newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
-
-        # Copy over the latest publish file.
-        if os.path.exists(publishFile) and not os.path.exists(newFilePath):
-            shutil.copy(publishFile, newFilePath)
-        os.chmod(newFilePath, 0666)
         metadata = task.getMeta()
         metadata['filename'] = newFilePath
         task.setMeta(metadata)
