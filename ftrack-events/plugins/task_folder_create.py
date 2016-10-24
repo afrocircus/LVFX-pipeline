@@ -1,10 +1,19 @@
 import ftrack
 import os
 import subprocess
+import threading
 import re
 import sys
 import shutil
 import glob
+
+
+def async(fn):
+    """Run *fn* asynchronously."""
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+    return wrapper
 
 
 def getShotFolder(task):
@@ -86,7 +95,7 @@ def copyFromLayoutPublish(taskFolder, taskName):
     return publishFile
 
 
-def createTemplateFiles(templateFolder, task, taskFolder, shotName):
+def createTemplateFiles(templateFolder, task, taskFolder, shotName, user):
     # Create template files based on task type
     taskType = task.getType().getName().lower()
     if taskType == 'modeling':
@@ -138,8 +147,29 @@ def createTemplateFiles(templateFolder, task, taskFolder, shotName):
         os.chmod(newFilePath, 0666)
         metadata = {'filename': newFilePath}
         task.setMeta(metadata)
+    elif taskType == 'lighting':
+        mayapy = '/usr/autodesk/maya2016/bin/mayapy'
+        if os.path.exists(mayapy):
+            newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
+            buildLightingScene(mayapy, task.getId(), taskFolder, user, newFilePath, shotName)
+            metadata = {'filename': newFilePath}
+            task.setMeta(metadata)
     else:
         copyTemplateFiles(templateFolder, task, taskFolder, shotName)
+
+@async
+def buildLightingScene(mayapy, task, folder, user, filename, shotName):
+    job = ftrack.createJob('Building Lighting scene file for shot '
+                           '{0}'.format(shotName), 'queued', user)
+    job.setStatus('running')
+    cmd = '%s /home/natasha/dev/LVFX-pipeline/scripts/lt_build_scene.py ' \
+          '-taskid %s -taskDir %s' % (mayapy, task, folder)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
+    process.wait()
+    if os.path.exists(filename):
+        job.setStatus('done')
+    else:
+        job.setStatus('failed')
 
 
 def createAssetFolders(task, projectFolder):
@@ -164,6 +194,7 @@ def callback(event):
     for entity in event['data'].get('entities', []):
         if entity.get('entityType') == 'task' and entity['action'] == 'add':
             task = ftrack.Task(id=entity['entityId'])
+            user = ftrack.User(id=event['source']['user']['id'])
             taskName = task.getName().lower()
             if task.getObjectType() == 'Task':
                 project = task.getProject()
@@ -186,7 +217,7 @@ def callback(event):
                         except:
                             print "could not change directory permission for %s" % taskFolder
                 templateFolder = os.path.join(projFolder, 'template_files')
-                createTemplateFiles(templateFolder, task, taskFolder, shotName)
+                createTemplateFiles(templateFolder, task, taskFolder, shotName, user)
 
 
 # Subscribe to events with the update topic.
