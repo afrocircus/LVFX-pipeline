@@ -92,7 +92,7 @@ def main(argv):
         elif opt in ('-d', '--outfile'):
             outdir = arg.replace('#', '[0-9][0-9][0-9][0-9]')
     movFile, task = createMov(outdir, filename, taskid)
-    if task:
+    if task and os.path.exists(movFile):
         uploadToFtrack(task, movFile)
     else:
         print "No task found. Cannot upload to ftrack."
