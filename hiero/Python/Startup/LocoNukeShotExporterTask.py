@@ -536,6 +536,11 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
 
         script.addNode(metadataNode)
 
+        # Add the delivery gizmo
+        deliveryNode = nuke.Node('delivery')
+        writeNodes.append(nuke.PushNode("ScriptEnd"))
+        writeNodes.append(deliveryNode)
+
         # Generate Write nodes for nuke renders.
 
         # Bug 45843 - Branch the viewer when using OCIO nodes so
@@ -558,6 +563,7 @@ class LocoNukeShotExporterTask(hiero.core.TaskBase):
                 if node.knob('file_type') == 'mov':
                     slateNode = nuke.Node('slate')
                     script.addNode(slateNode)
+            node.setInputNode(0, metadataNode)
             script.addNode(node)
 
         if branchViewer:
