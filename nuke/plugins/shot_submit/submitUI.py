@@ -51,6 +51,9 @@ class ShotSubmitUI(QtGui.QWidget):
 
     def populateWriteNodes(self):
         writeNodes = nuke.allNodes('Write')
+        deliveryNodes = nuke.allNodes('delivery')
+        for node in deliveryNodes:
+            self.writeNodeBox.addItem(node.name())
         for node in writeNodes:
             self.writeNodeBox.addItem(node.name())
 
@@ -77,6 +80,10 @@ class ShotSubmitUI(QtGui.QWidget):
 
     def submitRender(self):
         filename = str(self.fileTextBox.text())
+        nuke.scriptSave()
+        if filename.endswith('.autosave'):
+            nuke.message('Cannot submit .autosave file for render! Please save and try again.')
+            return
         if filename is '' or not os.path.exists(filename):
             nuke.message('Please select a valid file to render!')
             return

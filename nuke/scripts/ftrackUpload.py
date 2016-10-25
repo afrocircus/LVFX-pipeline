@@ -89,13 +89,15 @@ def getDate():
 @async
 def uploadToFtrack():
     node = None
+    nukeFile = nuke.scriptName()
+    nuke.scriptSave()
     for node in nuke.allNodes('Write'):
         if node.name() == 'Write_mov':
             break
-    if not nuke.GUI or (node and node.knob('uploadToFtrack').value()):
+    if not nuke.GUI or (node and node.knob('uploadToFtrack').value()) or \
+            nukeFile.endswith('.autosave'):
         print "Submitting to Dailies"
         outputFile = writeNodeManager.getOutputFile()
-        nukeFile = nuke.scriptName()
         if 'FTRACK_TASKID' in os.environ:
             taskid = os.environ['FTRACK_TASKID']
         else:
@@ -127,4 +129,4 @@ def uploadToFtrack():
                 except Exception:
                     print "Error while uploading movie"
         else:
-            print "Error in submitting to ftrack. The project details might be incorrect."
+            nuke.message("Error in submitting to ftrack. The project details might be incorrect.")

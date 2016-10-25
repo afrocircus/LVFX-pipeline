@@ -139,6 +139,8 @@ def setOutputPath(type):
         outFile = os.path.join(outDir, '%s.####.%s' % (fname, fileType))
     elif type == 'mov':
         outFile = os.path.join(outDir, '%s.%s' % (fname, fileType))
+    elif type == 'qc':
+        outFile = os.path.join(outDir, '%s_qc.%s' % (fname, fileType))
     return outFile
 
 
