@@ -16,6 +16,7 @@ Loco VFX Pipeline Documentation
    client-review
    modeling-pipeline
    rigging-pipeline
+   layout-pipeline
    comp-pipeline
    roto-pipeline
    render-submission

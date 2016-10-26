@@ -27,12 +27,12 @@ The timer stops when the application is closed.
 Rigging File Location
 ----------------------
 
-When the artist starts nuke from ftrack, the corresponding asset's model file will be launched.
+When the artist starts maya from ftrack, the corresponding asset's model file will be launched.
 The file should be called <assetName_version>.mb and will be located at::
 
     /data/production/<show>/assets/<assetType>/<assetName>/rigging/
 
-For example the location of a model file for asset 'boy' of type 'character for project 'test' will be::
+For example the location of a rig file for asset 'boy' of type 'character for project 'test' will be::
 
     /data/production/test/assets/character/boy/rigging/boy_v01.mb
 

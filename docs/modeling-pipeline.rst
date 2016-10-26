@@ -27,7 +27,7 @@ The timer stops when the application is closed.
 Modeling File Location
 ----------------------
 
-When the artist starts nuke from ftrack, the corresponding asset's model file will be launched.
+When the artist starts maya from ftrack, the corresponding asset's model file will be launched.
 The file should be called <assetName_version>.mb and will be located at::
 
     /data/production/<show>/assets/<assetType>/<assetName>/modeling/maya/
