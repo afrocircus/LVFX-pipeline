@@ -14,6 +14,15 @@ Loco VFX Pipeline Documentation
    shot-ingestion
    internal-review
    client-review
+   modeling-pipeline
+   rigging-pipeline
    comp-pipeline
    roto-pipeline
    render-submission
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Technical Documentation
+
+   event-server
+
