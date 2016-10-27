@@ -27,8 +27,8 @@ The timer stops when the application is closed.
 Layout File Location
 ----------------------
 
-When the artist starts maya from ftrack, the corresponding asset's model file will be launched.
-The file should be called <assetName_version>.mb and will be located at::
+When the artist starts maya from ftrack, the corresponding task's scene file will be launched.
+The file will be located at::
 
     /data/production/<show>/shots/<sq>/<shot>/scene/layout/<shot>_<version>.mb
 
