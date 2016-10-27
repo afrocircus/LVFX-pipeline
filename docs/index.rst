@@ -18,6 +18,7 @@ Loco VFX Pipeline Documentation
    rigging-pipeline
    layout-pipeline
    animation-pipeline
+   lighting-pipeline
    comp-pipeline
    roto-pipeline
    render-submission
