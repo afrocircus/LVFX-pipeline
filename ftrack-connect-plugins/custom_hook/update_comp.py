@@ -68,7 +68,8 @@ class UpdateCompMetadata(ftrack.Action):
         if task.getType().getName().lower() == 'modeling':
             taskFolder = os.path.join(taskFolder, 'maya')
         if os.path.exists(taskFolder):
-            files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))]
+            files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))
+                     and not f.endswith('.autosave')]
             maxVersion = 1
             if files:
                 for f in files:
