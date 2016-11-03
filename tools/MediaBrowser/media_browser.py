@@ -1,6 +1,9 @@
 import sys
+import os
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
+from PySide.phonon import Phonon
+from table_model import *
 from style import pyqt_style_rc
 
 
@@ -45,16 +48,40 @@ class MediaBrowser(QtGui.QMainWindow):
         sideTab.setFixedWidth(200)
 
         self.browserTabs = QtGui.QTabWidget()
+        self.browserTabs.setFixedWidth(610)
         self.browserTabs.setTabsClosable(True)
         self.browserTabs.tabCloseRequested.connect(self.removeBrowserTabs)
         centralLayout.addWidget(self.browserTabs)
 
     def addBrowserTabs(self, category):
-        tableWidget = QtGui.QTableWidget()
-        self.browserTabs.addTab(tableWidget, category.text())
+        tableView = QtGui.QTableView()
+        tableView.adjustSize()
+        videos = self.createVideoList(tableView)
+        model = BrowserTableModel(videos)
+        tableView.setModel(model)
+        tableView.setShowGrid(False)
+        tableView.horizontalHeader().setVisible(False)
+        tableView.verticalHeader().setVisible(False)
+
+        for row in range(0, model.rowCount()):
+            tableView.setRowHeight(row, 150)
+            for col in range(0, model.columnCount()):
+                tableView.setItemDelegate(VideoWidget(self))
+                tableView.openPersistentEditor(model.index(row, col))
+                tableView.setColumnWidth(col, 150)
+
+        self.browserTabs.addTab(tableView, category.text())
 
     def removeBrowserTabs(self, index):
         self.browserTabs.removeTab(index)
+
+    def createVideoList(self, view):
+        refFolder = '/home/natasha/Videos/explosions'
+        refFiles = [os.path.join(refFolder, f) for f in os.listdir(refFolder) if os.path.isfile(os.path.join(refFolder, f))
+                    and f.endswith('.mov')]
+        colSize = 4
+        videoList = [refFiles[i:i+colSize] for i in xrange(0, len(refFiles), colSize)]
+        return videoList
 
 
 def main():
