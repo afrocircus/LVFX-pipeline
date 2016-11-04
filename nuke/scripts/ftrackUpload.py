@@ -96,7 +96,7 @@ def uploadToFtrack():
             node = write
             break
 
-    if not nuke.GUI or (node and node.knob('uploadToFtrack').value()) or \
+    if node and node.knob('uploadToFtrack').value() and not \
             nukeFile.endswith('.autosave'):
         print "Submitting to Dailies"
 
