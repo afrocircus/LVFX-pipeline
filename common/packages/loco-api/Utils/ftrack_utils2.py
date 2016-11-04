@@ -55,7 +55,7 @@ def parentIsShot(session, filename, task):
             shot = sqPartSplit[1]
             taskName = sqPartSplit[3]
             task = session.query('Task where name is "{0}" and project.name is "{1}" '
-                                 'and parent.name is "{2}" and parent.parent.name is {3}'
+                                 'and parent.name is "{2}" and parent.parent.name is {3} '
                                  'and parent.parent.parent.name is {4}'.format(taskName, project, shot,
                                                                                seq, project)).one()
         elif len(sqPartSplit) == 6:

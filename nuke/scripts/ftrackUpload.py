@@ -90,13 +90,16 @@ def getDate():
 def uploadToFtrack():
     node = None
     nukeFile = nuke.scriptName()
-    nuke.scriptSave()
-    for node in nuke.allNodes('Write'):
-        if node.name() == 'Write_mov':
+
+    for write in nuke.allNodes('Write'):
+        if write.name() == 'Write_mov':
+            node = write
             break
+
     if not nuke.GUI or (node and node.knob('uploadToFtrack').value()) or \
             nukeFile.endswith('.autosave'):
         print "Submitting to Dailies"
+
         outputFile = writeNodeManager.getOutputFile()
         if 'FTRACK_TASKID' in os.environ:
             taskid = os.environ['FTRACK_TASKID']
