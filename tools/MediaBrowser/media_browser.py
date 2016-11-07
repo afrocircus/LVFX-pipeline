@@ -2,8 +2,10 @@ import sys
 import os
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-from PySide.phonon import Phonon
-from table_model import *
+
+from table_model import BrowserTableModel
+from delegate import VideoDelegate
+from view import TableView
 from style import pyqt_style_rc
 
 
@@ -54,28 +56,25 @@ class MediaBrowser(QtGui.QMainWindow):
         centralLayout.addWidget(self.browserTabs)
 
     def addBrowserTabs(self, category):
-        tableView = QtGui.QTableView()
-        tableView.adjustSize()
-        videos = self.createVideoList(tableView)
+        tableView = TableView(self.stylesheet)
+        videos = self.createVideoList()
         model = BrowserTableModel(videos)
         tableView.setModel(model)
-        tableView.setShowGrid(False)
-        tableView.horizontalHeader().setVisible(False)
-        tableView.verticalHeader().setVisible(False)
 
         for row in range(0, model.rowCount()):
             tableView.setRowHeight(row, 150)
             for col in range(0, model.columnCount()):
-                tableView.setItemDelegate(VideoWidget(self))
+                tableView.setItemDelegate(VideoDelegate(self))
                 tableView.openPersistentEditor(model.index(row, col))
                 tableView.setColumnWidth(col, 150)
 
         self.browserTabs.addTab(tableView, category.text())
 
+
     def removeBrowserTabs(self, index):
         self.browserTabs.removeTab(index)
 
-    def createVideoList(self, view):
+    def createVideoList(self):
         refFolder = '/home/natasha/Videos/explosions'
         refFiles = [os.path.join(refFolder, f) for f in os.listdir(refFolder) if os.path.isfile(os.path.join(refFolder, f))
                     and f.endswith('.mov')]
