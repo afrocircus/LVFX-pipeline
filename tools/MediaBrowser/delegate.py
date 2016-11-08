@@ -1,3 +1,4 @@
+import os
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 from widget import VideoWidget
@@ -19,10 +20,16 @@ class VideoDelegate(QtGui.QStyledItemDelegate):
         painter.restore()
 
     def createEditor(self, parent, option, index):
-        self.videoEditor = VideoWidget(parent)
+        filename = index.model().data(index, QtCore.Qt.ItemDataRole)
+        if os.path.exists(filename):
+            self.videoEditor = VideoWidget(parent)
+        else:
+            return ''
         return self.videoEditor
 
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
-        self.videoEditor.setMediaSource(index.model().data(index, QtCore.Qt.ItemDataRole))
+        filename = index.model().data(index, QtCore.Qt.ItemDataRole)
+        if os.path.exists(filename):
+            self.videoEditor.setMediaSource(filename)
         editor.blockSignals(False)

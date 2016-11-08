@@ -22,7 +22,10 @@ class BrowserTableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.ItemDataRole:
             row = index.row()
             column = index.column()
-            value = self.__videos[row][column]
+            try:
+                value = self.__videos[row][column]
+            except:
+                value = ''
             return value
 
         elif role == QtCore.Qt.DisplayRole:

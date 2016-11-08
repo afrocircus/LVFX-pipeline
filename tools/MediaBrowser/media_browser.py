@@ -62,11 +62,11 @@ class MediaBrowser(QtGui.QMainWindow):
         tableView.setModel(model)
 
         for row in range(0, model.rowCount()):
-            tableView.setRowHeight(row, 150)
+            tableView.setRowHeight(row, 200)
             for col in range(0, model.columnCount()):
                 tableView.setItemDelegate(VideoDelegate(self))
                 tableView.openPersistentEditor(model.index(row, col))
-                tableView.setColumnWidth(col, 150)
+                tableView.setColumnWidth(col, 200)
 
         self.browserTabs.addTab(tableView, category.text())
 
@@ -78,7 +78,7 @@ class MediaBrowser(QtGui.QMainWindow):
         refFolder = '/home/natasha/Videos/explosions'
         refFiles = [os.path.join(refFolder, f) for f in os.listdir(refFolder) if os.path.isfile(os.path.join(refFolder, f))
                     and f.endswith('.mov')]
-        colSize = 4
+        colSize = 3
         videoList = [refFiles[i:i+colSize] for i in xrange(0, len(refFiles), colSize)]
         return videoList
 
