@@ -14,7 +14,8 @@ def loadAndInit():
     setupPrefs()
     mc.loadPlugin('locoVFXPlugins.py', quiet=True)
     mc.spLocoVFXPlugin()
-    mel.eval('setProject "%s"' % os.environ['PROJECT_DIR'])
+    if 'PROJECT_DIR' in os.environ:
+        mel.eval('setProject "%s"' % os.environ['PROJECT_DIR'])
 
     # Load Pyblish plugins
     pyblish.api.register_gui('pyblish_lite')
