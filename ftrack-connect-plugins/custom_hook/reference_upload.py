@@ -164,6 +164,11 @@ class RefClipUploader(ftrack.Action):
             return
         task = tasks[0].getName()
         print '%s / %s / %s / %s' % (project, sqName, shotName, task)
+        try:
+            shot.set('fstart', float(firstFrame))
+            shot.set('fend', float(lastFrame))
+        except Exception:
+            print 'Unable to set frame range firstFrame:%s, lastFrame:%s' % (firstFrame, lastFrame)
 
         outfilemp4, outfilewebm, thumbnail, metadata = self.prepMediaFiles(movieFile)
         self.upload(firstFrame, lastFrame, movieFile,
