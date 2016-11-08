@@ -1,14 +1,41 @@
 import maya.cmds as mc
+import maya.mel as mel
+import pymel.core as pm
+import maya.OpenMaya
 import ftrack_api
 import os
-
+import pyblish.api
+import pyblish_maya
 from maya.utils import executeDeferred
 
 print "loading custom plugins! ..."
 
 def loadAndInit():
+    setupPrefs()
     mc.loadPlugin('locoVFXPlugins.py', quiet=True)
     mc.spLocoVFXPlugin()
+    mel.eval('setProject "%s"' % os.environ['PROJECT_DIR'])
+
+    # Load Pyblish plugins
+    pyblish.api.register_gui('pyblish_lite')
+    pyblish_maya.setup()
+
+def setupPrefs():
+    #set the current options on load of maya (incase someone manually changed them it their settings)
+    pm.grid(size=1000, spacing=100, divisions=10)
+
+    #setting the grid settings
+    pm.optionVar (fv=("gridDivisions",10))
+    pm.optionVar (fv=("gridSize",1000))
+    pm.optionVar (fv=("gridSpacing",100))
+
+    mc.displayColor('gridAxis', 2, dormant=True)
+    mc.displayColor('gridHighlight', 1, dormant=True)
+    mc.displayColor('grid', 3, dormant=True)
+
+    #setting the units
+    pm.optionVar (sv=("workingUnitLinear", "cm"))
+    pm.optionVar (sv=("workingUnitLinearDefault", "cm"))
 
 
 def onClose():
@@ -27,5 +54,6 @@ def addQuitAppCallback():
     mc.scriptJob(e=["quitApplication", "onClose()"])
 
 
-mc.evalDeferred("loadAndInit()")
-executeDeferred("addQuitAppCallback()")
+if maya.OpenMaya.MGlobal.mayaState() == 0:
+    mc.evalDeferred("loadAndInit()")
+    executeDeferred("addQuitAppCallback()")
