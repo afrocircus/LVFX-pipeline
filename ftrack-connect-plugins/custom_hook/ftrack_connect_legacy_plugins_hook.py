@@ -295,6 +295,16 @@ class LegacyApplicationLauncher(
             taskParent = task.getParent()
 
             try:
+                duration = int(taskParent.get('duration'))
+                first = 1001
+                last = first + duration
+                environment['FS'] = str(first)
+                environment['FE'] = str(last)
+            except Exception:
+                environment['FS'] = '1'
+                environment['FE'] = '1'
+
+            '''try:
                 environment['FS'] = str(int(taskParent.getFrameStart()))
             except Exception:
                 environment['FS'] = '1'
@@ -302,7 +312,7 @@ class LegacyApplicationLauncher(
             try:
                 environment['FE'] = str(int(taskParent.getFrameEnd()))
             except Exception:
-                environment['FE'] = '1'
+                environment['FE'] = '1'''
 
             environment['FTRACK_TASKID'] = task.getId()
             environment['FTRACK_SHOTID'] = task.get('parent_id')
