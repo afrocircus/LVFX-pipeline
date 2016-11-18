@@ -297,12 +297,14 @@ class LegacyApplicationLauncher(
             try:
                 duration = int(taskParent.get('duration'))
                 first = 1001
-                last = first + duration
+                last = first + duration - 1
                 environment['FS'] = str(first)
                 environment['FE'] = str(last)
+                environment['FPS'] = taskParent.get('fps')
             except Exception:
                 environment['FS'] = '1'
                 environment['FE'] = '1'
+                environment['FPS'] = 24.0
 
             '''try:
                 environment['FS'] = str(int(taskParent.getFrameStart()))
