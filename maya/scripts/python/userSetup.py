@@ -11,7 +11,6 @@ from maya.utils import executeDeferred
 print "loading custom plugins! ..."
 
 def loadAndInit():
-    setupPrefs()
     mc.loadPlugin('locoVFXPlugins.py', quiet=True)
     mc.spLocoVFXPlugin()
     if 'PROJECT_DIR' in os.environ:
@@ -20,10 +19,28 @@ def loadAndInit():
     # Load Pyblish plugins
     pyblish.api.register_gui('pyblish_lite')
     pyblish_maya.setup()
+    setupPrefs()
 
 def setupPrefs():
     #set the current options on load of maya (incase someone manually changed them it their settings)
-    pm.grid(size=1000, spacing=100, divisions=10)
+    pm.playbackOptions(min=1, max=120)
+    pm.currentTime(1)
+    if 'FS' in os.environ and 'FE' in os.environ:
+        first = os.environ['FS']
+        last = os.environ['FE']
+        if not first == '1' and not last == '2':
+            pm.playbackOptions(minTime=first, maxTime=last, animationStartTime=first)
+            pm.currentTime(first)
+
+    '''pm.grid(size=1000, spacing=100, divisions=10)
+    pm.optionVar (fv=("playbackMax",120))
+    pm.optionVar (fv=("playbackMaxDefault",120))
+    pm.optionVar (fv=("playbackMaxRange",120))
+    pm.optionVar (fv=("playbackMaxRangeDefault",120))
+    pm.optionVar (fv=("playbackMin",1))
+    pm.optionVar (fv=("playbackMinDefault",1))
+    pm.optionVar (fv=("playbackMinRange",1))
+    pm.optionVar (fv=("playbackMinRangeDefault",1))'''
 
     #setting the grid settings
     pm.optionVar (fv=("gridDivisions",10))
