@@ -28,7 +28,9 @@ class ValidateStarterNormals(pyblish.api.InstancePlugin):
 
         # On locked normals, indicate that validation has failed
         # with a friendly message for the user.
-        assert not invalid, (
-            "Meshes found with locked normals: %s" % invalid)
-
-        self.log.info("The normals of \"%s\" are correct." % instance.data['model'])
+        #assert not invalid, (
+        #    "Meshes found with locked normals: %s" % invalid)
+        if len(invalid) > 0:
+            self.log.warning("Meshes found with locked normals: %s" % invalid)
+        else:
+            self.log.info("The normals of \"%s\" are correct." % instance.data['model'])
