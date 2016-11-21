@@ -10,15 +10,13 @@ class ExtractCamera(pyblish.api.InstancePlugin):
     hosts = ['maya']
     label = 'Export Camera Abc'
     families = ['scene']
+    optional = True
+    active = False
 
     def process(self, instance):
         shotAssetsDir = instance.data['shotAssetPath']
 
         versionDir = instance.data['vprefix'] + instance.data['version']
-        publishDir = os.path.join(instance.data['publishDir'], versionDir)
-        if not os.path.exists(publishDir):
-            os.makedirs(publishDir)
-        cameraMayaFile = os.path.join(publishDir, 'renderCam.mb')
 
         cameraDir = os.path.join(shotAssetsDir, 'camera', versionDir)
         cameraFile = os.path.join(cameraDir, 'renderCam.abc')
@@ -34,14 +32,6 @@ class ExtractCamera(pyblish.api.InstancePlugin):
 
         params = '{0} {1} -ws -ef -dataFormat ogawa {2}'.format(frameRange, cameraNode, filename)
 
-        cmds.select(camera)
-        refFile = os.path.join(instance.data['publishDir'], 'renderCam.mb')
-        # Export selection to a <filedir>/publish/env.mb
-        try:
-            cmds.file(cameraMayaFile, pr=True, es=True, force=True, type='mayaBinary')
-        except RuntimeError:
-            raise pyblish.api.ExtractionError
-
         try:
             cmds.AbcExport(j=params)
         except Exception:
@@ -53,7 +43,5 @@ class ExtractCamera(pyblish.api.InstancePlugin):
             os.remove(cameraSymLink)
         os.symlink(cameraFile, cameraSymLink)
 
-        # Create a symlink to the latest env publish
-        if os.path.exists(refFile):
-            os.remove(refFile)
-        os.symlink(cameraMayaFile, refFile)
+        metadata = instance.data['metadata']
+        metadata['renderCam'] = cameraSymLink

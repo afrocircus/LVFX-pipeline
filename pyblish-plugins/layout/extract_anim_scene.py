@@ -50,9 +50,9 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
                      "cmds.loadPlugin('AbcImport');"
         if os.path.exists(charFile):
             copyfile(charFile, animFile)
-            mayaScript += "cmds.file('%s', o=True);" % animFile
+            mayaScript += "cmds.file('%s', o=True, f=True);" % animFile
         else:
-            mayaScript += "cmds.file(new=True);" \
+            mayaScript += "cmds.file(new=True, f=True);" \
                           "cmds.file(rename=%s);" % animFile
 
         if os.path.exists(envFile):
@@ -62,7 +62,8 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
             mayaScript += "cmds.AbcImport('%s', mode='import');" % cameraFile
 
         mayaScript += "cmds.file(save=True, type='mayaBinary', force=True);" \
-                      "cmds.quit();"
+                      "cmds.quit();" \
+                      "os._exit(0)"
 
         mayapyPath = instance.context.data['mayapy']
         if mayapyPath == '' or not os.path.exists(mayapyPath):
