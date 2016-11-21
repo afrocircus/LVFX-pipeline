@@ -21,6 +21,24 @@ def loadAndInit():
     pyblish_maya.setup()
     setupPrefs()
 
+def getFPSpreset(fps):
+    if fps == '15.0':
+        return 'game'
+    elif fps == '24.0':
+        return 'film'
+    elif fps == '25.0':
+        return 'pal'
+    elif fps == '30.0':
+        return 'ntsc'
+    elif fps == '48.0':
+        return 'show'
+    elif fps == '50.0':
+        return 'palf'
+    elif fps == '60.0':
+        return 'ntscf'
+    else:
+        return 'film'
+
 def setupPrefs():
     #set the current options on load of maya (incase someone manually changed them it their settings)
     pm.playbackOptions(min=1, max=120)
@@ -28,8 +46,12 @@ def setupPrefs():
     if 'FS' in os.environ and 'FE' in os.environ:
         first = os.environ['FS']
         last = os.environ['FE']
+        fps = os.environ['FPS']
+        fpsPreset = getFPSpreset(fps)
+        mc.currentUnit(time=fpsPreset)
         if not first == '1' and not last == '2':
-            pm.playbackOptions(minTime=first, maxTime=last, animationStartTime=first)
+            pm.playbackOptions(minTime=first, maxTime=last, animationStartTime=first,
+                               animationEndTime=last)
             pm.currentTime(first)
 
     '''pm.grid(size=1000, spacing=100, divisions=10)
