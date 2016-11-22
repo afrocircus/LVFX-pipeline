@@ -45,3 +45,17 @@ class ExtractCamera(pyblish.api.InstancePlugin):
 
         metadata = instance.data['metadata']
         metadata['renderCam'] = cameraSymLink
+
+        # Export Nuke Cam if it exists
+        cameraNode = cmds.ls('renderCamNuke')
+        if len(cameraNode) != 0:
+            cmds.select('renderCamNuke')
+            import maya.mel as mel
+            cameraMayaFile = os.path.join(cameraDir, 'renderCamNuke.mb')
+            cameraNukeFile = os.path.join(cameraDir, 'renderCamNuke.nk')
+            result = mel.eval('source pass2nuke; openMotion("%s","mayaBinary")' % cameraMayaFile)
+            if result == 1:
+                os.rename(cameraMayaFile, cameraNukeFile)
+                metadata['nukeCam'] = cameraNukeFile
+            else:
+                self.log.warn('Unable to export the nuke camera.')
