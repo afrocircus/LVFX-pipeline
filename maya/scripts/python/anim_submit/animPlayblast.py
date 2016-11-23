@@ -2,12 +2,14 @@ import os
 from PySide.QtCore import QObject, Signal
 import threading
 import datetime
+import json
 import maya.cmds as cmds
 import shlex
 import subprocess
 
 from pymel.core import *
 from Utils import ftrack_utils2
+from Utils import capture
 
 
 def async(fn):
@@ -82,18 +84,30 @@ class AnimPlayblast(QObject):
         for headDisplay in headsUpDisplayList:
             headsUpDisplay(headDisplay, rem=True)
 
-    def playBlast(self, qlty, perc):
-        intPerc = int(perc*100)
+    def load_preset(self, path):
+        """Load options json from path"""
+        with open(path, "r") as f:
+            return json.load(f)
+
+    def playBlast(self, qlty, camera):
         filename = self.getCurrentMayaFile()
         dirname = os.path.dirname(filename)
         playblastDir = os.path.join(dirname, 'playblasts')
         if not os.path.exists(playblastDir):
             os.makedirs(playblastDir)
         outFile = os.path.join(playblastDir, '{0}_{1}_playblast.mov'.format(self.shotName, self.version))
-        width = int(cmds.getAttr('defaultResolution.width'))
-        height = int(cmds.getAttr('defaultResolution.height'))
-        playblast(fo=True, filename=outFile, format='qt', compression='jpeg', v=True,
-                  quality=qlty, cc=True, widthHeight=(width, height), p=intPerc)
+        presetName = 'default'
+
+        presetPath = os.path.join(os.path.dirname(capture.__file__),
+                                  'capture_presets',
+                                  (presetName + '.json'))
+        preset = self.load_preset(presetPath)
+        preset['camera'] = camera
+
+        capture.capture(filename=outFile,
+                        overwrite=True,
+                        quality=qlty, compression='jpeg',
+                        **preset)
 
     def getCurrentVersion(self):
         filename = self.getCurrentMayaFile()
@@ -105,6 +119,13 @@ class AnimPlayblast(QObject):
     def getCurrentMayaFile(self):
         filename = cmds.file(q=True, sn=True)
         return filename
+
+    def getCameras(self):
+        cameras = cmds.listCameras(p=True)
+        return cameras
+
+    def lookThruCamera(self, camera):
+        cmds.lookThru(camera)
 
     @async
     def playMovie(self, outFile):

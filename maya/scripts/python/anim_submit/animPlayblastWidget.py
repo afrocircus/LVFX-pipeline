@@ -16,6 +16,7 @@ class AnimPlayblastUI(QtGui.QWidget):
 
         self.setLayout(QtGui.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
+        self.setWindowTitle('Animation Playblast')
         hudLayout = QtGui.QHBoxLayout()
         hudFrame = QtGui.QFrame()
         hudFrame.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
@@ -34,7 +35,16 @@ class AnimPlayblastUI(QtGui.QWidget):
         playblastFrame.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
         #playblastFrame.setFixedHeight(100)
         playblastFrame.setLayout(playblastLayout)
+
         sliderLayout = QtGui.QGridLayout()
+        sliderLayout.addWidget(QtGui.QLabel('Camera:'), 0, 0)
+        self.camDropdown = QtGui.QComboBox()
+        self.camDropdown.addItems(self.animPlayblast.getCameras())
+        self.cameraChanged(0)
+        self.camDropdown.currentIndexChanged.connect(self.cameraChanged)
+        sliderLayout.addWidget(self.camDropdown, 0, 1)
+        sliderLayout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding,
+                                               QtGui.QSizePolicy.Minimum), 0, 2)
         qualitySlider = QtGui.QSlider(QtCore.Qt.Horizontal)
         qualitySlider.setRange(0,100)
         qualitySlider.setValue(70)
@@ -42,24 +52,12 @@ class AnimPlayblastUI(QtGui.QWidget):
         qualityTxtBox.setFixedWidth(40)
         qualitySlider.valueChanged.connect(lambda: self.setQtySliderValue(qualitySlider.value(),
                                                                                qualityTxtBox))
-        sliderLayout.addWidget(QtGui.QLabel('Quality:'), 0, 0)
-        sliderLayout.addWidget(qualityTxtBox, 0, 1)
-        sliderLayout.addWidget(qualitySlider, 0, 2)
-        scaleSlider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        scaleSlider.setRange(0, 100)
-        scaleSlider.setSingleStep(1)
-        scaleSlider.valueChanged.connect(lambda: self.setScaleSliderValue(scaleSlider.value(),
-                                                                          scaleTxtBox))
-        scaleTxtBox = QtGui.QLineEdit()
-        scaleSlider.setValue(70)
-        scaleTxtBox = QtGui.QLineEdit('0.70')
-        scaleTxtBox.setFixedWidth(40)
-        sliderLayout.addWidget(QtGui.QLabel('Scale:'), 1, 0)
-        sliderLayout.addWidget(scaleTxtBox, 1, 1)
-        sliderLayout.addWidget(scaleSlider, 1, 2)
+        sliderLayout.addWidget(QtGui.QLabel('Quality:'), 1, 0)
+        sliderLayout.addWidget(qualityTxtBox, 1, 1)
+        sliderLayout.addWidget(qualitySlider, 1, 2)
         playblastButton = QtGui.QPushButton('Playblast')
         playblastButton.clicked.connect(lambda: self.animPlayblast.playBlast(int(qualityTxtBox.text()),
-                                                                             float(scaleTxtBox.text())))
+                                                                             str(self.camDropdown.currentText())))
         playblastLayout.addLayout(sliderLayout)
         playblastLayout.addWidget(playblastButton)
         self.layout().addWidget(playblastFrame)
@@ -97,6 +95,10 @@ class AnimPlayblastUI(QtGui.QWidget):
         self.layout().addLayout(progressLayout)
         self.setProgressBar(False)
 
+    def cameraChanged(self, index):
+        camera = self.camDropdown.itemText(index)
+        self.animPlayblast.lookThruCamera(camera)
+
     def setProgressBar(self, visible):
         self.progressLabel.setText('')
         self.progressLabel.setVisible(visible)
@@ -105,10 +107,6 @@ class AnimPlayblastUI(QtGui.QWidget):
 
     def setQtySliderValue(self, value, txtBox):
         txtBox.setText(str(value))
-
-    def setScaleSliderValue(self, value, txtBox):
-        scaledValue = float(value)/100
-        txtBox.setText(str(scaledValue))
 
     def playCurrentMovie(self):
         filename = self.animPlayblast.getCurrentVersion()
