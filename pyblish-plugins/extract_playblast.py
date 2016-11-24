@@ -55,10 +55,18 @@ class ExtractPlayblast(pyblish.api.InstancePlugin):
 
         self.addHUD()
 
-        capture.capture(filename=outFile,
-                        overwrite=True,
-                        quality=70, compression='jpeg',
-                        **preset)
+        audioNodes = cmds.ls(type='audio')
+        if len(audioNodes) > 0:
+            capture.capture(filename=outFile,
+                            overwrite=True,
+                            quality=70, compression='jpeg',
+                            sound=audioNodes[0],
+                            **preset)
+        else:
+            capture.capture(filename=outFile,
+                            overwrite=True,
+                            quality=70, compression='jpeg',
+                            **preset)
         self.removeHUD()
 
         self.log.info('extract playblast')
