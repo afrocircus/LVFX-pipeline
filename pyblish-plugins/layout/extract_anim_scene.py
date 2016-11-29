@@ -2,6 +2,7 @@ import os
 import pyblish.api
 from shutil import copyfile
 import subprocess
+import maya.cmds as cmds
 
 
 @pyblish.api.log
@@ -45,6 +46,7 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
             os.remove(animFile)
 
         mayaScript = "import maya.cmds as cmds;" \
+                     "import maya.mel as mel;" \
                      "import maya.standalone; " \
                      "maya.standalone.initialize('Python'); " \
                      "cmds.loadPlugin('AbcImport');"
@@ -55,6 +57,11 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
             mayaScript += "cmds.file(new=True, f=True);" \
                           "cmds.file(rename=%s);" % animFile
 
+        audioNodes = cmds.ls(type='audio')
+        if len(audioNodes) > 0:
+            soundFile = cmds.sound(audioNodes[0], file=True, query=True)
+            mayaScript += "cmds.file('%s', i=True, type='audio', options='o=0');" % soundFile
+
         if os.path.exists(envFile):
             mayaScript += "cmds.file('%s', r=True);" % envFile
 
@@ -64,6 +71,8 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
         mayaScript += "cmds.file(save=True, type='mayaBinary', force=True);" \
                       "cmds.quit();" \
                       "os._exit(0)"
+
+        print mayaScript
 
         mayapyPath = instance.context.data['mayapy']
         if mayapyPath == '' or not os.path.exists(mayapyPath):
