@@ -27,15 +27,22 @@ class ValidateAnimation(pyblish.api.InstancePlugin):
                 # Get the children
                 members = cmds.listRelatives(each.name(), children=True)
                 geoMembers = []
+                rigMembers = []
                 for member in members:
                     # Get all children that have 'geo' in the name
                     if 'geo' in member.lower():
                         geoMembers.append(member)
-                # Invalid if there are more than 1 'geo' groups
-                if len(geoMembers) == 1:
-                    valid.append(geoMembers[0])
+                    if 'rig' in member.lower():
+                        rigMembers.append(member)
+
+                if len(rigMembers) > 0:
+                    # Invalid if there are more than 1 'geo' groups
+                    if len(geoMembers) == 1:
+                        valid.append(geoMembers[0])
+                    else:
+                        invalid.append(each.name())
                 else:
-                    invalid.append(each.name())
+                    valid.append(each.name())
 
         if len(invalid) > 0:
             self.log.error('There should only be 1 "geo" group under a parent group')
