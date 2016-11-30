@@ -574,7 +574,10 @@ def _applied_camera_options(options, panel):
             options.pop(opt)
 
     for opt, value in options.iteritems():
-        cmds.setAttr(camera + "." + opt, value)
+        try:
+            cmds.setAttr(camera + "." + opt, value)
+        except:
+            print opt, value
 
     try:
         yield
