@@ -21,7 +21,10 @@ class IntegrateFtrackMeta(pyblish.api.InstancePlugin):
         task = ftrack.Task(taskid)
         task.setMeta(metadata)
 
-        task.set('description', 'Published on %s' % instance.context.data['date'])
+        try:
+            task.set('description', 'Published on %s' % instance.context.data['date'])
+        except:
+            self.log.warn('Unable to set task description.')
 
         if 'renderCam' in metadata:
             shot = task.getParent()
