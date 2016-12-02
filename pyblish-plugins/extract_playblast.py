@@ -30,7 +30,7 @@ class ExtractPlayblast(pyblish.api.InstancePlugin):
             self.log.info('Skipping playblast for %s' % taskName)
             return
 
-        playblastDir = os.path.join(instance.data['workPath'], 'playblast')
+        playblastDir = os.path.join(instance.data['workPath'], 'playblasts')
         if not os.path.exists(playblastDir):
             os.makedirs(playblastDir)
         version = instance.data['vprefix'] + instance.data['version']
