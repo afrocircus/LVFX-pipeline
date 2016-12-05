@@ -10,6 +10,7 @@ class ExtractAlembic(pyblish.api.InstancePlugin):
     hosts = ['maya']
     label = 'Alembic export'
     families = ['scene']
+    optional = True
 
     def process(self, instance):
         shotAssetsDir = instance.data['shotAssetPath']

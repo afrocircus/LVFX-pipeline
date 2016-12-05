@@ -19,6 +19,9 @@ class ValidateAnimation(pyblish.api.InstancePlugin):
         valid = []
 
         for each in assemblies:
+            # If rendercam in group name, then skip processing it.
+            if 'rendercam' in each.name().lower():
+                continue
             # If env in group name, then skip processing it.
             if 'env_' in each.name().lower():
                 continue
