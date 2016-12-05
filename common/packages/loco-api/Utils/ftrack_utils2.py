@@ -6,8 +6,17 @@ import os
 import re
 import uuid
 import subprocess
+import threading
 import json
 import shutil
+
+
+def async(fn):
+    """Run *fn* asynchronously."""
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+    return wrapper
 
 
 def startSession():
@@ -288,3 +297,16 @@ def getDate():
         dailiesDate = today
     date = '%d-%02d-%02d' % (dailiesDate.year, dailiesDate.month, dailiesDate.day)
     return date
+
+
+@async
+def syncToJHB(filename):
+    if 'STUDIO' in os.environ:
+        if os.environ['STUDIO'] == 'CPT':
+            print "Syncing file"
+            rsyncCmd = 'rsync -avrh %s server@192.168.0.208:%s/' % (filename, os.path.dirname(filename))
+            print rsyncCmd
+            process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+            process.wait()
+            print "Sync Complete"

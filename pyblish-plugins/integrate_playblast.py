@@ -68,6 +68,7 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
                                                       endFrame, 24)
                 ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
                 self.log.info("Movie Upload Successful")
+                ftrack_utils2.syncToJHB(playblast)
             except Exception:
                 self.log.error("Error during movie upload")
         else:
