@@ -217,12 +217,28 @@ class UploadMedia(ftrack.Action):
         process = subprocess.Popen(ffmpegFrames, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
         process.wait()
-
         if os.path.exists(slate):
             os.remove(slate)
         if os.path.exists(slateMov):
             os.remove(slateMov)
         return slateMovFinal
+
+    def cptSync(self, jhbFile, job):
+        cptFile = jhbFile.replace('/data/production', '/data/production_cpt')
+
+        if os.path.exists(cptFile):
+            jbhDir = os.path.dirname(jhbFile)
+            if not os.path.exists(jbhDir):
+                os.makedirs(jbhDir)
+            rsyncCmd = 'rsync -avuh server@192.168.2.5:%s %s' % (jhbFile, jbhDir)
+            print rsyncCmd
+            job.setDescription('Syncing file to JHB')
+            process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=True)
+            process.wait()
+            return 1
+        else:
+            return 0
 
 
     @async
@@ -231,14 +247,24 @@ class UploadMedia(ftrack.Action):
             'Uploading media for shot {0}'.format(shot.getName()),
             'queued', user)
         job.setStatus('running')
-        fps = int(shot.getParent().get('fps'))
+        try:
+            fps = int(shot.getParent().get('fps'))
+        except Exception:
+            fps = 24.0
         filename = '/' + filename.strip('file:/')
         fname, fext = os.path.splitext(filename)
+
+        if not os.path.exists(filename):
+            result = self.cptSync(filename, job)
+            job.setDescription('Uploading media for shot {0}'.format(shot.getName()))
+            if result == 0:
+                job.setDescription('File sync from CPT failed for shot {0}'.format(shot.getName()))
+                job.setStatus('failed')
+                return
 
         if addSlate == 'Yes':
             job.setDescription('Adding slate for shot {0}'.format(shot.getName()))
             slateFile = self.addSlateToMedia(filename, taskid, shot, user)
-            print slateFile
             if os.path.exists(slateFile):
                 filename = slateFile
                 job.setDescription('Uploading media for shot {0}'.format(shot.getName()))
