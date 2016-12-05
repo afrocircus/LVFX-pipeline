@@ -304,7 +304,8 @@ def syncToJHB(filename):
     if 'STUDIO' in os.environ:
         if os.environ['STUDIO'] == 'CPT':
             print "Syncing file"
-            rsyncCmd = 'rsync -avrh %s server@192.168.0.208:%s/' % (filename, os.path.dirname(filename))
+            remoteDir = os.path.dirname(filename).replace('/data/production', '/data/XFS1')
+            rsyncCmd = 'rsync -avrh %s server@192.168.0.208:%s/' % (filename, remoteDir)
             print rsyncCmd
             process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=True)
