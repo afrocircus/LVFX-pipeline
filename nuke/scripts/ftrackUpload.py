@@ -129,8 +129,8 @@ def uploadToFtrack():
                     print 'cleaning up temporary files...'
                     ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
                     print 'Upload Complete!'
-                    ftrack_utils2.syncToJHB(outputFile)
                 except Exception:
                     print "Error while uploading movie"
+                ftrack_utils2.syncToJHB(outputFile)
         else:
             nuke.message("Error in submitting to ftrack. The project details might be incorrect.")
