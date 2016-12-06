@@ -176,9 +176,9 @@ class AnimPlayblast(QObject):
                     self.movieUploadUpdate.emit(95, 'cleaning up temporary files...')
                     ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
                     self.movieUploadUpdate.emit(100, 'Upload Complete!')
-                    ftrack_utils2.syncToJHB(filename)
                 except Exception:
                     self.movieUploadFail.emit('Upload Failed: Error uploading to ftrack.')
+                ftrack_utils2.syncToJHB(filename)
             else:
                 self.movieUploadFail.emit('Upload Failed: Error during file conversion.')
         else:
