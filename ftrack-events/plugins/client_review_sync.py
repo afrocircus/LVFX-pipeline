@@ -1,5 +1,5 @@
 import os
-import sys
+import re
 import ftrack_api
 import threading
 import logging
@@ -60,6 +60,21 @@ class ReviewSync(object):
             filename = ''
         return filename
 
+    def version_get(self, string, prefix):
+        """
+        Extract version information from filenames.
+        Code from Foundry's nukescripts.version_get()
+        """
+        if string is None:
+            raise ValueError("Empty version string - no match")
+
+        regex = "[/_.]"+prefix+"\d+"
+        matches = re.findall(regex, string, re.IGNORECASE)
+        if not len(matches):
+            msg = "No \"_"+prefix+"#\" found in \""+string+"\""
+            raise ValueError(msg)
+        return (matches[-1:][0][1], re.search("\d+", matches[-1:][0]).group())
+
     def getFileToUpload(self, metadata, assetVersion):
         filename = ''
         location = self.session.query('Location where name is "ftrack.server"').one()
@@ -74,7 +89,11 @@ class ReviewSync(object):
                     filename = self.getComponentFilename(location, component, assetVersion['id'], 'jpeg')
                     break
         if os.path.exists(filename):
-            return filename
+            try:
+                version = 'v' + self.version_get(filename, 'v')[1]
+            except Exception:
+                version = 'v01'
+            return version, filename
         return None
 
     @async
@@ -146,7 +165,7 @@ class ReviewSync(object):
         """Upload asset versions to remote cloud account"""
 
         assetVersion = reviewObject['asset_version']
-        fileToUpload = self.getFileToUpload(assetVersion['metadata'], assetVersion)
+        version, fileToUpload = self.getFileToUpload(assetVersion['metadata'], assetVersion)
         if not fileToUpload:
             localJob['data'] = json.dumps({'description':'file not found'})
             localJob['status'] = 'failed'
@@ -155,12 +174,12 @@ class ReviewSync(object):
         defaultShotStatus = remoteProject['project_schema'].get_statuses('Shot')[0]
         # Create a shot under remoteFolder
         try:
-            remoteShot = remoteSession.query('Shot where name is "{0}" and '
-                                             'parent.name is "{1}"'.format(reviewObject['name'],
-                                                                         remoteFolder['name'])).one()
+            remoteShot = remoteSession.query('Shot where name is "{0}_{1}" and '
+                                             'parent.name is "{2}"'.format(reviewObject['name'],
+                                                                           version, remoteFolder['name'])).one()
         except Exception:
             remoteShot = remoteSession.create('Shot', {
-                'name': reviewObject['name'],
+                'name': '{0}_{1}'.format(reviewObject['name'], version),
                 'parent': remoteFolder,
                 'status': defaultShotStatus
             })
@@ -190,7 +209,7 @@ class ReviewSync(object):
         except Exception:
             localJob['status'] = 'failed'
             self.session.commit()
-            logging.error("serverError for {0}".format(reviewObject['name']))
+            logging.error("serverError for {0}_{1}".format(reviewObject['name'], version))
 
         try:
             self.uploadAndAddToReview(remoteSession, fileToUpload, remoteVersion, remoteReviewSession,
