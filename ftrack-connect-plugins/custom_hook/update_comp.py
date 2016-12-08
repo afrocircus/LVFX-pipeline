@@ -69,7 +69,7 @@ class UpdateCompMetadata(ftrack.Action):
             taskFolder = os.path.join(taskFolder, 'maya')
         if os.path.exists(taskFolder):
             files = [f for f in os.listdir(taskFolder) if os.path.isfile(os.path.join(taskFolder, f))
-                     and not f.endswith('.autosave')]
+                     and not (f.endswith('.autosave') or f.endswith('~'))]
             maxVersion = 1
             if files:
                 for f in files:
