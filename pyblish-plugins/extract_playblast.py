@@ -42,6 +42,7 @@ class ExtractPlayblast(pyblish.api.InstancePlugin):
         self.shotInfo = '{0} | {1} | {2} | {3} | {4}'.format(projectName, shotName,
                                                              taskName, version, usernames)
 
+        self.log.info(self.shotInfo)
         outFile = os.path.join(playblastDir, '{0}_{1}_playblast.mov'.format(shotName, version))
         instance.set_data('playblastFile', value=outFile)
 
@@ -56,6 +57,7 @@ class ExtractPlayblast(pyblish.api.InstancePlugin):
         self.addHUD()
 
         audioNodes = cmds.ls(type='audio')
+        self.log.info(audioNodes)
         if len(audioNodes) > 0:
             capture.capture(filename=outFile,
                             overwrite=True,
@@ -96,5 +98,6 @@ class ExtractPlayblast(pyblish.api.InstancePlugin):
 
     def removeHUD(self):
         headsUpDisplayList = cmds.headsUpDisplay(lh=True)
-        for headDisplay in headsUpDisplayList:
-            cmds.headsUpDisplay(headDisplay, rem=True)
+        if headsUpDisplayList:
+            for headDisplay in headsUpDisplayList:
+                cmds.headsUpDisplay(headDisplay, rem=True)
