@@ -10,6 +10,7 @@ class ExtractCamera(pyblish.api.InstancePlugin):
     hosts = ['maya']
     label = 'Export Camera Abc'
     families = ['scene']
+    optional = True
 
     def process(self, instance):
         shotAssetsDir = instance.data['shotAssetPath']

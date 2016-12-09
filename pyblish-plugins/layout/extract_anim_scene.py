@@ -25,6 +25,10 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
         envFile = os.path.join(instance.data['publishDir'], 'env.mb')
         charFile = os.path.join(publishDir, 'char.mb')
         animFile = os.path.join(publishDir, 'animation_publish.mb')
+        if 'image_planes' in instance.data:
+            imagePlanes = instance.data['image_planes']
+        else:
+            imagePlanes = []
 
         metadata = instance.data['metadata']
         metadata['version'] = versionDir
@@ -60,13 +64,35 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
         audioNodes = cmds.ls(type='audio')
         if len(audioNodes) > 0:
             soundFile = cmds.sound(audioNodes[0], file=True, query=True)
-            mayaScript += "cmds.file('%s', i=True, type='audio', options='o=0');" % soundFile
+            soundOffset = cmds.sound(audioNodes[0], offset=True, query=True)
+            mayaScript += "cmds.file('%s', i=True, type='audio', options='o=%s');" % \
+                          (soundFile, soundOffset)
 
         if os.path.exists(envFile):
             mayaScript += "cmds.file('%s', r=True);" % envFile
 
         if os.path.exists(cameraFile):
             mayaScript += "cmds.AbcImport('%s', mode='import');" % cameraFile
+
+        if len(imagePlanes) > 0:
+            for imagePlane in imagePlanes:
+                imagePath = cmds.getAttr(imagePlane + '.imageName')
+                imageSeq = cmds.getAttr(imagePlane + '.useFrameExtension')
+                frameOffset = cmds.getAttr(imagePlane + '.frameOffset')
+                imageSizeX = cmds.getAttr(imagePlane + '.sizeX')
+                imageSizeY = cmds.getAttr(imagePlane + '.sizeY')
+                imageOffsetX = cmds.getAttr(imagePlane + '.offsetX')
+                imageOffsetY = cmds.getAttr(imagePlane + '.offsetY')
+                camera = cmds.imagePlane(imagePlane, camera=True, query=True)[0]
+                mayaScript += "cmds.imagePlane(camera='%s');" % camera
+                mayaScript += "cmds.setAttr('%s.imageName', '%s', type='string');" % (imagePlane,
+                                                                                      imagePath)
+                mayaScript += "cmds.setAttr('%s.useFrameExtension', %s);" % (imagePlane, imageSeq)
+                mayaScript += "cmds.setAttr('%s.frameOffset', %s);" % (imagePlane, frameOffset)
+                mayaScript += "cmds.setAttr('%s.sizeX', %s);" % (imagePlane, imageSizeX)
+                mayaScript += "cmds.setAttr('%s.sizeY', %s);" % (imagePlane, imageSizeY)
+                mayaScript += "cmds.setAttr('%s.offsetX', %s);" % (imagePlane, imageOffsetX)
+                mayaScript += "cmds.setAttr('%s.offsetY', %s);" % (imagePlane, imageOffsetY)
 
         mayaScript += "cmds.file(save=True, type='mayaBinary', force=True);" \
                       "cmds.quit();" \
