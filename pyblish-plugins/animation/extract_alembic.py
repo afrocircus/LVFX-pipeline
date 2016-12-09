@@ -27,6 +27,7 @@ class ExtractAlembic(pyblish.api.InstancePlugin):
             charName = each.split(':')[0].split('char_')[1]
             charDir = os.path.join(shotAssetsDir, charName, versionDir)
             charFile = os.path.join(charDir, charName + '.abc')
+            charSymFile = os.path.join(shotAssetsDir, charName, charName + '.abc')
 
             if not os.path.exists(charDir):
                 os.makedirs(charDir)
@@ -44,6 +45,11 @@ class ExtractAlembic(pyblish.api.InstancePlugin):
             except Exception:
                 self.log.error('Error during alembic export for %s' % charName)
                 failed = True
+
+            # Create a symlink to the latest camera publish
+            if os.path.exists(charSymFile):
+                os.remove(charSymFile)
+            os.symlink(charFile, charSymFile)
 
             metadata = instance.data['metadata']
             metadata['version'] = versionDir

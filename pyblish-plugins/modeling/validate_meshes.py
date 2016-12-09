@@ -19,13 +19,17 @@ class ValidateMeshes(pyblish.api.InstancePlugin):
             if any(ext in each.name().lower() for ext in ['grp', 'fur']):
                 modelInstances.append(each.name())
 
+        furCount = 0
         if len(modelInstances) == 2:
-            furCount = 0
             for each in modelInstances:
                 if 'fur' in each.lower():
                     furCount += 1
 
-        if len(modelInstances) > 2 or modelInstances == 0 or furCount != 1:
+        if len(modelInstances) > 2 or len(modelInstances) == 0:
+            self.log.error('Invalid groups in the scene.')
+            raise pyblish.api.ValidationError
+
+        if len(modelInstances) == 2 and furCount != 1:
             self.log.error('Invalid groups in the scene.')
             raise pyblish.api.ValidationError
 

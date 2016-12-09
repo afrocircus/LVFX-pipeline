@@ -25,7 +25,11 @@ class ExtractCamera(pyblish.api.InstancePlugin):
         if not os.path.exists(cameraDir):
             os.makedirs(cameraDir)
 
-        camera = cmds.ls('renderCam')[0]
+        cameraList = cmds.ls('renderCam')
+        if len(cameraList) == 0:
+            self.log.error('No camera called renderCam found')
+            raise pyblish.api.ExtractionError
+        camera = cameraList[0]
         frameRange = '-fr {0} {1}'.format(instance.data['startFrame'], instance.data['endFrame'])
         cameraNode = '-root {0}'.format(camera)
         filename = '-file {0}'.format(cameraFile)
