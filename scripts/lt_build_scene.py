@@ -76,12 +76,17 @@ def buildScene(filepath, cameraFile, envFile, animMeta):
     for char in animMeta:
         if 'ref' in animMeta[char]:
             rigFile = animMeta[char]['ref']
-            modelRef = getModelingRef(rigFile)
+            if 'modeling' in rigFile:
+                modelRef = rigFile
+            else:
+                modelRef = getModelingRef(rigFile)
             if modelRef != '':
                 cmds.file(modelRef, r=True, namespace='char_%s' % char)
                 if 'publish' in animMeta[char] and 'mayaNode' in animMeta[char]:
+                    print animMeta[char]
                     cmds.AbcImport(animMeta[char]['publish'], connect=animMeta[char]['mayaNode'],
                                    mode='import', fitTimeRange=True)
+                    print 'asset import: ' + animMeta[char]['publish']
 
     cmds.file(save=True, type='mayaBinary', force=True)
 
@@ -110,6 +115,7 @@ def main(argv):
     buildScene(filepath, shotCam, envFile, animMeta)
 
     cmds.quit()
+    os._exit(0)
 
 
 if __name__ == '__main__':
