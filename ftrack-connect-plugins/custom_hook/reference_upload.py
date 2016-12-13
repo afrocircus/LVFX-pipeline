@@ -53,9 +53,14 @@ class RefClipUploader(ftrack.Action):
     def getShotPlatesFolder(self, shot):
         project = self.getProject(shot.get('showid'))
         projectFolder = self.getProjectFolder(project)
-        sequenceName = shot.getParent().getName()
+        sequence = shot.getParent()
+        sequenceName = sequence.getName()
         shotName = shot.getName()
-        imgFolder = os.path.join(projectFolder, 'shots', sequenceName, shotName, 'img')
+        if isinstance(sequence.getParent(), ftrack.Task):
+            episodeName = sequence.getParent().getName()
+            imgFolder = os.path.join(projectFolder, 'shots', episodeName, sequenceName, shotName, 'img')
+        else:
+            imgFolder = os.path.join(projectFolder, 'shots', sequenceName, shotName, 'img')
         platesFolder = os.path.join(imgFolder, 'plates')
         if not os.path.exists(platesFolder):
             platesFolder = os.path.join(platesFolder, 'proxy')
