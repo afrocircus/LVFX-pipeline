@@ -15,9 +15,20 @@ class ValidateRig(pyblish.api.InstancePlugin):
 
         assemblies = pymel.core.ls(assemblies=True)
         rigInstances = []
+        furInstances = []
         for each in assemblies:
-            if any(ext in each.name().lower() for ext in ['grp']):
+            if any(ext in each.name().lower() for ext in ['grp', 'fur']):
                 rigInstances.append(each.name())
+
+        for each in rigInstances:
+            if 'fur' in each.lower():
+                furInstances.append(each)
+                rigInstances.remove(each)
+
+        print furInstances
+        if len(furInstances) > 1:
+            self.log.error('There should be only one fur group in the scene')
+            raise pyblish.api.ValidationError
 
         if len(rigInstances) != 1:
             self.log.error('There should be only one parent group in the scene')
@@ -33,4 +44,6 @@ class ValidateRig(pyblish.api.InstancePlugin):
             self.log.error('There should be 2 child groups called geo and rig')
             raise pyblish.api.ValidationError
 
-        instance.set_data('rig', value=rigInstances[0])
+        rigInstances.extend(furInstances)
+
+        instance.set_data('rig', value=rigInstances)

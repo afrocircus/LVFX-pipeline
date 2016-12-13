@@ -27,6 +27,8 @@ class ValidateAnimation(pyblish.api.InstancePlugin):
                 continue
             # Valid group must have 'grp' in the top level name
             if 'grp' in each.name().lower():
+                if 'fur' in each.name().lower():
+                    continue
                 # Get the children
                 members = cmds.listRelatives(each.name(), children=True)
                 geoMembers = []
