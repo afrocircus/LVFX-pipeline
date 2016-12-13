@@ -132,7 +132,7 @@ class GetLatestPublish(ftrack.Action):
             task = ftrack.Task(selection[0]['entityId'])
             if task.get('objecttypename') == 'Task':
                 taskType = task.getType().getName().lower()
-                if taskType == 'animation' or taskType == 'previz' or taskType == 'lighting':
+                if taskType == 'animation' or taskType == 'previz':
                     taskFolder = self.getTaskFolder(task)
                     shotName = task.getParent().getName()
                     newFilePath = os.path.join(taskFolder, '%s_v01.mb' % shotName)
@@ -144,6 +144,14 @@ class GetLatestPublish(ftrack.Action):
                                 'icon': 'https://raw.githubusercontent.com/afrocircus/LVFX-pipeline/master/ftrack-connect-plugins/icons/send.png'
                             }]
                         }
+                elif taskType == 'lighting':
+                    return {
+                        'items': [{
+                            'label': self.label,
+                            'actionIdentifier': self.identifier,
+                            'icon': 'https://raw.githubusercontent.com/afrocircus/LVFX-pipeline/master/ftrack-connect-plugins/icons/send.png'
+                        }]
+                    }
             else:
                 return
 
