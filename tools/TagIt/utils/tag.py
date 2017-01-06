@@ -24,9 +24,10 @@ class Tag(QtGui.QMenu):
         self.tagDict = tagDict
         self.clear()
         selectionLine = self.parent.textCursor().blockNumber()+1
+        selectionText = self.parent.textCursor().selectedText()
         for taskType in TASK_TYPES:
             taskAction = QtGui.QAction(taskType, self, checkable=True)
-            if self.taskFound(selectionLine, taskType):
+            if self.taskFound(selectionLine, taskType, selectionText):
                 taskAction.setChecked(True)
             else:
                 taskAction.setChecked(False)
@@ -43,7 +44,7 @@ class Tag(QtGui.QMenu):
                     return True
         return QtGui.QMenu.eventFilter(self, obj, event)
 
-    def taskFound(self, selectionLineNo, taskType):
+    def taskFound(self, selectionLineNo, taskType, taskDesc):
         """
         Find if the selected text has a task associated with it already.
         :param selectionLineNo: Selection line number
@@ -56,7 +57,7 @@ class Tag(QtGui.QMenu):
                            if item <= selectionLineNo][-1]
             # Check if the scene dict has the associated task
             if 'tasks' in self.tagDict[sceneNumber]:
-                for task, taskLine in self.tagDict[sceneNumber]['tasks']:
+                for task, taskLine, taskDesc in self.tagDict[sceneNumber]['tasks']:
                     if task == taskType and taskLine == selectionLineNo:
                         return True
         return False
@@ -75,6 +76,7 @@ class Tag(QtGui.QMenu):
         # Get current selection
         selectionStart = cursor.selectionStart()
         selectionEnd = cursor.selectionEnd()
+        taskDesc = cursor.selectedText().encode("utf-8")
 
         if self.allActionsUnchecked():
             color = QtGui.QColor(255, 255, 255)
@@ -88,11 +90,11 @@ class Tag(QtGui.QMenu):
         d['desc'] = sceneDesc
         if action.isChecked():
             if 'tasks' in d:
-                d['tasks'].append((taskName, taskNo))
+                d['tasks'].append((taskName, taskNo, taskDesc))
             else:
-                d['tasks'] = [(taskName, taskNo)]
-        elif (taskName, taskNo) in d['tasks']:
-            d['tasks'].remove((taskName, taskNo))
+                d['tasks'] = [(taskName, taskNo, taskDesc)]
+        elif (taskName, taskNo, taskDesc) in d['tasks']:
+            d['tasks'].remove((taskName, taskNo, taskDesc))
 
     def allActionsUnchecked(self):
         unchecked = True

@@ -24,9 +24,9 @@ class ImportFile(object):
                 d = tagDict[sceneLine]
                 d['desc'] = tagList[1],
                 d['page'] = int(tagList[2])
-                d['tasks'] = [(tagList[3], int(tagList[4]))]
+                d['tasks'] = [(tagList[3], int(tagList[5]), tagList[4])]
             else:
-                tagDict[sceneLine]['tasks'].append((tagList[3], int(tagList[4])))
+                tagDict[sceneLine]['tasks'].append((tagList[3], int(tagList[5]), tagList[4]))
         return tagDict
 
 

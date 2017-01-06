@@ -13,17 +13,23 @@ class Export(object):
         :return: dataList: CSV readable data
         """
 
-        titles = ['Seq Line No', 'Seq Description', 'Seq Page No', 'Task Type', 'Task Line No']
+        titles = ['Seq Line No', 'Seq Description', 'Seq Page No', 'Task Type',
+                  'Task Description', 'Task Line No']
         dataList = [titles]
         for seq in sorted(tagDict.iterkeys()):
             descriptionAdded = False
-            for task, lineNo in tagDict[seq]['tasks']:
+            oldLineNo = 0
+            for task, lineNo, desc in tagDict[seq]['tasks']:
                 if not descriptionAdded:
                     row = [seq, tagDict[seq]['desc'], tagDict[seq]['page']]
                     descriptionAdded = True
                 else:
                     row = ['', '', '']
-                row.extend([task, lineNo])
+                if oldLineNo != lineNo:
+                    oldLineNo = lineNo
+                    row.extend([task, desc, lineNo])
+                else:
+                    row.extend([task, '', lineNo])
                 dataList.append(row)
         return dataList
 
