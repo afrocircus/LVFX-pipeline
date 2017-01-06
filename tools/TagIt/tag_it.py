@@ -339,7 +339,7 @@ class Main(QtGui.QMainWindow):
         cursor = self.text.textCursor()
         for key in self.tagDict.iterkeys():
             self.changeColorAtLine(key, 'seq', document, cursor)
-            for task, lineno in self.tagDict[key]['tasks']:
+            for task, lineno, desc in self.tagDict[key]['tasks']:
                 self.changeColorAtLine(lineno, 'task', document, cursor)
 
     def changeColorAtLine(self, line, type, document, cursor):
