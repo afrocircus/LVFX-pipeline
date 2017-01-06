@@ -109,13 +109,18 @@ class ShotSubmitUI(QtGui.QWidget):
             fileDir, fname = os.path.split(paramDict['filename'])
             jobname = 'VRay - %s' % fname
             rendererParams = '%s %s' % (renderer, rendererParams)
+            if 'FTRACK_TASKID' in os.environ:
+                taskid = os.environ['FTRACK_TASKID']
+            else:
+                taskid = ''
+
             if chunk > 0:
                 jobIds = self.jobWidget.submitVRStandalone(hq_server, jobname, paramDict['filename'],
                                                            paramDict['imgFile'], rendererParams,
                                                            paramDict['startFrame'], paramDict['endFrame'],
                                                            paramDict['step'], chunk, paramDict['multiple'],
                                                            pool, priority, paramDict['review'], user,
-                                                           dependency, prog)
+                                                           dependency, prog, taskid)
                 QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
                                                                        "Job Id = {0}".format(jobIds))
             elif chunk==0 and not paramDict['multiple']:

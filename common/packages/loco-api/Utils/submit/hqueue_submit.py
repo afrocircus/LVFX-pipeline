@@ -52,7 +52,7 @@ def submitNoChunk(hq_server, jobname, vrayCmd, priority, tries, group, vrayResta
 
 def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFrame, endFrame,
                          step, chunk, multiple, group, priority, review, pythonPath, slackToken,
-                         slackUser, dependent, progressive):
+                         slackUser, dependent, progressive, taskid):
     jobList = []
     if 'LOGNAME' in os.environ.keys():
         submitter = os.environ['LOGNAME']
@@ -141,8 +141,10 @@ def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFram
                    'Fail "%s" "%s"' % (pythonPath, slackToken, slackUser, submitter)
     }
     if review:
+        movFile = os.path.join(os.path.dirname(imgFile), os.path.basename(filename).split('.')[0] + '.mov')
         mainJob['command'] += 'python2.7 /data/production/pipeline/linux/scripts/mov_create_upload.py ' \
-                              '-f %s -d %s' % (filename, imgFile)
+                              '-f "%s" -t %s -d "%s"' % (movFile, taskid, imgFile)
+        print mainJob['command']
 
     jobs_ids = hq_server.newjob(mainJob)
     return jobs_ids

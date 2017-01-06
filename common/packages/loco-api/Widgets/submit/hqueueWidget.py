@@ -143,10 +143,10 @@ class HQueueWidget(QtGui.QWidget):
 
     def submitVRStandalone(self, hq_server, jobname, filename, imgFile, vrCmd, startFrame,
                            endFrame, step, chunk, multiple, group, priority, review,
-                           slackUser, dependent, prog):
+                           slackUser, dependent, prog, taskid):
         jobsIds = hqueue_submit.submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd,
                                                      startFrame, endFrame, step, chunk, multiple,
                                                      group, priority, review, config['python_path'],
                                                      config['slack_bot_token'], slackUser,
-                                                     dependent, prog)
+                                                     dependent, prog, taskid)
         return jobsIds
