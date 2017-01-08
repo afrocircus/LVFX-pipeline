@@ -6,14 +6,103 @@ import PySide.QtCore as QtCore
 from table_model import BrowserTableModel
 from delegate import VideoDelegate
 from view import TableView
+from db_manager import *
 from style import pyqt_style_rc
+
+
+class LibWidget(QtGui.QDialog):
+    def __init__(self, parent=None, db=None):
+        QtGui.QDialog.__init__(self, parent)
+        self.parent = parent
+        self.db = db
+        self.initUI()
+
+    def initUI(self):
+        layout = QtGui.QGridLayout()
+        self.setLayout(layout)
+        self.setWindowTitle("Add to Library")
+
+        folderBtn = QtGui.QPushButton()
+        folderBtn.setText('Choose Folder:')
+        folderBtn.setFocusPolicy(QtCore.Qt.NoFocus)
+        folderBtn.clicked.connect(self.getFolder)
+        layout.addWidget(folderBtn, 0, 0)
+        self.folderLineEdit = QtGui.QLineEdit()
+        layout.addWidget(self.folderLineEdit, 0, 1)
+        self.folderLineEdit.setReadOnly(True)
+        nameLabel = QtGui.QLabel('Name:')
+        nameLabel.setAlignment(QtCore.Qt.AlignRight)
+        layout.addWidget(nameLabel, 1, 0)
+        self.nameLineEdit = QtGui.QLineEdit()
+        layout.addWidget(self.nameLineEdit, 1, 1)
+        tagLabel = QtGui.QLabel('Tags:')
+        tagLabel.setAlignment(QtCore.Qt.AlignRight)
+        layout.addWidget(tagLabel, 2, 0)
+        self.tagLineEdit = QtGui.QLineEdit()
+        layout.addWidget(self.tagLineEdit, 2, 1)
+        self.tagLineEdit.setToolTip('Enter comma separated tags.')
+        addBtn = QtGui.QPushButton()
+        addBtn.setText('Add')
+        addBtn.setFocusPolicy(QtCore.Qt.NoFocus)
+        layout.addWidget(addBtn, 3, 0)
+        addBtn.clicked.connect(self.addToLibrary)
+
+        hlayout = QtGui.QHBoxLayout()
+        layout.addLayout(hlayout, 3, 1)
+        cancelBtn = QtGui.QPushButton()
+        cancelBtn.setText('Cancel')
+        cancelBtn.setFixedWidth(100)
+        hlayout.addWidget(cancelBtn)
+        cancelBtn.setFocusPolicy(QtCore.Qt.NoFocus)
+        hlayout.addItem(QtGui.QSpacerItem(10, 10, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum))
+        cancelBtn.clicked.connect(self.close)
+
+    def getFolder(self):
+        fileDialog = QtGui.QFileDialog()
+        fileDialog.setFileMode(QtGui.QFileDialog.Directory)
+        fileDialog.setOption(QtGui.QFileDialog.ShowDirsOnly)
+        folder = fileDialog.getExistingDirectory(self, "Select Folder",
+                                                 options= QtGui.QFileDialog.DontUseNativeDialog)
+        name = os.path.split(folder)[-1]
+        self.folderLineEdit.setText(str(folder))
+        self.nameLineEdit.setText(name)
+
+    def addToLibrary(self):
+        name = str(self.nameLineEdit.text())
+        tags = str(self.tagLineEdit.text())
+        folder = str(self.folderLineEdit.text())
+        self.recurseAndValidateFolders(folder, name, tags)
+        self.close()
+
+    def recurseAndValidateFolders(self, root, rootName, rootTags):
+        mediaExt = ('mov', 'mp4', 'flv', 'jpg', 'jpeg', 'bmp', 'png', 'gif', 'tiff')
+        for rootFolder, subFolder, files in os.walk(root):
+            mediaFiles = [f for f in files if f.endswith(mediaExt)]
+            rootFold = rootFolder + '/'
+            depth = rootFold[len(root) + len(os.path.sep):].count(os.path.sep)
+            if depth == 0:
+                name = rootName
+                tags = rootTags
+            else:
+                name = os.path.basename(rootFolder)
+                tags = os.path.basename(rootFolder)
+            if len(mediaFiles) > 0:
+                self.checkIfEntryExits(rootFolder, name, tags)
+
+    def checkIfEntryExits(self, folder, name, tags):
+        # if entry exists, update the entry else insert a new entry
+        if self.db.Media.find({'refDir':folder}).count() == 0:
+            insert(self.db, folder, name, tags)
+        else:
+            update(self.db, name, tags, folder)
 
 
 class MediaBrowser(QtGui.QMainWindow):
 
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
-
+        self.db = getDatabase()
+        self.media = read(self.db)
         self.setGeometry(100, 100, 800, 800)
         self.setWindowTitle('Media Browser')
         self.setWindowStyle()
@@ -31,6 +120,12 @@ class MediaBrowser(QtGui.QMainWindow):
         menubar = QtGui.QMenuBar(self)
         self.setMenuBar(menubar)
         exitMenu = menubar.addMenu('File')
+        addToLibAction = QtGui.QAction('Add/Update Library', self)
+        addToLibAction.triggered.connect(LibWidget(self, self.db).show)
+        exitMenu.addAction(addToLibAction)
+        reloadLibAction = QtGui.QAction('Reload Library', self)
+        reloadLibAction.triggered.connect(lambda: read(self.db))
+        exitMenu.addAction(reloadLibAction)
         exitAction = QtGui.QAction('Exit', self)
         exitAction.triggered.connect(QtGui.qApp.quit)
         exitMenu.addAction(exitAction)
@@ -42,10 +137,17 @@ class MediaBrowser(QtGui.QMainWindow):
 
         sideTab = QtGui.QTabWidget()
         listWidget = QtGui.QListWidget()
-        folders = ['fire', 'explosion', 'smoke']
-        listWidget.addItems(folders)
+        folders = []
+        for each in self.media:
+            folders.append((each['name'], each['_id']))
+        for folder, id in folders:
+            item = QtGui.QListWidgetItem(folder)
+            item.setData(QtCore.Qt.UserRole, id)
+            listWidget.addItem(item)
+
         listWidget.itemDoubleClicked.connect(self.addBrowserTabs)
         sideTab.addTab(listWidget, 'Category')
+        sideTab.setFocusPolicy(QtCore.Qt.NoFocus)
         centralLayout.addWidget(sideTab)
         sideTab.setFixedWidth(200)
 
@@ -57,27 +159,30 @@ class MediaBrowser(QtGui.QMainWindow):
 
     def addBrowserTabs(self, category):
         tableView = TableView(self.stylesheet)
-        videos = self.createVideoList()
-        model = BrowserTableModel(videos)
-        tableView.setModel(model)
+        id = category.data(QtCore.Qt.UserRole)
+        results = find(self.db, '_id', id)
+        if results:
+            refFolder = results[0]['refDir']
+            videos = self.createVideoList(refFolder)
+            model = BrowserTableModel(videos)
+            tableView.setModel(model)
 
-        for row in range(0, model.rowCount()):
-            tableView.setRowHeight(row, 200)
-            for col in range(0, model.columnCount()):
-                tableView.setItemDelegate(VideoDelegate(self))
-                tableView.openPersistentEditor(model.index(row, col))
-                tableView.setColumnWidth(col, 200)
+            for row in range(0, model.rowCount()):
+                tableView.setRowHeight(row, 200)
+                for col in range(0, model.columnCount()):
+                    tableView.setItemDelegate(VideoDelegate(self))
+                    tableView.openPersistentEditor(model.index(row, col))
+                    tableView.setColumnWidth(col, 200)
 
-        self.browserTabs.addTab(tableView, category.text())
-
+            self.browserTabs.addTab(tableView, category.text())
 
     def removeBrowserTabs(self, index):
         self.browserTabs.removeTab(index)
 
-    def createVideoList(self):
-        refFolder = '/home/natasha/Videos/explosions'
-        refFiles = [os.path.join(refFolder, f) for f in os.listdir(refFolder) if os.path.isfile(os.path.join(refFolder, f))
-                    and f.endswith('.mov')]
+    def createVideoList(self, refFolder):
+        mediaExt = ('mov', 'mp4', 'flv', 'jpg', 'jpeg', 'bmp', 'png', 'gif', 'tiff')
+        refFiles = [os.path.join(refFolder, f) for f in os.listdir(refFolder)
+                    if os.path.isfile(os.path.join(refFolder, f)) and f.endswith(mediaExt)]
         colSize = 3
         videoList = [refFiles[i:i+colSize] for i in xrange(0, len(refFiles), colSize)]
         return videoList

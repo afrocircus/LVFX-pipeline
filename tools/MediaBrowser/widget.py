@@ -17,6 +17,7 @@ def async(fn):
 
 
 class VideoWidget(QtGui.QWidget):
+    """ Video Player Widget """
 
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -49,17 +50,6 @@ class VideoWidget(QtGui.QWidget):
         self.media.play()
         self.media.pause()
 
-    def mediaStateChanged(self, newstate, oldstate):
-        if oldstate == Phonon.State.PlayingState:
-            self.media.play()
-            self.media.pause()
-
-    def playPauseEvent(self):
-        if self.media.state() == Phonon.State.PlayingState:
-            self.media.pause()
-        else:
-            self.media.play()
-
     def mousePressEvent(self, event):
         super(VideoWidget, self).mousePressEvent(event)
         if self.media.state() == Phonon.State.PlayingState:
@@ -75,7 +65,6 @@ class VideoWidget(QtGui.QWidget):
 
     @async
     def playMovie(self, outFile):
-        print outFile
         mov_player = '/usr/bin/djv_view'
         try:
             cmd = '{0} "{1}"'.format(mov_player, outFile)

@@ -4,7 +4,7 @@ import PySide.QtCore as QtCore
 
 class TableView(QtGui.QTableView):
     """
-    A simple table to demonstrate the QComboBox delegate.
+    A table containing the media widgets
     """
     def __init__(self, styleSheet, parent=None):
         QtGui.QTableView.__init__(self, parent)
@@ -19,13 +19,17 @@ class TableView(QtGui.QTableView):
         self.customContextMenuRequested.connect(self.on_context_menu)
 
     def keyPressEvent(self, event):
+        # Overriding the default key press event
         super(TableView, self).keyPressEvent(event)
+        # Copy to clipboard when Ctrl+C pressed
         if event.matches(QtGui.QKeySequence.Copy):
             self.copy()
         else:
             event.ignore()
 
     def copy(self):
+        # copy filepath of the source media to clipboard.
+        # Allows multiple selection
         selection = self.selectionModel()
         indexes = selection.selectedIndexes()
         fileList = []
@@ -36,6 +40,7 @@ class TableView(QtGui.QTableView):
         clipboard.setText(filename)
 
     def on_context_menu(self, point):
+        # Right click context menu to copy file paths.
         menu = QtGui.QMenu()
         menu.setStyleSheet(self.__stylesheet)
         copyAction = menu.addAction('Copy Path')

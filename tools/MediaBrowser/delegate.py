@@ -5,11 +5,12 @@ from widget import VideoWidget
 
 
 class VideoDelegate(QtGui.QStyledItemDelegate):
-
+    """ Delegate for video widget items """
     def __init__(self, parent):
         QtGui.QStyledItemDelegate.__init__(self, parent)
 
     def paint(self,  painter,  option,  index):
+        # Selected cell displays orange.
         painter.save()
         painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))
         if option.state & QtGui.QStyle.State_Selected:
@@ -20,14 +21,16 @@ class VideoDelegate(QtGui.QStyledItemDelegate):
         painter.restore()
 
     def createEditor(self, parent, option, index):
+        # Initialize video widget if the filename is valid
         filename = index.model().data(index, QtCore.Qt.ItemDataRole)
         if os.path.exists(filename):
             self.videoEditor = VideoWidget(parent)
         else:
-            return ''
+            return None
         return self.videoEditor
 
     def setEditorData(self, editor, index):
+        # Set media source if filepath is valid.
         editor.blockSignals(True)
         filename = index.model().data(index, QtCore.Qt.ItemDataRole)
         if os.path.exists(filename):

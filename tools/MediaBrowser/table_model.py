@@ -2,6 +2,7 @@ import PySide.QtCore as QtCore
 
 
 class BrowserTableModel(QtCore.QAbstractTableModel):
+    """ Data Model for table view. """
 
     def __init__(self, videos=[[]], parent=None):
 
