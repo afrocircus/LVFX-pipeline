@@ -65,7 +65,7 @@ class LibWidget(QtGui.QDialog):
                                                  options= QtGui.QFileDialog.DontUseNativeDialog)
         name = os.path.split(folder)[-1]
         self.folderLineEdit.setText(str(folder))
-        self.nameLineEdit.setText(name)
+        self.nameLineEdit.setText(name)  
 
     def addToLibrary(self):
         name = str(self.nameLineEdit.text())
