@@ -31,3 +31,44 @@ class BrowserTableModel(QtCore.QAbstractTableModel):
 
         elif role == QtCore.Qt.DisplayRole:
             return ''
+
+
+class CategoryListModel(QtCore.QAbstractListModel):
+
+    dataSet = QtCore.Signal(str, str)
+
+    def __init__(self, listData=[], parent=None):
+
+        QtCore.QAbstractListModel.__init__(self, parent)
+        self.__listdata = listData
+
+    def rowCount(self, parent):
+        return len(self.__listdata)
+
+    def data(self, index, role):
+
+        if role == QtCore.Qt.ItemDataRole:
+            row = index.row()
+            value, id = self.__listdata[row]
+            return value, id
+
+        if role == QtCore.Qt.DisplayRole:
+            row = index.row()
+            value, id = self.__listdata[row]
+            return value
+
+        if role == QtCore.Qt.EditRole:
+            row = index.row()
+            return self.__listdata[row][0]
+
+    def flags(self, index):
+        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+    def setData(self, index, value, role=QtCore.Qt.EditRole):
+        if role == QtCore.Qt.EditRole:
+            row = index.row()
+            oldValue, id = self.data(index, QtCore.Qt.ItemDataRole)
+            self.__listdata[row] = (value, id)
+            self.dataSet.emit(value, str(id))
+            return True
+        return False

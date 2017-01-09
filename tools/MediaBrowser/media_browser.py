@@ -3,14 +3,20 @@ import os
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 
+from bson import ObjectId
 from table_model import BrowserTableModel
+from table_model import CategoryListModel
 from delegate import VideoDelegate
 from view import TableView
+from view import ListView
 from db_manager import *
 from style import pyqt_style_rc
 
 
 class LibWidget(QtGui.QDialog):
+
+    closeSig = QtCore.Signal()
+
     def __init__(self, parent=None, db=None):
         QtGui.QDialog.__init__(self, parent)
         self.parent = parent
@@ -65,7 +71,7 @@ class LibWidget(QtGui.QDialog):
                                                  options= QtGui.QFileDialog.DontUseNativeDialog)
         name = os.path.split(folder)[-1]
         self.folderLineEdit.setText(str(folder))
-        self.nameLineEdit.setText(name)  
+        self.nameLineEdit.setText(name)
 
     def addToLibrary(self):
         name = str(self.nameLineEdit.text())
@@ -95,6 +101,9 @@ class LibWidget(QtGui.QDialog):
             insert(self.db, folder, name, tags)
         else:
             update(self.db, name, tags, folder)
+
+    def closeEvent(self, event):
+        self.closeSig.emit()
 
 
 class MediaBrowser(QtGui.QMainWindow):
@@ -136,17 +145,16 @@ class MediaBrowser(QtGui.QMainWindow):
         self.setCentralWidget(centralWidget)
 
         sideTab = QtGui.QTabWidget()
-        listWidget = QtGui.QListWidget()
         folders = []
         for each in self.media:
             folders.append((each['name'], each['_id']))
-        for folder, id in folders:
-            item = QtGui.QListWidgetItem(folder)
-            item.setData(QtCore.Qt.UserRole, id)
-            listWidget.addItem(item)
-
-        listWidget.itemDoubleClicked.connect(self.addBrowserTabs)
-        sideTab.addTab(listWidget, 'Category')
+        listView = ListView(self.stylesheet)
+        listModel = CategoryListModel(folders)
+        listModel.dataSet.connect(self.updateDb)
+        listView.setModel(listModel)
+        listView.doubleClick.connect(self.addBrowserTabs)
+        listView.contextMenu.connect(self.openUpdateWidget)
+        sideTab.addTab(listView, 'Category')
         sideTab.setFocusPolicy(QtCore.Qt.NoFocus)
         centralLayout.addWidget(sideTab)
         sideTab.setFixedWidth(200)
@@ -157,10 +165,31 @@ class MediaBrowser(QtGui.QMainWindow):
         self.browserTabs.tabCloseRequested.connect(self.removeBrowserTabs)
         centralLayout.addWidget(self.browserTabs)
 
-    def addBrowserTabs(self, category):
+    '''def updateBrowser(self, index, category):
+        print index, category
+        model = index.model()
+        model.setData(index, category, QtCore.Qt.EditRole)
+        self.media = read(self.db)'''
+
+    def updateDb(self, value, id):
+        results = find(self.db, '_id', ObjectId(id))
+        if results:
+            update(self.db, value, results[0]['tags'], results[0]['refDir'])
+
+    def openUpdateWidget(self, index):
+        category, id = index.model().data(index, QtCore.Qt.ItemDataRole)
+        results = find(self.db, '_id', ObjectId(id))
+        if results:
+            libWidget = LibWidget(self, self.db)
+            libWidget.folderLineEdit.setText(results[0]['refDir'])
+            libWidget.nameLineEdit.setText(category)
+            libWidget.tagLineEdit.setText(results[0]['tags'])
+            #libWidget.closeSig.connect(lambda: self.updateBrowser(index, category))
+            libWidget.show()
+
+    def addBrowserTabs(self, category, id):
         tableView = TableView(self.stylesheet)
-        id = category.data(QtCore.Qt.UserRole)
-        results = find(self.db, '_id', id)
+        results = find(self.db, '_id', ObjectId(id))
         if results:
             refFolder = results[0]['refDir']
             videos = self.createVideoList(refFolder)
@@ -174,7 +203,7 @@ class MediaBrowser(QtGui.QMainWindow):
                     tableView.openPersistentEditor(model.index(row, col))
                     tableView.setColumnWidth(col, 200)
 
-            self.browserTabs.addTab(tableView, category.text())
+            self.browserTabs.addTab(tableView, category)
 
     def removeBrowserTabs(self, index):
         self.browserTabs.removeTab(index)
@@ -189,7 +218,6 @@ class MediaBrowser(QtGui.QMainWindow):
 
 
 def main():
-
     app = QtGui.QApplication(sys.argv)
     main = MediaBrowser()
     main.show()
