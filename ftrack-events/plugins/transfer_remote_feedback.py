@@ -98,7 +98,10 @@ class TransferFeedback(object):
                 if 'inviteeId' in remoteNote['metadata'].keys():
                     inviteeId = remoteNote['metadata']['inviteeId']
                     invitee = remoteSession.get('ReviewSessionInvitee', inviteeId)
-                    remoteNoteContent = '{0} says: {1}'.format(invitee['name'], remoteNote['content'])
+                    try:
+                        remoteNoteContent = '{0} says: {1}'.format(invitee['name'], remoteNote['content'])
+                    except TypeError:
+                        remoteNoteContent = remoteNote['content']
                 else:
                     remoteNoteContent = remoteNote['content']
                 # Create a new note
