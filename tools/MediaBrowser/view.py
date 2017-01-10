@@ -48,10 +48,12 @@ class TableView(QtGui.QTableView):
         if action == copyAction:
             self.copy()
 
-class ListView(QtGui.QListView):
 
+class ListView(QtGui.QListView):
+    """
+    Custom list view
+    """
     doubleClick = QtCore.Signal(str, str)
-    contextMenu = QtCore.Signal(QtCore.QModelIndex)
 
     def __init__(self, styleSheet, parent=None):
         QtGui.QListView.__init__(self, parent)
@@ -59,25 +61,12 @@ class ListView(QtGui.QListView):
         self.__stylesheet = styleSheet
         self.adjustSize()
         self.setMouseTracking(True)
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.on_context_menu)
+        # Setting the edit trigger to start editing when clicking on an
+        # already selected item.
         self.setEditTriggers(4)
 
-    def editItem(self):
-        selection = self.selectionModel()
-        index = selection.selectedIndexes()[0]
-        self.contextMenu.emit(index)
-
-    def on_context_menu(self, point):
-        # Right click context menu to copy file paths.
-        menu = QtGui.QMenu()
-        menu.setStyleSheet(self.__stylesheet)
-        copyAction = menu.addAction('Update')
-        action = menu.exec_(self.mapToGlobal(point))
-        if action == copyAction:
-            self.editItem()
-
     def mouseDoubleClickEvent(self, event):
+        # Overriding the mouseDoubleClick event to emit a "doubleClick" signal
         selection = self.selectionModel()
         index = selection.selectedIndexes()[0]
         value, id = index.model().data(index, QtCore.Qt.ItemDataRole)

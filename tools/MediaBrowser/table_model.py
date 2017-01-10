@@ -34,6 +34,7 @@ class BrowserTableModel(QtCore.QAbstractTableModel):
 
 
 class CategoryListModel(QtCore.QAbstractListModel):
+    """ Data Model for list view. """
 
     dataSet = QtCore.Signal(str, str)
 
@@ -46,7 +47,7 @@ class CategoryListModel(QtCore.QAbstractListModel):
         return len(self.__listdata)
 
     def data(self, index, role):
-
+        # Each list item stores the name of the folder and database ID
         if role == QtCore.Qt.ItemDataRole:
             row = index.row()
             value, id = self.__listdata[row]
@@ -72,3 +73,19 @@ class CategoryListModel(QtCore.QAbstractListModel):
             self.dataSet.emit(value, str(id))
             return True
         return False
+
+    def insertRows(self, position, rows, valueList, parent = QtCore.QModelIndex()):
+        self.beginInsertRows(parent, position, position + rows - 1)
+
+        for i in range(rows):
+            self.__listdata.append(valueList[i])
+
+        self.endInsertRows()
+
+        return True
+
+    def clearRows(self, position, rows, parent = QtCore.QModelIndex()):
+        self.beginRemoveRows(parent, position, position + rows - 1)
+        self.__listdata = []
+        self.endRemoveRows()
+        return True

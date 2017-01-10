@@ -51,6 +51,7 @@ class VideoWidget(QtGui.QWidget):
         self.media.pause()
 
     def mousePressEvent(self, event):
+        # Mouse press acts as a toggle to play or pause the media in the widget.
         super(VideoWidget, self).mousePressEvent(event)
         if self.media.state() == Phonon.State.PlayingState:
             self.media.pause()
@@ -59,12 +60,14 @@ class VideoWidget(QtGui.QWidget):
         event.ignore()
 
     def mouseDoubleClickEvent(self, event):
+        # On double click, open file in media player
         super(VideoWidget, self).mousePressEvent(event)
         self.playMovie(self.media.currentSource().fileName())
         event.ignore()
 
     @async
     def playMovie(self, outFile):
+        # Opens the media file in the player in a different thread.
         mov_player = '/usr/bin/djv_view'
         try:
             cmd = '{0} "{1}"'.format(mov_player, outFile)
