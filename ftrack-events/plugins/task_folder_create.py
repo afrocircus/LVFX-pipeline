@@ -188,6 +188,20 @@ def createAssetFolders(task, projectFolder):
     return taskFolder
 
 
+def syncToCpt(xferDir):
+    cptDir = os.path.dirname(xferDir)
+    rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
+                       '--rsync-path="mkdir -p \"%s\" && rsync" "%s" server@192.168.2.5:"%s/"' % (
+                cptDir, xferDir, cptDir)
+    process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, shell=True)
+    out, err = process.communicate()
+    exitcode = process.returncode
+    if str(exitcode) != '0':
+        print 'Sync Failed for {0}'.format(xferDir)
+    else:
+        print 'Synced {0}'.format(xferDir)
+
 def callback(event):
     """ This plugin creates a template folder structure on disk.
     """
@@ -218,6 +232,7 @@ def callback(event):
                             print "could not change directory permission for %s" % taskFolder
                 templateFolder = os.path.join(projFolder, 'template_files')
                 createTemplateFiles(templateFolder, task, taskFolder, shotName, user)
+                syncToCpt(taskFolder.rstrip('/'))
 
 
 # Subscribe to events with the update topic.
