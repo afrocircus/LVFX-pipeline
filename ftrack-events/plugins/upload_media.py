@@ -242,7 +242,7 @@ class UploadMedia(ftrack.Action):
 
 
     @async
-    def uploadToFtrack(self, filename, addSlate, taskid, shot, user):
+    def uploadToFtrack(self, filename, assetName, comment, addSlate, taskid, shot, user):
         job = ftrack.createJob(
             'Uploading media for shot {0}'.format(shot.getName()),
             'queued', user)
@@ -281,8 +281,10 @@ class UploadMedia(ftrack.Action):
         status = ftrack.Status('Pending Internal Review')
         if result:
             self.createThumbnail(outfilemp4, thumbnail)
-            asset = self.getAsset(shot, 'ReviewAsset')
-            version = asset.createVersion('Upload for Internal Review', taskid)
+            asset = self.getAsset(shot, assetName)
+            version = asset.createVersion("Upload for Internal Review", taskid)
+            if comment is not '':
+                note = version.createNote(comment)
             try:
                 self.createAttachment(version, 'ftrackreview-mp4', outfilemp4, ff, lf, fps, metadata)
                 self.createAttachment(version, 'ftrackreview-webm', outfilewebm, ff, lf, fps, metadata)
@@ -355,7 +357,9 @@ class UploadMedia(ftrack.Action):
 
         if 'values' in event['data']:
             values = event['data']['values']
-            self.uploadToFtrack(values['file_path'], values['add_slate'], selection[0]['entityId'], shot, user)
+            self.uploadToFtrack(values['file_path'], values['asset_name'],
+                                values['note'], values['add_slate'],
+                                selection[0]['entityId'], shot, user)
             return {
                 'success': True,
                 'message': 'Action completed successfully'
@@ -366,10 +370,20 @@ class UploadMedia(ftrack.Action):
                     'value': '##{0}##'.format('File Path'.capitalize()),
                     'type': 'label'
                 }, {
-                    'label': 'Name',
+                    'label': 'Folder',
                     'type': 'text',
                     'value': '',
                     'name': 'file_path'
+                }, {
+                    'label': 'Asset Name',
+                    'type': 'text',
+                    'value': 'ReviewAsset',
+                    'name': 'asset_name'
+                }, {
+                    'label': 'Add Note',
+                    'type': 'textarea',
+                    'value': 'Done: \nTo Do:',
+                    'name': 'note'
                 }, {
                     'label':'Add Slate',
                     'type':'enumerator',
