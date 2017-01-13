@@ -34,7 +34,7 @@ def getSlackUsers(user):
     return slackUser
 
 
-def findTask(task, newTaskType, message):
+def findTask(task, newTaskType, message, project=''):
     """
     Find the correct lighting or compositing task, get its assignee and send them a message.
     :param task: The task whose status has been changed
@@ -58,4 +58,5 @@ def findTask(task, newTaskType, message):
             slackUser = getSlackUsers(user.getUsername())
             sendSlackMessage(slackUser, message)
     if not users:
-        sendSlackMessage('#general', message)
+        slackGroup = getSlackUsers(project)
+        sendSlackMessage(slackGroup, message)

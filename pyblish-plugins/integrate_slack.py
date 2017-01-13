@@ -31,7 +31,7 @@ class IntegrateSlack(pyblish.api.ContextPlugin):
             nextTask = ''
 
         try:
-            slack_utils.findTask(task, nextTask, message)
+            slack_utils.findTask(task, nextTask, message, project)
         except Exception:
             self.log.info('Unable to send slack message')
             return
