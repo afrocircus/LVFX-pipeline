@@ -59,7 +59,7 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
             mayaScript += "cmds.file('%s', o=True, f=True);" % animFile
         else:
             mayaScript += "cmds.file(new=True, f=True);" \
-                          "cmds.file(rename=%s);" % animFile
+                          "cmds.file(rename='%s');" % animFile
 
         audioNodes = cmds.ls(type='audio')
         if len(audioNodes) > 0:
