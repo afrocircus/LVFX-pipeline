@@ -53,8 +53,8 @@ class ValidateAnimation(pyblish.api.InstancePlugin):
             self.log.error('There should only be 1 "geo" group under a parent group')
             raise pyblish.api.ValidationError
         elif len(invalid) == 0 and len(valid) == 0:
-            self.log.error('No group found. Nothing to export.')
-            raise pyblish.api.ValidationError
+            self.log.warning('No group found. Nothing to export.')
+            #raise pyblish.api.ValidationError
 
         instance.set_data('anim', value=valid)
         print valid
