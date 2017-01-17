@@ -13,7 +13,7 @@ class ExtractEnv(pyblish.api.InstancePlugin):
 
     def process(self, instance):
         try:
-            cmds.select('env_*:*')
+            cmds.select('env_*')
         except ValueError:
             self.log.warning('No environment elements to extract.')
             return
