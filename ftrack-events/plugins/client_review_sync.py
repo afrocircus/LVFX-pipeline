@@ -78,7 +78,7 @@ class ReviewSync(object):
     def getFileToUpload(self, metadata, assetVersion):
         filename = ''
         location = self.session.query('Location where name is "ftrack.server"').one()
-        if 'source_file' in metadata:
+        if 'source_file' in metadata and os.path.exists(str(metadata['source_file'])):
             filename = str(metadata['source_file'])
         else:
             for component in assetVersion['components']:
@@ -94,7 +94,7 @@ class ReviewSync(object):
             except Exception:
                 version = 'v01'
             return version, filename
-        return None
+        return None, None
 
     @async
     def prepRemoteSession(self, reviewSession, username):
