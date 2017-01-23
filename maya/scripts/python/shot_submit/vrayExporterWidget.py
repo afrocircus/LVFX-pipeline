@@ -35,9 +35,10 @@ class VRayExporterWidget(QtGui.QWidget):
         self.frameStepEdit.setText(str(1.0))
         widgetLayout.addWidget(self.frameStepEdit, 0, 5)
         widgetLayout.addWidget(QtGui.QLabel('Render Layer:'), 1, 0)
-        self.renderLayerEdit = QtGui.QLineEdit()
-        self.renderLayerEdit.mousePressEvent = self.openPopupRender
-        widgetLayout.addWidget(self.renderLayerEdit, 1, 1)
+        self.renderLayerCombo = QtGui.QComboBox()
+        self.renderLayerCombo.addItems(cmds.ls(type='renderLayer'))
+        self.renderLayerCombo.currentIndexChanged.connect(self.constructOutFileLabel)
+        widgetLayout.addWidget(self.renderLayerCombo, 1, 1)
         widgetLayout.addWidget(QtGui.QLabel('Camera:'), 1, 2)
         self.cameraEdit = QtGui.QComboBox()
         self.cameraEdit.addItems(cmds.listCameras())
@@ -48,6 +49,7 @@ class VRayExporterWidget(QtGui.QWidget):
         if filename:
             vrsceneFile = os.path.splitext(os.path.split(filename)[-1])[0]
             self.vrsceneLineEdit.setText(vrsceneFile)
+        self.vrsceneLineEdit.textChanged.connect(self.constructOutFileLabel)
         widgetLayout.addWidget(self.vrsceneLineEdit, 2, 1)
         self.separateCheckbox = QtGui.QCheckBox()
         self.separateCheckbox.setText('Separate Frames')
@@ -59,13 +61,27 @@ class VRayExporterWidget(QtGui.QWidget):
         projLayout.addWidget(QtGui.QLabel('Project Dir'))
         self.projdirEdit = QtGui.QLineEdit()
         self.projdirEdit.setReadOnly(True)
+        self.projdirEdit.textChanged.connect(self.constructOutFileLabel)
         self.setProjectDirectory()
         projLayout.addWidget(self.projdirEdit)
         projBrowseButton = QtGui.QToolButton()
         projBrowseButton.setText('...')
         projBrowseButton.clicked.connect(lambda: self.openDirBrowser(self.projdirEdit))
         projLayout.addWidget(projBrowseButton)
+        self.outFileLabel = QtGui.QLabel()
+        self.constructOutFileLabel()
         self.layout().addLayout(projLayout)
+        self.layout().addWidget(self.outFileLabel)
+
+    def constructOutFileLabel(self):
+        renderLayer = self.renderLayerCombo.currentText()
+        projDir = self.projdirEdit.text()
+        vrscene = self.vrsceneLineEdit.text()
+        if renderLayer == 'defaultRenderLayer':
+            renderLayer = 'masterLayer'
+        outFilename = os.path.join(projDir, renderLayer, vrscene)
+        outFilename += '.vrscene'
+        self.outFileLabel.setText(outFilename)
 
     def openFileBrowser(self):
         dialog = QtGui.QFileDialog()
@@ -102,9 +118,8 @@ class VRayExporterWidget(QtGui.QWidget):
             os.makedirs(projDir)
         rendererParams += ' -proj "%s"' % projDir
         camera = self.cameraEdit.currentText()
-        rendererParams += ' -cam %s' % camera
-        if self.renderLayerEdit.text() != '':
-            rendererParams += ' -rl %s' % str(self.renderLayerEdit.text())
+        rendererParams += ' -cam "%s"' % camera
+        rendererParams += ' -rl "%s"' % str(self.renderLayerCombo.currentText())
         rendererParams += ' -exportFileName "%s"' % str(self.vrsceneLineEdit.text())
         rendererParams += ' -noRender'
         if self.compressedCheckbox.isChecked():
@@ -132,51 +147,3 @@ class VRayExporterWidget(QtGui.QWidget):
         else:
             uploadCheck = False
         return uploadCheck
-
-    def openPopupRender(self, event):
-        popup = PopupWidget('render')
-        popup.itemsSelected.connect(self.populateRenderLineEdit)
-        popup.exec_()
-
-    def openPopupCamera(self, event):
-        popup = PopupWidget('camera')
-        popup.itemsSelected.connect(self.populateCameraLineEdit)
-        popup.exec_()
-
-    def populateRenderLineEdit(self, selection):
-        self.renderLayerEdit.setText(selection)
-
-    def populateCameraLineEdit(self, selection):
-        self.cameraEdit.setText(selection)
-
-
-class PopupWidget(QtGui.QDialog):
-    itemsSelected = Signal(str)
-
-    def __init__(self, itemType):
-        super(PopupWidget, self).__init__()
-        self.setLayout(QtGui.QVBoxLayout())
-        self.listWidget = QtGui.QListWidget()
-        self.listWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        self.setWindowTitle('Select')
-        self.layout().addWidget(self.listWidget)
-        self.populateWidget(itemType)
-        button = QtGui.QPushButton('Select')
-        self.layout().addWidget(button)
-        button.clicked.connect(self.buttonClicked)
-
-    def populateWidget(self, itemType):
-        itemList = []
-        if itemType == 'render':
-            itemList = cmds.ls(type='renderLayer')
-        elif itemType == 'camera':
-            itemList = cmds.listCameras()
-        self.listWidget.addItems(itemList)
-
-    def buttonClicked(self):
-        selectedItems = []
-        for item in self.listWidget.selectedItems():
-            selectedItems.append(str(item.text()))
-        selection = ','.join(selectedItems)
-        self.itemsSelected.emit(selection)
-        self.close()

@@ -46,6 +46,7 @@ class VRayStandaloneWidget(QtGui.QWidget):
         self.outfileEdit = QtGui.QLineEdit()
         if 'outfile' in dataDict.keys():
             self.outfileEdit.setText(dataDict['outfile'])
+        self.outfileEdit.textChanged.connect(self.constructLabel)
         outFileLayout.addWidget(self.outfileEdit)
         self.layout().addLayout(outFileLayout)
         outDirLayout = QtGui.QHBoxLayout()
@@ -54,6 +55,7 @@ class VRayStandaloneWidget(QtGui.QWidget):
         if 'outdir' in dataDict.keys():
             self.outdirEdit.setText(dataDict['outdir'])
         outDirLayout.addWidget(self.outdirEdit)
+        self.outdirEdit.textChanged.connect(self.constructLabel)
         dirBrowseButton = QtGui.QToolButton()
         dirBrowseButton.setText('...')
         dirBrowseButton.clicked.connect(self.openDirBrowser)
@@ -66,6 +68,15 @@ class VRayStandaloneWidget(QtGui.QWidget):
         else:
             self.ftrackCheckbox.setChecked(False)
         self.layout().addWidget(self.ftrackCheckbox)
+        self.outfileLabel = QtGui.QLabel()
+        self.layout().addWidget(self.outfileLabel)
+        self.constructLabel()
+
+    def constructLabel(self):
+        outDir = self.outdirEdit.text()
+        outFile = self.outfileEdit.text()
+        filename = os.path.join(outDir, outFile)
+        self.outfileLabel.setText(filename)
 
     def openFileBrowser(self):
         dialog = QtGui.QFileDialog()
@@ -109,12 +120,16 @@ class VRayStandaloneWidget(QtGui.QWidget):
             paramDict['multiple'] = True
         else:
             paramDict['multiple'] = False
-        if self.ftrackCheckbox.isChecked():
+        '''if self.ftrackCheckbox.isChecked():
             paramDict['review'] = True
         else:
-            paramDict['review'] = False
+            paramDict['review'] = False'''
+        paramDict['review'] = False
         return paramDict, rendererParams
 
     def getUploadCheck(self):
         uploadCheck = self.ftrackCheckbox.isChecked()
         return uploadCheck
+
+    def setFilename(self, filename):
+        self.fileTextBox.setText(filename)

@@ -43,8 +43,8 @@ class ShotSubmitUI(QtGui.QWidget):
     def createDockLayout(self):
         gMainWindow = mm.eval('$temp1=$gMainWindow')
         columnLay = cmds.paneLayout(parent=gMainWindow, width=500)
-        dockControl = cmds.dockControl(l='ShotSubmitUI', allowedArea='all',\
-                                        area='right', content=columnLay, width=500)
+        dockControl = cmds.dockControl(l='ShotSubmitUI', allowedArea='all',
+                                       area='right', content=columnLay, width=500)
         cmds.control(str(self.objectName()),e=True,p=columnLay)
 
     def changeRendererOptions(self, index):
@@ -55,6 +55,8 @@ class ShotSubmitUI(QtGui.QWidget):
         elif index == 1:
             self.vrayExporter.hide()
             self.vrayStandalone.show()
+            filename = self.vrayExporter.outFileLabel.text()
+            self.vrayStandalone.setFilename(filename)
             self.vrayMaya.hide()
         elif index == 2:
             self.vrayExporter.hide()
@@ -84,7 +86,7 @@ class ShotSubmitUI(QtGui.QWidget):
             if filename is '':
                 QtGui.QMessageBox.critical(self, 'Error', 'Please select a valid file to render!')
                 return
-            renderLayer = str(self.vrayExporter.renderLayerEdit.text())
+            renderLayer = str(self.vrayExporter.renderLayerCombo.currentText())
             fileDir, fname = os.path.split(filename)
             jobname = 'VRayExport - %s_%s' % (os.path.splitext(fname)[0], renderLayer)
             rendererParams = '%s %s' % (renderer, rendererParams)
