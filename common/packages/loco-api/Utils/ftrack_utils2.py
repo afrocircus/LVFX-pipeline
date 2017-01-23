@@ -1,5 +1,6 @@
 import sys
 import ftrack_api
+import ftrack
 import logging
 import datetime
 import os
@@ -242,7 +243,7 @@ def addMetadata(session, entity, metadict):
 
 
 def createAndPublishVersion(session, task, asset, status, comment, thumbnail, filename,
-                            outfilemp4, outfilewebm, metadata, framein, frameout, framerate):
+                            outfilemp4, outfilewebm, metadata, framein, frameout, framerate, addNote=False):
     version = session.create('AssetVersion', {
             'asset': asset,
             'status': status,
@@ -256,8 +257,15 @@ def createAndPublishVersion(session, task, asset, status, comment, thumbnail, fi
         fileComponent = version.create_thumbnail(thumbnail)
         task['thumbnail'] = fileComponent
     addMetadata(session, version, metadata)
+    if addNote:
+        addNoteToVersion(version, comment)
     session.commit()
 
+
+def addNoteToVersion(version, comment):
+    # Using old API to create a note on the version.
+    versionOld = ftrack.AssetVersion(version['id'])
+    versionOld.createNote(comment)
 
 def copyToApprovals(outputFile, project):
     filename = os.path.split(outputFile)[-1]

@@ -152,7 +152,7 @@ class AnimPlayblast(QObject):
                 self.moviePlayFail.emit()
 
     @async
-    def uploadToFtrack(self, filename, mayaFile):
+    def uploadToFtrack(self, filename, mayaFile, comment):
         if self.task:
             taskMeta = {'filename': mayaFile}
             self.movieUploadUpdate.emit(10, 'Updating metadata...')
@@ -170,9 +170,9 @@ class AnimPlayblast(QObject):
                 status = ftrack_utils2.getStatus(self.session, 'Pending Internal Review')
                 try:
                     ftrack_utils2.createAndPublishVersion(self.session, self.task, asset,
-                                                          status,'Upload for Internal Review',
+                                                          status, comment,
                                                           thumbnail, filename, outfilemp4,
-                                                          outfilewebm, metadata, ff, lf, 24)
+                                                          outfilewebm, metadata, ff, lf, 24, True)
                     self.movieUploadUpdate.emit(95, 'cleaning up temporary files...')
                     ftrack_utils2.deleteFiles(outfilemp4, outfilewebm, thumbnail)
                     self.movieUploadUpdate.emit(100, 'Upload Complete!')
