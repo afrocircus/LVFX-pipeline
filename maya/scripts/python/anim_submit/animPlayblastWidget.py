@@ -134,7 +134,8 @@ class AnimPlayblastUI(QtGui.QWidget):
         self.setProgressBar(True)
         filename = self.animPlayblast.getCurrentVersion()
         mayaFile = self.animPlayblast.getCurrentMayaFile()
-        self.animPlayblast.uploadToFtrack(filename, mayaFile)
+        comment = self.commentBox.toPlainText()
+        self.animPlayblast.uploadToFtrack(filename, mayaFile, comment)
 
     def uploadSelectedToDailies(self):
         self.setProgressBar(True)
