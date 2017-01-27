@@ -61,7 +61,6 @@ class VRayExporterWidget(QtGui.QWidget):
         projLayout.addWidget(QtGui.QLabel('Project Dir'))
         self.projdirEdit = QtGui.QLineEdit()
         self.projdirEdit.setReadOnly(True)
-        self.projdirEdit.textChanged.connect(self.constructOutFileLabel)
         self.setProjectDirectory()
         projLayout.addWidget(self.projdirEdit)
         projBrowseButton = QtGui.QToolButton()
@@ -72,14 +71,20 @@ class VRayExporterWidget(QtGui.QWidget):
         self.constructOutFileLabel()
         self.layout().addLayout(projLayout)
         self.layout().addWidget(self.outFileLabel)
+        self.projdirEdit.textChanged.connect(self.constructOutFileLabel)
 
     def constructOutFileLabel(self):
         renderLayer = self.renderLayerCombo.currentText()
+        totalItems = self.renderLayerCombo.count()
+        print totalItems
         projDir = self.projdirEdit.text()
         vrscene = self.vrsceneLineEdit.text()
-        if renderLayer == 'defaultRenderLayer':
-            renderLayer = 'masterLayer'
-        outFilename = os.path.join(projDir, renderLayer, vrscene)
+        if totalItems == 1:
+            outFilename = os.path.join(projDir, vrscene)
+        else:
+            if renderLayer == 'defaultRenderLayer':
+                renderLayer = 'masterLayer'
+            outFilename = os.path.join(projDir, renderLayer, vrscene)
         outFilename += '.vrscene'
         self.outFileLabel.setText(outFilename)
 
