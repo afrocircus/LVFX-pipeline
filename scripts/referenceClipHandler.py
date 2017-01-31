@@ -129,10 +129,22 @@ def upload(session, ff, lf, projPath, inputFile, outfilemp4, outfilewebm, thumnb
     deleteFiles(outfilemp4, outfilewebm, thumnbail)
 
 
+def getFrameLength(filename):
+    cmd = 'ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames ' \
+          '-of default=nokey=1:noprint_wrappers=1 "{0}"'.format(filename)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, shell=True)
+    output = process.communicate()
+    firstFrame = 1
+    lastFrame = firstFrame + int(output[0])
+    return firstFrame, lastFrame
+
+
 def main(argv):
     sspec = ''
+    movie = None
     try:
-        opts, args = getopt.getopt(argv, 'hi:', ['sspec='])
+        opts, args = getopt.getopt(argv, 'hi:m:', ['sspec=', 'movie='])
     except getopt.GetoptError:
         print 'referenceClipHandler.py -sspec <project:sq:shot>'
         sys.exit(2)
@@ -146,7 +158,15 @@ def main(argv):
             sys.exit()
         elif opt in ('-i', '--sspec'):
             sspec = arg
-    result, outputFile, ff, lf = makeMovie(sspec)
+        elif opt in ('-m', '--movie'):
+            movie = arg
+    if not movie:
+        result, outputFile, ff, lf = makeMovie(sspec)
+    else:
+        result = 0
+        outputFile = movie
+        ff, lf = getFrameLength(outputFile)
+        print ff, lf
     if result == 0:
         print 'conversion successful'
         uploadToFtrack(outputFile, sspec, ff, lf)
