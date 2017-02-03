@@ -12,10 +12,21 @@ class ExtractEnv(pyblish.api.InstancePlugin):
     families = ['scene']
 
     def process(self, instance):
+        selected = False
+        cmds.select(clear=True)
         try:
-            cmds.select('env_*')
+            cmds.select('env_*:*')
+            selected = True
         except ValueError:
-            self.log.warning('No environment elements to extract.')
+            pass
+        try:
+            cmds.select('env_*', add=True)
+            selected = True
+        except ValueError:
+            pass
+
+        if not selected:
+            self.log.warning('No env elements found to extract.')
             return
 
         versionDir = instance.data['vprefix'] + instance.data['version']
