@@ -25,7 +25,6 @@ class ValidateRig(pyblish.api.InstancePlugin):
                 furInstances.append(each)
                 rigInstances.remove(each)
 
-        print furInstances
         if len(furInstances) > 1:
             self.log.error('There should be only one fur group in the scene')
             raise pyblish.api.ValidationError
