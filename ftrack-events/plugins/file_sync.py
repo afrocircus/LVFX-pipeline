@@ -27,7 +27,6 @@ class FileSync(ftrack.Action):
     @async
     def cptSync(self, xferFile, xferValue, user):
         # Remove trailing '/'
-        print user
         xferFile = xferFile.rstrip('/')
         rsyncCmd = ''
 
@@ -41,11 +40,13 @@ class FileSync(ftrack.Action):
             jhbDir = os.path.dirname(xferFile)
             if not os.path.exists(jhbDir):
                 os.makedirs(jhbDir)
-            rsyncCmd = 'rsync -avuzrh server@192.168.2.5:%s %s/' % (xferFile, jhbDir)
+            rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
+                       'server@192.168.2.5:"%s" "%s/"' % (xferFile, jhbDir)
         elif xferValue == 1:
             # JHB -> CPT
             cptDir = os.path.dirname(xferFile)
-            rsyncCmd = 'rsync -avuzrh --rsync-path="mkdir -p %s && rsync" %s server@192.168.2.5:%s/' % (
+            rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
+                       '--rsync-path="mkdir -p \"%s\" && rsync" "%s" server@192.168.2.5:"%s/"' % (
                 cptDir, xferFile, cptDir)
         print '\n' + rsyncCmd
         process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
@@ -108,11 +109,6 @@ class FileSync(ftrack.Action):
                 'success': True,
                 'message': 'Starting File Sync'
             }
-            '''else:
-                return {
-                    'success': False,
-                    'message': 'Unable to start sync'
-                }'''
 
 
         return {
