@@ -76,6 +76,7 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
 
         if len(imagePlanes) > 0:
             for imagePlane in imagePlanes:
+                imageName = imagePlane.split('->')[-1]
                 imagePath = cmds.getAttr(imagePlane + '.imageName')
                 imageSeq = cmds.getAttr(imagePlane + '.useFrameExtension')
                 frameOffset = cmds.getAttr(imagePlane + '.frameOffset')
@@ -84,7 +85,10 @@ class ExtractAnimScene(pyblish.api.InstancePlugin):
                 imageOffsetX = cmds.getAttr(imagePlane + '.offsetX')
                 imageOffsetY = cmds.getAttr(imagePlane + '.offsetY')
                 camera = cmds.imagePlane(imagePlane, camera=True, query=True)[0]
-                mayaScript += "cmds.imagePlane(camera='%s');" % camera
+                if imageName == 'imagePlane1':
+                    mayaScript += "cmds.imagePlane(camera='%s');" % camera
+                else:
+                    mayaScript += "cmds.imagePlane(camera='%s', name='%s');" % (camera, imageName)
                 mayaScript += "cmds.setAttr('%s.imageName', '%s', type='string');" % (imagePlane,
                                                                                       imagePath)
                 mayaScript += "cmds.setAttr('%s.useFrameExtension', %s);" % (imagePlane, imageSeq)
