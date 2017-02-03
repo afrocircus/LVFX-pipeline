@@ -23,6 +23,7 @@ class IntegratePlayblast(pyblish.api.InstancePlugin):
     families = ['scene']
     hosts = ['maya']
     version = (0, 1, 0)
+    optional = True
 
     def process(self, instance):
 
