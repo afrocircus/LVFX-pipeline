@@ -1,7 +1,18 @@
 import os
 import nuke
+import shlex
+import threading
+import subprocess
 import PySide.QtGui as QtGui
 from Widgets.submit.hqueueWidget import HQueueWidget
+
+
+def async(fn):
+    """Run *fn* asynchronously."""
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+    return wrapper
 
 
 class ShotSubmitUI(QtGui.QWidget):
@@ -78,6 +89,13 @@ class ShotSubmitUI(QtGui.QWidget):
         renderParams = '%s -X %s' % (renderParams, str(self.writeNodeBox.currentText()))
         return renderParams
 
+    @async
+    def submitLocalRender(self, cmd):
+        logFile = self.jobWidget.getLogFileName()
+        args = shlex.split(cmd)
+        with open(logFile, 'w') as f:
+            subprocess.call(args, stdout=f, stderr=f)
+
     def submitRender(self):
         filename = str(self.fileTextBox.text())
         nuke.scriptSave()
@@ -91,6 +109,7 @@ class ShotSubmitUI(QtGui.QWidget):
         jobName = 'Nuke - %s' % fname
         renderer = self.jobWidget.getRenderer('Nuke')
         splitMode = self.jobWidget.getSplitMode()
+        local = self.jobWidget.localCheckbox.isChecked()
         pool = self.jobWidget.getClientPools()
         if pool == 'Linux Farm':
             pool = ''
@@ -100,6 +119,11 @@ class ShotSubmitUI(QtGui.QWidget):
         dependent = self.jobWidget.getDependentJob()
         cmd = '%s %s %s' % (renderer, rendererParams, filename)
         hq_server = self.jobWidget.getHQProxy()
-        jobIds = self.jobWidget.submitNoChunk(hq_server, jobName, cmd, priority, 0,
-                                              pool, False, slackUser, dependent)
-        nuke.message('Job Submission Successful. Job Ids = {0}'.format(jobIds))
+        if local:
+            newCmd = cmd.split(';')[-1]
+            self.submitLocalRender(newCmd)
+            nuke.message('Local render started. \nCommand: %s' % newCmd)
+        else:
+            jobIds = self.jobWidget.submitNoChunk(hq_server, jobName, cmd, priority, 0,
+                                                  pool, False, slackUser, dependent)
+            nuke.message('Job Submission Successful. Job Ids = {0}'.format(jobIds))
