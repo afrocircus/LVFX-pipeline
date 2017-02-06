@@ -1,5 +1,8 @@
 import os
 import json
+import uuid
+import subprocess
+import shlex
 import PySide.QtGui as QtGui
 from PySide.QtCore import Signal
 from Utils.submit import hqueue_submit
@@ -64,6 +67,32 @@ class HQueueWidget(QtGui.QWidget):
         self.userEdit = QtGui.QLineEdit()
         self.userEdit.setText('#render-updates')
         jobBoxLayout.addWidget(self.userEdit, 3, 3)
+        self.localCheckbox = QtGui.QCheckBox()
+        self.localCheckbox.setText('Render local')
+        jobBoxLayout.addWidget(self.localCheckbox, 4, 0)
+        if 'TEMP' in os.environ:
+            logFilename = os.path.join(os.environ['TEMP'], '%s.log' % uuid.uuid4())
+        else:
+            logFilename = os.path.join('/tmp', '%s.log' % uuid.uuid4())
+        self.logFileLabel = QtGui.QLineEdit(logFilename)
+        self.logFileLabel.setVisible(False)
+        jobBoxLayout.addWidget(self.logFileLabel, 4, 1)
+        self.localCheckbox.stateChanged.connect(self.changeCheckboxDisplay)
+
+    def setLogFileName(self, filename):
+        self.logFileLabel.setText(filename)
+
+    def getLogFileName(self):
+        filename = self.logFileLabel.text()
+        return filename
+
+    def changeCheckboxDisplay(self):
+        if self.localCheckbox.isChecked():
+            self.localCheckbox.setText('Render locally to')
+            self.logFileLabel.setVisible(True)
+        else:
+            self.localCheckbox.setText('Render local')
+            self.logFileLabel.setVisible(False)
 
     def emitRendererChangedSignal(self):
         rendererIndex = int(self.rendererBox.currentIndex())
@@ -126,6 +155,9 @@ class HQueueWidget(QtGui.QWidget):
 
     def getPriority(self):
         return int(self.priorityBox.value())
+
+    def getLocalRender(self):
+        return self.localCheckbox.isChecked()
 
     def getHQProxy(self):
         hq_server = hqueue_submit.getHQServerProxy(config['hq_host'], config['hq_port'])

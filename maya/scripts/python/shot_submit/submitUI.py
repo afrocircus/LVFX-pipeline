@@ -1,4 +1,7 @@
 import os
+import shlex
+import threading
+import subprocess
 import PySide.QtGui as QtGui
 import maya.cmds as cmds
 import maya.mel as mm
@@ -9,6 +12,14 @@ from Widgets.submit.hqueueWidget import HQueueWidget
 from vrayStandaloneWidget import VRayStandaloneWidget
 from vrayMayaWidget import VRayMayaWidget
 from vrayExporterWidget import VRayExporterWidget
+
+
+def async(fn):
+    """Run *fn* asynchronously."""
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+    return wrapper
 
 
 class ShotSubmitUI(QtGui.QWidget):
@@ -69,6 +80,7 @@ class ShotSubmitUI(QtGui.QWidget):
         renderer = self.jobWidget.getRenderer('Maya')
         chunk = self.jobWidget.getSplitMode()
         pool = self.jobWidget.getClientPools()
+        local = self.jobWidget.getLocalRender()
         tries = 1
         restart = True
         if pool == 'Linux Farm':
@@ -90,9 +102,15 @@ class ShotSubmitUI(QtGui.QWidget):
             fileDir, fname = os.path.split(filename)
             jobname = 'VRayExport - %s_%s' % (os.path.splitext(fname)[0], renderLayer)
             rendererParams = '%s %s' % (renderer, rendererParams)
-            jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, rendererParams, priority,
-                                                  tries, pool, restart, user, dependency)
-            QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+            if local:
+                newParams = rendererParams.split(';')[-1]
+                self.submitLocalRender(newParams)
+                QtGui.QMessageBox.about(self, 'Local Render', 'Local render started. '
+                                                              '\nCommand: %s' % newParams)
+            else:
+                jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, rendererParams, priority,
+                                                      tries, pool, restart, user, dependency)
+                QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
                                                                    "Job Id = {0}".format(jobIds))
         elif self.vrayStandalone.isVisible():
             paramDict, rendererParams = self.vrayStandalone.getRenderParams()
@@ -116,29 +134,45 @@ class ShotSubmitUI(QtGui.QWidget):
             else:
                 taskid = ''
 
-            if chunk > 0:
-                jobIds = self.jobWidget.submitVRStandalone(hq_server, jobname, paramDict['filename'],
-                                                           paramDict['imgFile'], rendererParams,
-                                                           paramDict['startFrame'], paramDict['endFrame'],
-                                                           paramDict['step'], chunk, paramDict['multiple'],
-                                                           pool, priority, paramDict['review'], user,
-                                                           dependency, prog, taskid)
-                QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
-                                                                       "Job Id = {0}".format(jobIds))
-            elif chunk==0 and not paramDict['multiple']:
+            if local:
                 vrayCmd = '{0} -sceneFile={1} -frames={2}-{3},{4}'.format(rendererParams,
                                                                           paramDict['filename'],
                                                                           paramDict['startFrame'],
                                                                           paramDict['endFrame'],
                                                                           paramDict['step'])
-                jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, vrayCmd, priority,
-                                                      tries, pool, restart, user, dependency)
-                QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
-                                                                       "Job Id = {0}".format(jobIds))
+                self.submitLocalRender(vrayCmd)
+                QtGui.QMessageBox.about(self, 'Local Render', 'Local render started. '
+                                                              '\nCommand: %s' % vrayCmd)
             else:
-                QtGui.QMessageBox.critical(self, 'Job Submit Failed', "Could not submit the job to HQueue."
-                                                                      "Please re-check render parameters.")
+                if chunk > 0:
+                    jobIds = self.jobWidget.submitVRStandalone(hq_server, jobname, paramDict['filename'],
+                                                               paramDict['imgFile'], rendererParams,
+                                                               paramDict['startFrame'], paramDict['endFrame'],
+                                                               paramDict['step'], chunk, paramDict['multiple'],
+                                                               pool, priority, paramDict['review'], user,
+                                                               dependency, prog, taskid)
+                    QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+                                                                           "Job Id = {0}".format(jobIds))
+                elif chunk==0 and not paramDict['multiple']:
+                    vrayCmd = '{0} -sceneFile={1} -frames={2}-{3},{4}'.format(rendererParams,
+                                                                              paramDict['filename'],
+                                                                              paramDict['startFrame'],
+                                                                              paramDict['endFrame'],
+                                                                              paramDict['step'])
+                    jobIds = self.jobWidget.submitNoChunk(hq_server, jobname, vrayCmd, priority,
+                                                          tries, pool, restart, user, dependency)
+                    QtGui.QMessageBox.about(self, 'Job Submit Successful', "Job submitted successfully. "
+                                                                           "Job Id = {0}".format(jobIds))
+                else:
+                    QtGui.QMessageBox.critical(self, 'Job Submit Failed', "Could not submit the job to HQueue."
+                                                                          "Please re-check render parameters.")
 
+    @async
+    def submitLocalRender(self, cmd):
+        logFile = self.jobWidget.getLogFileName()
+        args = shlex.split(cmd)
+        with open(logFile, 'w') as f:
+            subprocess.call(args, stdout=f, stderr=f)
 
 
     def jsonWrite(self, jsonFilename, jsonDict):
