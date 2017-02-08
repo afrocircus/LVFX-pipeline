@@ -141,9 +141,8 @@ def submitVRayStandalone(hq_server, jobname, filename, imgFile, vrCmd, startFram
                    'Fail "%s" "%s"' % (pythonPath, slackToken, slackUser, submitter)
     }
     if review:
-        movFile = os.path.join(os.path.dirname(imgFile), os.path.basename(filename).split('.')[0] + '.mov')
         mainJob['command'] += 'python2.7 /data/production/pipeline/linux/scripts/mov_create_upload.py ' \
-                              '-f "%s" -t %s -d "%s" -u' % (movFile, taskid, imgFile)
+                              '-f "%s" -t %s -d "%s" -u' % (filename, taskid, imgFile)
         print mainJob['command']
 
     jobs_ids = hq_server.newjob(mainJob)
