@@ -244,7 +244,7 @@ def main(argv):
         newFilePath = os.path.join(taskDir, newFile)
         shutil.copyfile(oldFilePath, newFilePath)
         metadata['filename'] = newFilePath
-        cmds.file(filepath, open=True)
+        cmds.file(newFilePath, open=True)
     else:
         cmds.file(new=True)
         cmds.file(rename=filepath)
