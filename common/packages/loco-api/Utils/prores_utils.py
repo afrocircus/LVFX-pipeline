@@ -3,8 +3,12 @@ __author__ = 'Natasha'
 import subprocess
 import shlex
 import os
+import uuid
 import glob
 from datetime import datetime
+
+
+EXTRACT_RGB_CMD = '/data/production/pipeline/linux/scripts/exrExtractRGB/exrExtractRGB'
 
 
 def getImageSize(filename):
@@ -39,11 +43,25 @@ def makeSlate(size, filename, shotInfo, date):
     return slate
 
 
+def extractRGB(imgSeq):
+    tmpFolder = os.environ['TEMP']
+    extractFolder = os.path.join(tmpFolder, 'extractEXR_%s' % str(uuid.uuid4()))
+    if not os.path.exists(extractFolder):
+        os.makedirs(extractFolder)
+    for img in imgSeq:
+        outImg = os.path.join(extractFolder, os.path.basename(img))
+        cmd = '%s %s %s' % (EXTRACT_RGB_CMD, img, outImg)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=True)
+        out, err = process.communicate()
+    return extractFolder
+
+
 def makeMovie(filename):
     slateFolder, outfileName = os.path.split(filename)
     fname,fext = os.path.splitext(outfileName)
     frameno = fname.split('.')[-1]
-    filePart = os.path.join(slateFolder, fname.split('.')[0])
+    filePart = os.path.join(slateFolder, fname.rsplit('.', 1)[:-1][0])
     outFile = os.path.join(slateFolder, '{0}.mov'.format(filePart))
     ffmpegCmd = 'ffmpeg -y -start_number %s -an -i %s.%%0%sd%s -vcodec libx264 -pix_fmt yuv420p ' \
                 '-preset slow -crf 18 -vf "lutrgb=r=gammaval(0.45454545):g=gammaval(0.45454545):' \
