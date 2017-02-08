@@ -36,7 +36,7 @@ class VRayExporterWidget(QtGui.QWidget):
         widgetLayout.addWidget(self.frameStepEdit, 0, 5)
         widgetLayout.addWidget(QtGui.QLabel('Render Layer:'), 1, 0)
         self.renderLayerCombo = QtGui.QComboBox()
-        self.renderLayerCombo.addItems(cmds.ls(type='renderLayer'))
+        self.renderLayerCombo.addItems(self.getRenderLayers())
         self.renderLayerCombo.currentIndexChanged.connect(self.constructOutFileLabel)
         widgetLayout.addWidget(self.renderLayerCombo, 1, 1)
         widgetLayout.addWidget(QtGui.QLabel('Camera:'), 1, 2)
@@ -72,6 +72,14 @@ class VRayExporterWidget(QtGui.QWidget):
         self.layout().addLayout(projLayout)
         self.layout().addWidget(self.outFileLabel)
         self.projdirEdit.textChanged.connect(self.constructOutFileLabel)
+
+    def getRenderLayers(self):
+        # Ignore any layer named char_defaultRenderLayer as it comes from the ref char.mb
+        layers = []
+        for rl in cmds.ls(type='renderLayer'):
+            if rl != 'char_defaultRenderLayer' and rl != 'char:defaultRenderLayer':
+                layers.append(rl)
+        return layers
 
     def constructOutFileLabel(self):
         renderLayer = self.renderLayerCombo.currentText()
