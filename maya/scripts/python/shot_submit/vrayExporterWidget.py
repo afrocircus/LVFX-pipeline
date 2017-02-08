@@ -1,6 +1,7 @@
 import os
 import PySide.QtGui as QtGui
 import maya.cmds as cmds
+import re
 from PySide.QtCore import Signal
 
 
@@ -76,8 +77,12 @@ class VRayExporterWidget(QtGui.QWidget):
     def getRenderLayers(self):
         # Ignore any layer named char_defaultRenderLayer as it comes from the ref char.mb
         layers = []
+        # Dont want anything called char:defaultRenderLayer or char_defaultRenderLayer1 etc
+        query = 'char' + '[_:]' + 'defaultRenderLayer' + '\d*'
+        pattern = re.compile(query)
         for rl in cmds.ls(type='renderLayer'):
-            if rl != 'char_defaultRenderLayer' and rl != 'char:defaultRenderLayer':
+            result = re.search(pattern, rl)
+            if not result:
                 layers.append(rl)
         return layers
 
