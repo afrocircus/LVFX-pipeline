@@ -120,11 +120,10 @@ class VRayStandaloneWidget(QtGui.QWidget):
             paramDict['multiple'] = True
         else:
             paramDict['multiple'] = False
-        '''if self.ftrackCheckbox.isChecked():
+        if self.ftrackCheckbox.isChecked():
             paramDict['review'] = True
         else:
-            paramDict['review'] = False'''
-        paramDict['review'] = False
+            paramDict['review'] = False
         return paramDict, rendererParams
 
     def getUploadCheck(self):
