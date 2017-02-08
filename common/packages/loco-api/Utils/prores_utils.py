@@ -44,7 +44,10 @@ def makeSlate(size, filename, shotInfo, date):
 
 
 def extractRGB(imgSeq):
-    tmpFolder = os.environ['TEMP']
+    if 'TEMP' in os.environ:
+        tmpFolder = os.environ['TEMP']
+    else:
+        tmpFolder = '/tmp'
     extractFolder = os.path.join(tmpFolder, 'extractEXR_%s' % str(uuid.uuid4()))
     if not os.path.exists(extractFolder):
         os.makedirs(extractFolder)
@@ -64,7 +67,8 @@ def makeMovie(filename):
     filePart = os.path.join(slateFolder, fname.rsplit('.', 1)[:-1][0])
     outFile = os.path.join(slateFolder, '{0}.mov'.format(filePart))
     ffmpegCmd = 'ffmpeg -y -start_number %s -an -i %s.%%0%sd%s -vcodec libx264 -pix_fmt yuv420p ' \
-                '-preset slow -crf 18 -vf "lutrgb=r=gammaval(0.45454545):g=gammaval(0.45454545):' \
+                '-preset slow -crf 18 -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2:' \
+                'lutrgb=r=gammaval(0.45454545):g=gammaval(0.45454545):' \
                 'b=gammaval(0.45454545),drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
                 'fontsize=24:text=%%{n}:x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
                 'boxcolor=0x00000099" %s' % (frameno, filePart,len(frameno),fext, outFile)
@@ -78,8 +82,8 @@ def makeSlateMovie(filename, slate):
     slateFolder, outfileName = os.path.split(filename)
     fname,fext = os.path.splitext(outfileName)
     slateMov = os.path.join(slateFolder, '{0}_slate{1}'.format(fname, fext))
-    ffmpegSlate = 'ffmpeg -y -i "{0}" -i "{1}" -filter_complex "overlay=5:5" "{2}"'.format(filename,
-                                                                                  slate, slateMov)
+    ffmpegSlate = 'ffmpeg -y -i "{0}" -i "{1}" -filter_complex "overlay=5:5, ' \
+                  'scale=trunc(iw/2)*2:trunc(ih/2)*2" "{2}"'.format(filename, slate, slateMov)
     process = subprocess.Popen(ffmpegSlate, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, shell=True)
     process.wait()

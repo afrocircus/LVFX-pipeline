@@ -17,7 +17,9 @@ os.environ['FTRACK_API_KEY'] = config.ftrack_api_key
 
 def createMov(outdir, filename, taskid):
     session = ftrack_utils2.startANewSession()
-    task = ftrack_utils2.getTask(session, taskid, filename)
+    # If taskid is not valid, then don't try and figure it out from filename as it can
+    # be problematic. Only upload if there is a valid taskid.
+    task = ftrack_utils2.getTask(session, taskid, '')
     extractDir = ''
 
     imgSeq = glob.glob(outdir)
@@ -25,17 +27,20 @@ def createMov(outdir, filename, taskid):
     size = prores_utils.getImageSize(imgSeq[0])
     # if exr, extract rgb channel
     if imgSeq[0].endswith('.exr'):
-        logging.info('Extracting RGB channel from EXR image sequence...')
+        print 'Extracting RGB channel from EXR image sequence...'
         extractDir = prores_utils.extractRGB(imgSeq)
         imgSeq = glob.glob(os.path.join(extractDir, '*'))
         imgSeq.sort()
     # make movie
-    logging.info('Making movie...')
+    print 'Making movie...'
     movFile = prores_utils.makeMovie(imgSeq[0])
     movFilename = os.path.split(movFile)[-1]
     parentDir = os.path.dirname(outdir)
 
+    print 'Created: %s' % movFile
+
     # copy movFile to out filename location
+    print 'Copying to location: %s' % parentDir
     try:
         shutil.copy(movFile, parentDir)
     except shutil.Error:
@@ -44,7 +49,7 @@ def createMov(outdir, filename, taskid):
     movFile = os.path.join(parentDir, movFilename)
 
     if task:
-        logging.info('Valid task found')
+        print 'Valid task found!'
         artist = ftrack_utils2.getUsername(task)
         date = ftrack_utils2.getDate()
         try:
@@ -59,7 +64,7 @@ def createMov(outdir, filename, taskid):
 
         slate = prores_utils.makeSlate(size, imgSeq[0], shotInfo, date)
 
-        logging.info('Making slate movie')
+        print 'Making slate movie'
         slateMov = prores_utils.makeSlateMovie(movFile, slate)
 
         logging.debug('Removing tmp files')
@@ -72,6 +77,7 @@ def createMov(outdir, filename, taskid):
     logging.debug('Removing tmp exr files')
     if os.path.exists(extractDir):
         shutil.rmtree(extractDir)
+    print 'Final movie file: %s' % movFile
     return movFile, task
 
 
