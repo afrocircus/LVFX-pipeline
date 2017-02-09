@@ -41,7 +41,7 @@ class ValidateParts(pyblish.api.InstancePlugin):
         rigParts = []
         rigPartsFinal = []
         rigGeo = None
-        print rig
+
         for each in rig:
             children = cmds.listRelatives(each, children=True)
             for child in children:
