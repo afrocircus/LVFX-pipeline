@@ -41,6 +41,7 @@ class ValidateParts(pyblish.api.InstancePlugin):
         rigParts = []
         rigPartsFinal = []
         rigGeo = None
+        print rig
         for each in rig:
             children = cmds.listRelatives(each, children=True)
             for child in children:
@@ -58,6 +59,7 @@ class ValidateParts(pyblish.api.InstancePlugin):
             if not cmds.getAttr(part+'.intermediateObject'):
                 rigPartsFinal.append(part)
 
+        rigPartsFinal.sort()
         mayapy = '/usr/autodesk/maya2016/bin/mayapy'
         cmd = '%s /data/production/pipeline/linux/scripts/getPartnames.py ' \
               '-file %s -group %s' % (mayapy, modelFile, rigGeo)
@@ -71,6 +73,7 @@ class ValidateParts(pyblish.api.InstancePlugin):
             raise pyblish.api.ValidationError
 
         modelParts = err.split('GEO_PARTS: ')[-1].strip('\n').split(',')
+        modelParts.sort()
         self.log.info('Model Parts: ' + ', '.join(modelParts))
 
         if rigPartsFinal == modelParts:
