@@ -76,7 +76,7 @@ def main(argv):
         destXfer = destXfer.replace('/data/production', '/mnt/production')
         destLoc = 'root@192.168.0.210'
 
-    rsyncCmd += ' --rsync-path="mkdir -p \"{0}\" && rsync" "{1}" {2}:"{0}/"'.format(
+    rsyncCmd += ' --rsync-path="mkdir -p \\"{0}\\" && rsync" "{1}" {2}:"{0}/"'.format(
                 destXfer, srcXfer, destLoc)
     args = shlex.split(rsyncCmd)
     subprocess.call(args)
