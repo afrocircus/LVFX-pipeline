@@ -27,6 +27,7 @@ Loco VFX Pipeline Documentation
    :maxdepth: 2
    :caption: Technical Documentation
 
+   linux-setup
    event-server
    file-backup
    file-sync
