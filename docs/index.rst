@@ -28,4 +28,6 @@ Loco VFX Pipeline Documentation
    :caption: Technical Documentation
 
    event-server
+   file-backup
+   file-sync
 
