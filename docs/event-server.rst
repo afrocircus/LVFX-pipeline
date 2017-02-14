@@ -75,3 +75,27 @@ What actions are hosted on the event server?
     not play in RV.
 
     .. image:: /img/rv-component.png
+
+
+Who runs the event server?
+--------------------------
+
+The event server is nothing but a python script located at ``/data/production/pipeline/linux/ftrack-events/server.py``.
+As long as this python script is running, the ftrack events and actions will be monitored. So we need
+a process that will continuously run this event server script and monitor and log it's behaviour.
+
+A supervisor daemon is a process that does this for us. The details of the script are included in the
+supervisord config file located at ``/etc/supervisord.conf``
+
+We start the supervisord by running::
+
+    service supervisord start
+
+This is run in the terminal as a "root" user.
+
+Similarly, we can stop the supervisord by running::
+
+    service supervisord stop
+
+The supervisor daemon automatically starts itself when the workstation boots up. The logs of the ftrack
+event server are written to ``/tmp/ftrack_event_server.log``
