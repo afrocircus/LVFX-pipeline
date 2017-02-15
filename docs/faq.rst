@@ -124,6 +124,35 @@ Frequently Asked Questions
     .. image:: /img/online-client.png
 
 * **There is a task on ftrack, but I don't have the corresponding folder or file on disk**
+    This could be one of 2 reasons, either the task's type was not selected correctly or it is a
+    permissions issue.
+    If a task's type is wrong, first correct the type in Ftrack.
+
+    .. image:: /img/task-type.png
+
+    If it is a file permissions issue, first correct the directory permissions as described above.
+    Then create a folder with the same name as the task in the shot structure. Copy the template file
+    from ``/data/production/<your_project>/template_files/<task_file>`` to your task folder. Rename the
+    file to <shotname>_<version>.<ext eg. E1_010_0010_v01.mb
 
 
 * **The asset type is wrong on Ftrack, what do I do?**
+    The asset type determines the asset folder on disk. So for asset Earth, if type is environment,
+    then the asset will be created under ``/data/production/<project>/assets/environment/Earth``
+    If the asset type is prop, then the asset will be created under ``/data/production/<project>/assets/prop/Earth``
+
+    .. image:: /img/asset-type.png
+
+    So if the asset type is wrong, your asset folder has been created incorrectly on disk.
+    In such a situation, first change the asset type on ftrack. Then simply move the folder to the
+    correct asset type folder.
+
+.. note:: Asset types and task types are important as events are triggered based on the type. If the
+          type is wrong, then a folder may be created in the wrong place on disk or the wrong template
+          file may be copied over. So when creating a new task or asset, use the 'Create' menu in ftrack
+
+          .. image:: /img/create-menu.png
+
+          and make sure to select the correct type from the drop down menu.
+
+          .. image:: /img/create-type.png
