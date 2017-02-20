@@ -25,10 +25,12 @@ class FileSync(ftrack.Action):
         )
 
     @async
-    def cptSync(self, xferFile, xferValue, user):
+    def cptSync(self, xferFile, xferValue, user, entity):
         # Remove trailing '/'
         xferFile = xferFile.rstrip('/')
         rsyncCmd = ''
+        xferMsg = 'User: %s \n\n' \
+                  'File(s): %s \n\n' % (user.getUsername(), xferFile)
 
         job = ftrack.createJob(
             'Syncing {0}'.format(xferFile),
@@ -42,12 +44,14 @@ class FileSync(ftrack.Action):
                 os.makedirs(jhbDir)
             rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
                        'server@192.168.2.5:"%s" "%s/"' % (xferFile, jhbDir)
+            xferMsg += 'Direction: CPT -> JHB \n\n'
         elif xferValue == 1:
             # JHB -> CPT
             cptDir = os.path.dirname(xferFile)
             rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
                        '--rsync-path="mkdir -p \"%s\" && rsync" "%s" server@192.168.2.5:"%s/"' % (
                 cptDir, xferFile, cptDir)
+            xferMsg += 'Direction: JHB -> CPT \n\n'
         print '\n' + rsyncCmd
         process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
@@ -57,9 +61,13 @@ class FileSync(ftrack.Action):
         if str(exitcode) != '0':
             job.setDescription('Sync Failed for {0}'.format(xferFile))
             job.setStatus('failed')
+            xferMsg += 'Status: Failed. Please re-try. \n\n'
+            entity.createNote(xferMsg)
         else:
             job.setDescription('Sync Complete')
             job.setStatus('done')
+            xferMsg += 'Status: Success. Transfer Complete \n'
+            entity.createNote(xferMsg)
 
     def register(self):
         """Register discover actions on logged in user."""
@@ -84,6 +92,9 @@ class FileSync(ftrack.Action):
         if not selection:
             return
 
+        if selection[0]['entityType'] == 'show':
+            return
+
         return {
             'items': [{
                 'label': self.label,
@@ -97,6 +108,9 @@ class FileSync(ftrack.Action):
         Called when action is executed
         """
         selection = event['data'].get('selection', [])
+        entityId = selection[0]['entityId']
+
+        entity = ftrack.Task(entityId)
         user = ftrack.User(id=event['source']['user']['id'])
 
         if 'values' in event['data']:
@@ -104,7 +118,7 @@ class FileSync(ftrack.Action):
             path = values['file_path']
             value = values['xfer_loc']
             #if os.path.exists(path):
-            self.cptSync(path, value, user)
+            self.cptSync(path, value, user, entity)
             return {
                 'success': True,
                 'message': 'Starting File Sync'
