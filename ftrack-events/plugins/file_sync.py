@@ -31,6 +31,7 @@ class FileSync(ftrack.Action):
         rsyncCmd = ''
         xferMsg = 'User: %s \n\n' \
                   'File(s): %s \n\n' % (user.getUsername(), xferFile)
+        direction = 'CPT -> JHB'
 
         job = ftrack.createJob(
             'Syncing {0}'.format(xferFile),
@@ -45,6 +46,7 @@ class FileSync(ftrack.Action):
             rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
                        'server@192.168.2.5:"%s" "%s/"' % (xferFile, jhbDir)
             xferMsg += 'Direction: CPT -> JHB \n\n'
+            direction = 'CPT -> JHB'
         elif xferValue == 1:
             # JHB -> CPT
             cptDir = os.path.dirname(xferFile)
@@ -52,19 +54,21 @@ class FileSync(ftrack.Action):
                        '--rsync-path="mkdir -p \"%s\" && rsync" "%s" server@192.168.2.5:"%s/"' % (
                 cptDir, xferFile, cptDir)
             xferMsg += 'Direction: JHB -> CPT \n\n'
+            direction = 'JHB -> CPT'
         print '\n' + rsyncCmd
         process = subprocess.Popen(rsyncCmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
         out, err = process.communicate()
         logging.info(out)
         exitcode = process.returncode
+        filebase = os.path.basename(xferFile)
         if str(exitcode) != '0':
-            job.setDescription('Sync Failed for {0}'.format(xferFile))
+            job.setDescription('Sync Failed for {0} from {1}'.format(filebase, direction))
             job.setStatus('failed')
             xferMsg += 'Status: Failed. Please re-try. \n\n'
             entity.createNote(xferMsg)
         else:
-            job.setDescription('Sync Complete')
+            job.setDescription('Sync Complete for {0} from {1}'.format(filebase, direction))
             job.setStatus('done')
             xferMsg += 'Status: Success. Transfer Complete \n'
             entity.createNote(xferMsg)
@@ -109,8 +113,12 @@ class FileSync(ftrack.Action):
         """
         selection = event['data'].get('selection', [])
         entityId = selection[0]['entityId']
+        entityType = selection[0]['entityType']
 
-        entity = ftrack.Task(entityId)
+        if entityType == 'assetversion':
+            entity = ftrack.AssetVersion(entityId)
+        else:
+            entity = ftrack.Task(entityId)
         user = ftrack.User(id=event['source']['user']['id'])
 
         if 'values' in event['data']:
