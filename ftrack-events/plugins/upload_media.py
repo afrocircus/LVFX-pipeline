@@ -187,7 +187,7 @@ class UploadMedia(ftrack.Action):
 
         # generate slate
         slate = os.path.join(slateFolder, str(uuid.uuid4())+'.png')
-        slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold -pointsize 32 ' \
+        slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold ' \
                    '-fill white -gravity NorthWest -annotate +25+25 "{1}" ' \
                    '-gravity NorthEast -annotate +25+25 "{2}" -gravity SouthEast ' \
                    '"{3}"'.format(size, shotInfo, date, slate)
@@ -375,6 +375,18 @@ class UploadMedia(ftrack.Action):
                     'value': '',
                     'name': 'file_path'
                 }, {
+                    'label':'Add Slate',
+                    'type':'enumerator',
+                    'value': 'No',
+                    'name':'add_slate',
+                    'data':[{
+                        'label': 'Yes',
+                        'value': 'Yes'
+                    }, {
+                        'label': 'No',
+                        'value': 'No'
+                    }]
+                }, {
                     'label': 'Asset Name',
                     'type': 'text',
                     'value': 'ReviewAsset',
@@ -384,18 +396,6 @@ class UploadMedia(ftrack.Action):
                     'type': 'textarea',
                     'value': 'Done: \nTo Do:',
                     'name': 'note'
-                }, {
-                    'label':'Add Slate',
-                    'type':'enumerator',
-                    'value': 'Yes',
-                    'name':'add_slate',
-                    'data':[{
-                        'label': 'Yes',
-                        'value': 'Yes'
-                    }, {
-                        'label': 'No',
-                        'value': 'No'
-                    }]
                 }]
             }
 
