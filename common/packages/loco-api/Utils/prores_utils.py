@@ -33,7 +33,7 @@ def makeSlate(size, filename, shotInfo, date):
     # generate slate
     slateFolder = os.path.split(filename)[0]
     slate = os.path.join(slateFolder, 'slate.png')
-    slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold -pointsize 24 ' \
+    slateCmd = 'convert -size {0} xc:transparent -font Palatino-Bold ' \
                '-fill white -gravity NorthWest -annotate +25+25 "{1}" ' \
                '-gravity NorthEast -annotate +25+25 "{2}" -gravity SouthEast ' \
                '"{3}"'.format(size, shotInfo, date, slate)
@@ -67,8 +67,7 @@ def makeMovie(filename):
     filePart = os.path.join(slateFolder, fname.rsplit('.', 1)[:-1][0])
     outFile = os.path.join(slateFolder, '{0}.mov'.format(filePart))
     ffmpegCmd = 'ffmpeg -y -start_number %s -an -i %s.%%0%sd%s -vcodec libx264 -pix_fmt yuv420p ' \
-                '-preset slow -crf 18 -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2:' \
-                'lutrgb=r=gammaval(0.45454545):g=gammaval(0.45454545):' \
+                '-preset slow -crf 18 -vf "lutrgb=r=gammaval(0.45454545):g=gammaval(0.45454545):' \
                 'b=gammaval(0.45454545),drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans.ttf:' \
                 'fontsize=24:text=%%{n}:x=(w-tw)-50: y=h-(2*lh):fontcolor=white: box=1:' \
                 'boxcolor=0x00000099" %s' % (frameno, filePart,len(frameno),fext, outFile)
