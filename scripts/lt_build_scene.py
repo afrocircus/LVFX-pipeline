@@ -26,7 +26,7 @@ def getCharPublishFile(shot):
     version = None
     if animTask:
         meta = animTask.getMeta()
-        refs = [ (key, meta[key]) for key in meta.keys() if 'ref' in key ]
+        refs = [ (key, meta[key]) for key in meta.keys() if 'ref_' in key ]
         for ref, filepath in refs:
             charname = ref.split('ref_')[-1]
             animMeta[charname] = {'ref': filepath}
@@ -62,13 +62,17 @@ def isValidFile(filepath):
 
 
 def getModelingRef(rigFile):
-    modelRef = ''
     assetDir = rigFile.split('rigging')[0]
+    assetName = os.path.basename(rigFile)
     modelPublishDir = os.path.join(assetDir, 'modeling', 'publish')
-    if os.path.exists(modelPublishDir):
-        refFiles = [f for f in glob.glob(os.path.join(modelPublishDir, '*_ref.mb')) if os.path.isfile(f)]
-        if refFiles:
-            modelRef = refFiles[0]
+    modelRef = os.path.join(modelPublishDir, assetName.replace('rig', 'ref'))
+    if not os.path.exists(modelRef):
+        if os.path.exists(modelPublishDir):
+            refFiles = [f for f in glob.glob(os.path.join(modelPublishDir, '*_ref.mb')) if os.path.isfile(f)]
+            if refFiles:
+                modelRef = refFiles[0]
+        else:
+            modelRef = ''
 
     return modelRef
 
