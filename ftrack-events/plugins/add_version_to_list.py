@@ -4,7 +4,7 @@ import datetime
 
 def getDate():
     today = datetime.datetime.today()
-    if today.hour >= 10:
+    if today.hour >= 12:
         dailiesDate = today + datetime.timedelta(1)
     else:
         dailiesDate = today
