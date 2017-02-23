@@ -93,6 +93,7 @@ def main(argv):
         file = os.path.join(tmpDir, str(uuid.uuid4()))
         with open(file, 'w') as f:
             f.write(rsyncCmd)
+        print "Queued for overnight sync"
     else:
         args = shlex.split(rsyncCmd)
         subprocess.call(args)
