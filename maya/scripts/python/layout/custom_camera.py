@@ -38,7 +38,7 @@ class CustomCamera(object):
                           '    break;\r\n' +
                           '  case 5: \r\n' +
                           '    python("camera_overlays.Overlay_Function().toggleGoldenSprialBottomLeft()"); \r\n' +
-                          '}select %s;\r' % camera, o="renderCam")
+                          '}select %s;\r' % camera, ae=False, o="renderCam")
 
     def createCustomCamera(self):
         camera = self.createCamera()
