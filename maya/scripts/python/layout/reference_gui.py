@@ -19,17 +19,25 @@ class ReferenceGUI(QtGui.QWidget):
         self.layout().addWidget(envRefBtn)
         self.layout().addWidget(envRefList)
 
-        envRefBtn.clicked.connect(lambda arg1=envRefList, arg2='env': self.showAssetGui(arg1, arg2))
+        envRefBtn.clicked.connect(lambda arg1=envRefList, arg2='env',
+                                         arg3='model': self.showAssetGui(arg1, arg2, arg3))
         horizontalLine = QtGui.QFrame()
         horizontalLine.setFrameStyle(QtGui.QFrame.HLine)
         horizontalLine.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.layout().addWidget(horizontalLine)
 
-        charRefBtn = QtGui.QPushButton('Reference Char')
+        charBtnLayout = QtGui.QHBoxLayout()
+        charRefBtn = QtGui.QPushButton('Reference Char Model')
+        charBtnLayout.addWidget(charRefBtn)
+        charRigBtn = QtGui.QPushButton('Reference Char Rig')
+        charBtnLayout.addWidget(charRigBtn)
+        self.layout().addLayout(charBtnLayout)
         charRefList = QtGui.QListWidget()
-        self.layout().addWidget(charRefBtn)
         self.layout().addWidget(charRefList)
-        charRefBtn.clicked.connect(lambda arg1=charRefList, arg2='char': self.showAssetGui(arg1, arg2))
+        charRefBtn.clicked.connect(lambda arg1=charRefList, arg2='char',
+                                          arg3='model': self.showAssetGui(arg1, arg2, arg3))
+        charRigBtn.clicked.connect(lambda arg1=charRefList, arg2='char',
+                                          arg3='rig': self.showAssetGui(arg1, arg2, arg3))
         horizontalLine = QtGui.QFrame()
         horizontalLine.setFrameStyle(QtGui.QFrame.HLine)
         horizontalLine.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -41,8 +49,8 @@ class ReferenceGUI(QtGui.QWidget):
         refreshBtn.clicked.connect(lambda arg1=envRefList, arg2=charRefList:
                                    self.refresh(arg1, arg2))
 
-    def showAssetGui(self, listWidget, namespace):
-        assetGui = AssetSelector(self, namespace)
+    def showAssetGui(self, listWidget, namespace, type):
+        assetGui = AssetSelector(self, namespace, type)
         assetGui.assetAdd.connect(lambda arg1, arg2, arg3=listWidget: self.addToList(arg1, arg2, arg3))
         assetGui.show()
 
@@ -73,13 +81,13 @@ class AssetSelector(QtGui.QDialog):
 
     assetAdd = QtCore.Signal(str, str)
 
-    def __init__(self, parent=None, namespace=None):
+    def __init__(self, parent=None, namespace=None, type=None):
         QtGui.QDialog.__init__(self, parent)
         self.setWindowTitle('Select an Asset')
         self.setLayout(QtGui.QVBoxLayout())
-        self.buildUI(namespace)
+        self.buildUI(namespace, type)
 
-    def buildUI(self, namespace):
+    def buildUI(self, namespace, type):
         refLayout = QtGui.QGridLayout()
         refLayout.addWidget(QtGui.QLabel('Name:'), 0, 0)
         self.refNameEdit = QtGui.QLineEdit()
@@ -98,7 +106,7 @@ class AssetSelector(QtGui.QDialog):
         assetList = QtGui.QListWidget()
         assetList.setSortingEnabled(True)
         assetList.itemClicked.connect(self.itemSelected)
-        assetNames = self.populateAssets()
+        assetNames = self.populateAssets(type)
         for key in assetNames.keys():
             item = QtGui.QListWidgetItem()
             item.setText(key)
@@ -110,7 +118,7 @@ class AssetSelector(QtGui.QDialog):
         acceptBtn.clicked.connect(lambda : self.acceptAsset(namespace))
         self.layout().addWidget(acceptBtn)
 
-    def populateAssets(self):
+    def populateAssets(self, type):
         session = ftrack_utils2.startANewSession()
         if 'FTRACK_TASKID' in os.environ:
             taskid = os.environ['FTRACK_TASKID']
@@ -118,14 +126,20 @@ class AssetSelector(QtGui.QDialog):
             taskid = ''
         if taskid == '':
             return {}
+        if type == 'rig':
+            taskName = 'rigging'
+            metadataKey = 'publish_rig'
+        else:
+            taskName = 'modeling'
+            metadataKey = 'publish_model'
         task = session.query('Task where id is %s' % taskid).one()
         # all modeling tasks
-        tasks = session.query('Task where project.name is %s and name is modeling' %
-                              task['project']['name']).all()
-        publishedTasks = [task for task in tasks if 'publish_model' in task['metadata']]
+        tasks = session.query('Task where project.name is %s and name is %s' %
+                              (task['project']['name'], taskName)).all()
+        publishedTasks = [task for task in tasks if metadataKey in task['metadata']]
         assetNameDict = {}
         for publishTask in publishedTasks:
-            assetNameDict[publishTask['parent']['name']] = publishTask['metadata']['publish_model']
+            assetNameDict[publishTask['parent']['name']] = publishTask['metadata'][metadataKey]
         return assetNameDict
 
     def itemSelected(self, item):
