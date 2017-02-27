@@ -11,6 +11,7 @@ class ReferenceGUI(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.setWindowTitle('Reference UI')
         self.setLayout(QtGui.QVBoxLayout())
+        self.assetList = None
         self.buildUI()
 
     def buildUI(self):
@@ -50,13 +51,15 @@ class ReferenceGUI(QtGui.QWidget):
                                    self.refresh(arg1, arg2))
 
     def showAssetGui(self, listWidget, namespace, type):
-        assetGui = AssetSelector(self, namespace, type)
+        assetGui = AssetSelector(self, namespace, type, self.assetList)
+        self.assetList = assetGui.assetNames
         assetGui.assetAdd.connect(lambda arg1, arg2, arg3=listWidget: self.addToList(arg1, arg2, arg3))
         assetGui.show()
 
     def refresh(self, envListWidget, charListWidget):
         envListWidget.clear()
         charListWidget.clear()
+        self.assetList = None
 
         references = cmds.ls(references=True)
         for ref in references:
@@ -81,10 +84,11 @@ class AssetSelector(QtGui.QDialog):
 
     assetAdd = QtCore.Signal(str, str)
 
-    def __init__(self, parent=None, namespace=None, type=None):
+    def __init__(self, parent=None, namespace=None, type=None, assetList=None):
         QtGui.QDialog.__init__(self, parent)
         self.setWindowTitle('Select an Asset')
         self.setLayout(QtGui.QVBoxLayout())
+        self.assetNames = assetList
         self.buildUI(namespace, type)
 
     def buildUI(self, namespace, type):
@@ -106,11 +110,12 @@ class AssetSelector(QtGui.QDialog):
         assetList = QtGui.QListWidget()
         assetList.setSortingEnabled(True)
         assetList.itemClicked.connect(self.itemSelected)
-        assetNames = self.populateAssets(type)
-        for key in assetNames.keys():
+        if not self.assetNames:
+            self.assetNames = self.populateAssets(type)
+        for key in self.assetNames.keys():
             item = QtGui.QListWidgetItem()
             item.setText(key)
-            item.setData(QtCore.Qt.UserRole, assetNames[key])
+            item.setData(QtCore.Qt.UserRole, self.assetNames[key])
             assetList.addItem(item)
         self.layout().addWidget(assetList)
 
