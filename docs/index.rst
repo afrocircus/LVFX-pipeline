@@ -32,4 +32,5 @@ Loco VFX Pipeline Documentation
    file-backup
    file-sync
    code-structure
+   crons
    faq
