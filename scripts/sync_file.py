@@ -90,7 +90,7 @@ def main(argv):
                 destXfer, srcXfer, destLoc)
 
     if queue:
-        file = os.path.join(tmpDir, str(uuid.uuid4()))
+        file = os.path.join(tmpDir, str(uuid.uuid1()))
         with open(file, 'w') as f:
             f.write(rsyncCmd)
         print "Queued for overnight sync"
