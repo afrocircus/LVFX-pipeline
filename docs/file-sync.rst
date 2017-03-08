@@ -38,6 +38,17 @@ Syncing a folder while excluding certain types of folders or files::
 This command will sync all files and folders in the specified directory while excluding the incrementalSave
 directory and will also exclude any .mov files.
 
+Queueing a file sync::
+
+    file_sync -file /data/production/osg_szm/assets/character/Giant_Dog/rigging/ -ex incrementalSave,*.mov -queue
+
+This command will sync queue the above folder for overnight sync.
+A file with the sync command is written out to ``/data/production/tmp_files/`` folder.
+A cron runs every evening that syncs all the files in this folder. For more information on crons
+`click here`_
+
+.. _click here: crons.html
+
 .. note:: **Further reading:** What is this file_sync command, where does it come from?
           The file_sync command is an alias for a python script that is located in the pipeline folder.
           So when we run file_sync,  we are actually running

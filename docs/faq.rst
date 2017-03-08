@@ -156,3 +156,24 @@ Frequently Asked Questions
           and make sure to select the correct type from the drop down menu.
 
           .. image:: /img/create-type.png
+
+* **How do I check how many Nuke licenses are in use?**
+
+    In your browser go to http://192.168.0.208:4102/
+    Click on the 'Status' button in the column on the left.
+    Then click on "foundry" under the "License Usage" column in the table.
+
+    .. image:: /img/foundry_usage.png
+
+    Then in the page that opens, click "Get License Usage" button
+
+    This will display a table of all licenses currently in use for hiero, nuke and mari.
+
+    .. image:: /img/licenses.png
+
+    The host in the above table is the hostname of the computer. You can find out the hostname of
+    your computer by going to System -> About this Computer.
+
+    .. image:: /img/hostname.png
+
+    In this example, hostname is dev-pc

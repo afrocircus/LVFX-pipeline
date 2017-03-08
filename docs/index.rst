@@ -29,6 +29,7 @@ Loco VFX Pipeline Documentation
 
    linux-setup
    event-server
+   slackbot
    file-backup
    file-sync
    code-structure
