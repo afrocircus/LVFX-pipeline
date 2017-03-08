@@ -59,7 +59,8 @@ def findTask(task, newTaskType):
             slackUser = getSlackUsers(user.getUsername())
             sendSlackMessage(slackUser, message)
         if not users:
-            sendSlackMessage('#general', message)
+            slackGroup = getSlackUsers(project)
+            sendSlackMessage(slackGroup, message)
     else:
         tt = ftrack.TaskType(newTaskType)
         shot.createTask('Lighting', taskType=tt)
