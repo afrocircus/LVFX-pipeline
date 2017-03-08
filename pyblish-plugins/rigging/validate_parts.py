@@ -60,9 +60,11 @@ class ValidateParts(pyblish.api.InstancePlugin):
                 rigPartsFinal.append(part)
 
         rigPartsFinal.sort()
+        print rigPartsFinal
+        print modelFile, rigGeo
         mayapy = '/usr/autodesk/maya2016/bin/mayapy'
         cmd = '%s /data/production/pipeline/linux/scripts/getPartnames.py ' \
-              '-file %s -group %s' % (mayapy, modelFile, rigGeo)
+              '-file "%s" -group %s' % (mayapy, modelFile, rigGeo)
 
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True)
         out, err = process.communicate()
