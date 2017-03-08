@@ -86,8 +86,9 @@ def main(argv):
         destXfer = destXfer.replace('/data/production', '/mnt/production')
         destLoc = 'root@192.168.0.210'
 
-    rsyncCmd += ' --rsync-path="mkdir -p \\"{0}\\" && rsync" "{1}" {2}:"{0}/"'.format(
-                destXfer, srcXfer, destLoc)
+    destXfer2 = destXfer.replace(' ', '\\ ')
+    rsyncCmd += ' --rsync-path="mkdir -p \\"{0}\\" && rsync" "{1}" {2}:"{3}/"'.format(
+                destXfer, srcXfer, destLoc, destXfer2)
 
     if queue:
         file = os.path.join(tmpDir, str(uuid.uuid1()))
