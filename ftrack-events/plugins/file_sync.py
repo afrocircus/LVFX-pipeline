@@ -26,7 +26,7 @@ class FileSync(ftrack.Action):
         )
 
     @async
-    def cptSync(self, xferFile, xferValue, user, entity, queue):
+    def cptSync(self, xferFile, xferValue, user, queue):
         # Remove trailing '/'
         xferFile = xferFile.rstrip('/')
         rsyncCmd = ''
@@ -51,19 +51,21 @@ class FileSync(ftrack.Action):
             # replace mount name as queue runs on file server
             if queue:
                 jhbDir = jhbDir.replace('/data/production', '/mnt/production')
+            xferFile2 = xferFile.replace(' ','\\ ')
             rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
-                       'server@192.168.2.5:"%s" "%s/"' % (xferFile, jhbDir)
+                       'server@192.168.2.5:"%s" "%s/"' % (xferFile2, jhbDir)
             xferMsg += 'Direction: CPT -> JHB \n\n'
             direction = 'CPT -> JHB'
         elif xferValue == 1:
             # JHB -> CPT
             cptDir = os.path.dirname(xferFile)
+            cptDir2 = cptDir.replace(' ', '\\ ')
             # replace mount name as queue runs on file server
             if queue:
                 xferFile = xferFile.replace('/data/production', '/mnt/production')
             rsyncCmd = 'rsync -avuzrh --exclude=incrementalSave ' \
-                       '--rsync-path="mkdir -p \"%s\" && rsync" "%s" server@192.168.2.5:"%s/"' % (
-                cptDir, xferFile, cptDir)
+                       '--rsync-path="mkdir -p \\"%s\\" && rsync" "%s" server@192.168.2.5:"%s/"' % (
+                cptDir, xferFile, cptDir2)
             xferMsg += 'Direction: JHB -> CPT \n\n'
             direction = 'JHB -> CPT'
         print '\n' + rsyncCmd
@@ -81,15 +83,14 @@ class FileSync(ftrack.Action):
             logging.info(out)
             exitcode = process.returncode
             if str(exitcode) != '0':
+                logging.info(err)
                 job.setDescription('Sync Failed for {0} from {1}'.format(filebase, direction))
                 job.setStatus('failed')
                 xferMsg += 'Status: Failed. Please re-try. \n\n'
-                entity.createNote(xferMsg)
             else:
                 job.setDescription('Sync Complete for {0} from {1}'.format(filebase, direction))
                 job.setStatus('done')
                 xferMsg += 'Status: Success. Transfer Complete \n'
-                entity.createNote(xferMsg)
 
     def register(self):
         """Register discover actions on logged in user."""
@@ -129,14 +130,6 @@ class FileSync(ftrack.Action):
         """
         Called when action is executed
         """
-        selection = event['data'].get('selection', [])
-        entityId = selection[0]['entityId']
-        entityType = selection[0]['entityType']
-
-        if entityType == 'assetversion':
-            entity = ftrack.AssetVersion(entityId)
-        else:
-            entity = ftrack.Task(entityId)
         user = ftrack.User(id=event['source']['user']['id'])
 
         if 'values' in event['data']:
@@ -145,7 +138,7 @@ class FileSync(ftrack.Action):
             value = values['xfer_loc']
             queue = values['queue']
             #if os.path.exists(path):
-            self.cptSync(path, value, user, entity, queue)
+            self.cptSync(path, value, user, queue)
             return {
                 'success': True,
                 'message': 'Starting File Sync'
