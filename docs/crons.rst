@@ -79,3 +79,4 @@ The following file opens in the terminal::
 
     # Kill all running rsync jobs at 9am everyday so that we do not slow down CPT network
     0 9 * * * kill -9 `ps -ef | grep 'rsync' | grep -v grep | grep -v $$ | awk '{ print $2 }' | xargs` > /tmp/rsync_jobs_killed_$(date +\%Y\%m\%d\%H\%M\%S).log 2>&1
+
