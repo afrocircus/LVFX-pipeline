@@ -66,7 +66,8 @@ def findTask(task, newTaskType):
         shot.createTask('Lighting', taskType=tt)
         message = "Project: {0}\nShot: {1}\nStatus: Ready for {2}\n" \
                   "Note: Task {2} was created as it did not exist".format(project, shot.getName(), newTaskType)
-        sendSlackMessage('#general', message)
+        slackGroup = getSlackUsers(project)
+        sendSlackMessage(slackGroup, message)
 
 
 def callback(event):
